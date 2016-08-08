@@ -17,8 +17,7 @@
 
    <!-- Build for Flash Player 10.2 -->
    <target name="test_10.2" depends="init">
-      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/ScratchFor10.2.swf"
-                      target-player="10.2" swf-version="11" debug="true">
+      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/scratch.swf" target-player="10.2" swf-version="11" debug="true">
          <source-path path-element="${SRC_DIR}" />
          <library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
          <library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
@@ -35,8 +34,7 @@
 
    <!-- Build and output Scratch.swf-->
    <target name="compile" depends="test_10.2,init">
-      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/Scratch.swf"
-                      target-player="11.4" swf-version="17" debug="false">
+      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/scratch.swf" target-player="11.4" swf-version="17" debug="false">
          <source-path path-element="${SRC_DIR}" />
          <library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
          <library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
@@ -52,4 +50,57 @@
          <define name="SCRATCH::allow3d" value="false" />
       </mxmlc>
    </target>
+
+
+
+   <!-- Build and output Scratch.swf-->
+<!--
+   <target name="compile-android" depends="init">
+      <amxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/scratch-android.swf" target-player="10.2" swf-version="11" debug="true">
+         <source-path path-element="${SRC_DIR}" />
+         <library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
+         <library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
+         <library-path file="${LIBS_DIR}/Bluetooth.swc" />
+         <library-path file="${LIBS_DIR}/NativeDialogs.swc" />
+
+         <static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
+         <default-size width="800" height="600" />
+         <define name="SCRATCH::allow3d" value="true" />
+         <define name="TARGET::android"  value="true" />
+         <define name="TARGET::desktop"  value="false" />
+         <define name="ANDROID::enableDonationButton" value="false" />
+         <define name="SCRATCH::allow3d" value="false" />
+      </amxmlc>
+   </target>
+-->
+
+   <target name="compile-android" depends="init">
+      <exec executable="C:/FLEX/bin/amxmlc.bat" failonerror="true">
+         <arg line="src/Scratch.as"/>
+         <arg line="-library-path+=${LIBS_DIR}"/>
+         <arg line="-define=TARGET::android,true"/>
+         <arg line="-define=TARGET::desktop,false"/>
+         <arg line="-define=ANDROID::enableDonationButton,false"/>
+         <arg line="-swf-version=15"/>
+         <arg line="-output bin/scratch-android.swf"/>
+      </exec>
+   </target>
+
+
+
+   <target name="android-apk" description="Packages up you Air application for release as an apk">
+      <exec executable="C:/FLEX/bin/adt.bat" failonerror="true">
+         <arg line="-package"/>
+         <arg line="-target apk"/>
+         <arg line="-storetype PKCS12"/>
+         <arg line="-keystore cert.p12"/>
+         <arg line="-storepass 111"/>
+         <arg line="bin/scratch"/>
+         <arg line="Scratchduino-app-full.xml"/>
+         <arg line="bin/scratch-android.swf"/>
+         <arg line="-extdir libs" />
+         <!-- <arg line="-C ${deploy.dir} ${air.assets}" /> -->
+      </exec>
+   </target>
+
 </project>

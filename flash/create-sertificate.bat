@@ -1,0 +1,1 @@
+C:\FLEX\bin\adt.bat -certificate -cn SelfSign -ou QE -c US 2048-RSA cert.p12 111

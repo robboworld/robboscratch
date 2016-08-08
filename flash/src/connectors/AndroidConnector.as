@@ -70,8 +70,8 @@ public class AndroidConnector implements IConnector {
                     ++isTurnOn;
                     if (isTurnOn == 2)
                         break;
-                    if (callbackForDiscoveryStarted)
-                        callbackForDiscoveryStarted();
+//                    if (callbackForDiscoveryStarted)
+//                        callbackForDiscoveryStarted();
                     trace("Scan started...");
                     break;
             }

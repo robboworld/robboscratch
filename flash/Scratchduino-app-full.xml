@@ -49,7 +49,7 @@
     <!-- Settings for the application's initial window. Required. -->
     <initialWindow>
         <!-- The main SWF or HTML file of the application. Required. -->
-        <content>SWF file name is set automatically at compile time</content>
+        <content>bin/scratch-android.swf</content>
 
         <!-- The title of the main window. Optional. -->
         <!--<title></title>-->
@@ -127,13 +127,13 @@
 
     <!-- The icon the system uses for the application. For at least one resolution, specify the path to a PNG file included in the AIR package. Optional. -->
     <icon>
-        <!--
+<!--
         <image16x16></image16x16>
         <image29x29></image29x29>
         <image32x32></image32x32>
         <image36x36></image36x36>
         <image40x40></image40x40>
-        <image48x48>assets/ic_launcher_48.png</image48x48>
+        <image48x48>src/assets/ic_launcher_48.png</image48x48>
         <image50x50></image50x50>
         <image57x57></image57x57>
         <image58x58></image58x58>
@@ -149,8 +149,9 @@
         <image144x144></image144x144>
         <image152x152></image152x152>
         <image512x512></image512x512>
-        <image732x412></image732x412>-->
-        <image1024x1024>assets/ic_launcher_1024.png</image1024x1024>
+        <image732x412></image732x412>
+        <image1024x1024>ic_launcher_1024.png</image1024x1024>
+-->
     </icon>
 
     <!-- Whether the application handles the update when a user double-clicks an update version of the AIR file (true),
@@ -231,16 +232,16 @@
                 <uses-permission android:name="android.permission.INTERNET"/>
 
                 <uses-permission android:name="android.permission.BLUETOOTH"/>
-				<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+                                <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
                 <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
 
-				<uses-permission android:name="android.permission.RECORD_AUDIO" />
+                                <uses-permission android:name="android.permission.RECORD_AUDIO" />
                 <uses-feature android:name="android.hardware.microphone" android:required="false"/>
 
-				<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+                                <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-				<uses-permission android:name="android.permission.CAMERA"/>
-				<uses-feature android:name="android.hardware.camera" android:required="false"/>
+                                <uses-permission android:name="android.permission.CAMERA"/>
+                                <uses-feature android:name="android.hardware.camera" android:required="false"/>
                 <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
                 <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
 

@@ -186,5 +186,74 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
             return "";
         return device.getName();
     }
+
+
+
+    private var isMotionTerminated:Boolean = false;
+
+
+
+    public function setMotorSpeedNoDirection(left:int, right:int):void {
+      trace("ROBOT SPEED " + left + " " + right);
+    }
+    public function setMotorSpeedAndDirection(left:int, right:int):void {
+      trace("ROBOT SPEED " + left + " " + right + " TERMINATED=" + isMotionTerminated);
+    }
+    public function setMotionLimit(limit:int):void{
+      trace("MOTION LIMIT=" + limit);
+    }
+    public function setMotorSpeedAndLimit(left:int, right:int, limit:int):void{
+      trace("MOTION LEFT=" + left + " RIGHT=" + right + " LIMIT=" + limit);
+    }
+    public function setMotionTerminated():void{
+    }
+
+
+
+
+
+    public function robLedOn(led:int):void {
+      trace("ROB LED ON=" + led);
+    }
+    public function robLedOff(led:int):void {
+      trace("ROB LED OFF=" + led);
+    }
+
+
+
+
+    public function ledOn(led:int):void {
+      trace("LED ON=" + led);
+    }
+    public function ledOff(led:int):void {
+      trace("LED OFF=" + led);
+    }
+
+    public function ledColorOn(led:String):void {
+      trace("LED ON=" + led);
+    }
+    public function ledColorOff(led:String):void {
+      trace("LED OFF=" + led);
+    }
+
+    public function playNote(note:int):void{
+      trace("PLAY=" + note);
+    }
+
+
+
+   public function setLabDigital(pin:int, value:Boolean):void{
+      trace("SET LAB DIGITAL PIN=" + pin + " VALUE=" + value);
+   }
+
+
+
+
+   public function setLabDigitalPwm(pin:int, value:int):void{
+      trace("SET LAB DIGITAL PWM PIN=" + pin + " VALUE=" + value);
+   }
+
+
+
 }
 }
