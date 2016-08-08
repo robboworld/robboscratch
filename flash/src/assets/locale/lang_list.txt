@@ -1,0 +1,43 @@
+ru,Русский
+fi,Suomi
+sv,Svenska
+id,Bahasa Indonesia
+cs,Česky
+cy,Cymraeg
+es,Español
+da,Dansk
+de,Deutsch
+fr,Français
+ga,Gaeilge
+hr,Hrvatski
+is,Íslenska
+it,Italiano
+la,Latina
+lv,Latviešu
+lt,Lietuvių
+hu,Magyar
+mt,Malti
+nl,Nederlands
+pl,Polski
+pt,Português
+ro,Română
+sk,Slovenčina
+sl,Slovenščina
+vi,Tiếng Việt
+tr,Türkçe
+ar,العربية
+bg,Български
+el,Ελληνικά
+fa,فارسی
+he,עִבְרִית
+hi,हिन्दी
+hy,Հայերեն
+ja,日本語
+ko,한국어
+mk,Македонски
+mn,Монгол хэл
+sr,Српски
+th,ไทย
+uk,Українська
+zh_cn,简体中文
+zh_tw,正體中文
