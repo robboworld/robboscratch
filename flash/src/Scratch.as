@@ -234,10 +234,13 @@ public class Scratch extends Sprite {
       loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
       app = this;
 
-      loadSettings();
+      loadSettings(null);
    }
 
-   public function loadSettings():void {
+   public function loadSettings(event:Event):void {
+      trace("loadSettings " + event);
+
+
       var loaderSettings:URLLoader = new URLLoader();
       loaderSettings.addEventListener(Event.COMPLETE, parseSettings);
       loaderSettings.addEventListener(IOErrorEvent.IO_ERROR, loadSettings);
