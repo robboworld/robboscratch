@@ -46,12 +46,16 @@ package blocks {
 	import flash.filters.BevelFilter;
 	import flash.text.*;
 
+
+
 TARGET::android {
 	import pl.mateuszmackowiak.nativeANE.dialogs.NativeTextInputDialog;
 	import pl.mateuszmackowiak.nativeANE.dialogs.support.NativeTextField;
 	import pl.mateuszmackowiak.nativeANE.dialogs.support.iNativeDialog;
 	import pl.mateuszmackowiak.nativeANE.events.NativeDialogEvent;
 }
+
+
 
 	import scratch.BlockMenus;
 
@@ -223,6 +227,10 @@ public class BlockArg extends Sprite {
 		tf.defaultTextFormat = Block.argTextFormat;
 		tf.selectable = false;
 		tf.addEventListener(Event.CHANGE, textChanged);
+
+
+
+		//AZ Text fields
 		TARGET::android {
 			tf.addEventListener(MouseEvent.CLICK, function (event:MouseEvent):void {
 				if (isEditable) {
@@ -236,6 +244,14 @@ public class BlockArg extends Sprite {
 		}
 		return tf;
 	}
+
+
+
+
+
+
+
+
 
 	private function argTextInsets(type:String = ''):Array {
 		if (type == 'b') return [5, 0];

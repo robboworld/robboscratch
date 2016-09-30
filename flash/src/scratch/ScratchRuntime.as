@@ -21,9 +21,6 @@
 // John Maloney, September 2010
 
 package scratch {
-TARGET::android {
-   import com.as3breeze.air.ane.android.events.BluetoothDataEvent;
-}
 
    import flash.display.BitmapData;
    import flash.display.DisplayObject;

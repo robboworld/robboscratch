@@ -1,0 +1,44 @@
+﻿---SUOMI---
+title=Ohjauspaneeli v%v (Suomi)
+
+label_device_list=Laitteet:
+
+button_search=Etsi uudelleen
+button_diagnostic=Vianmääritys
+button_exit=Poistu
+tray_menu_exit=Poistu
+
+button_upload_firmware=Päivitä laiteohjelmisto
+
+port_state_init=Muodostetaan yhteyttä...
+port_state_opened=Yhteys muodostettu...
+port_state_data_sent=Komento lähetetty
+port_state_analizing_response=Luetaan vastausta
+port_state_robot_ok=%d%s found.    Firmware=%f
+port_state_timeout=Ei vastausta!
+port_state_unknown_device=Tuntematon laite!
+port_state_wrong_version=Väärä firmware-versio! %d Firmware=%f
+port_state_error=Yhteysvirhe!
+port_state_closing=Closing the port...
+
+
+
+dialog_confirm_update_firmware=Päivitetäänkö firmwave-versio %f COM porttiin=%p?
+dialog_firmware_ok=Onnistui!
+dialog_firmware_error=Virhe! Katso lisätietoja firmware.log -tiedostosta.
+dialog_firmare_avrdude=Avrdude:
+dialog_firmare_avrdude_version=Version:
+dialog_firmare_avrdude_not_found=Avrdude not found
+dialog_firmare_avrdude_bad_version=Avrdude is too old. You have to install 6.x.x version.
+message_firmwaring=Ladataan uutta versiota laitteeseen...
+
+dialog_update_new_version_available=A new version available
+dialog_update_open_browser=A new version available on http://robbo.world website, would you like to open the download page?
+
+
+are_you_sure=Oletko varma?
+yes=Kyllä
+no=Ei
+
+device0=ROB-R-1-1-
+device1=ROB-L-1-1-

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-client-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-core-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-json-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-server-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-continuation-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-http-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-io-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-security-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-server-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-servlet-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-util-7.6.17.v20150415.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsr311-api-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jssc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet-api-2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aop-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aspects-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-beans-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context-support-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-core-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-expression-4.1.1.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/swing-layout-1.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/swtgraphics2d.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tinycp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tinylaf.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

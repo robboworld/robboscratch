@@ -1,0 +1,45 @@
+<command>
+   <code>67</code>
+   <response>
+       <value>
+          <name>Encoder 0</name>
+          <type>unsigned int</type>
+       </value>
+       <value>
+          <name>Encoder 1</name>
+          <type>unsigned int</type>
+       </value>
+       <value>
+          <name>Path 0</name>
+          <type>unsigned int</type>
+       </value>
+       <value>
+          <name>Path 1</name>
+          <type>unsigned int</type>
+       </value>
+       <value>
+          <name>A0</name>
+          <type>unsigned byte</type>
+       </value>
+       <value>
+          <name>A1</name>
+          <type>unsigned byte</type>
+       </value>
+       <value>
+          <name>A2</name>
+          <type>unsigned byte</type>
+       </value>
+       <value>
+          <name>A3</name>
+          <type>unsigned byte</type>
+       </value>
+       <value>
+          <name>A4</name>
+          <type>unsigned byte</type>
+       </value>
+       <value>
+          <name>Button</name>
+          <type>unsigned byte</type>
+       </value>
+   </response>
+</command>

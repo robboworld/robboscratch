@@ -27,7 +27,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
     protected var iAnticacheLab:int   = 0;
 
     private var pointer:int = 0;
-    private var test:Array = new Array(100);
 
 
     private var speedLeft:int   = 0;
@@ -64,10 +63,16 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
     private var labDigitalOut:Array = [false, false, false, false, false, false, false, false, false, false, false, false, false];
 
 
+    private var settingsDefaultMotorSpeed:int;
 
 
-    public function DesktopRobotCommunicator(onDataReceiveRobot:Function, onDataReceiveLab:Function) {
+    public function DesktopRobotCommunicator(settingsDefaultMotorSpeed:int, onDataReceiveRobot:Function, onDataReceiveLab:Function) {
         trace("Desktop Connector created");
+        this.settingsDefaultMotorSpeed = settingsDefaultMotorSpeed;
+        this._speedLeft  = settingsDefaultMotorSpeed;
+        this._speedRight = settingsDefaultMotorSpeed;
+
+
         this.onDataReceiveRobot = onDataReceiveRobot;
         this.onDataReceiveLab = onDataReceiveLab;
 
@@ -255,8 +260,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          speedRight = _speedRight;
 
          if(speedLeft == 0 && speedRight == 0){
-            speedLeft  = 100;
-            speedRight = 100;
+            speedLeft  = settingsDefaultMotorSpeed;
+            speedRight = settingsDefaultMotorSpeed;
          }
       }
 
@@ -632,7 +637,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
    public function manageRobot():void{
-      return;
 
          if(interfaceBusyRobot){
             return;

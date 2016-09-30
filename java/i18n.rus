@@ -1,0 +1,47 @@
+﻿---РУССКИЙ---
+title=Панель Управления v%v
+
+label_device_list=Список найденных устройств:
+
+button_search=Поиск новых устройств
+button_diagnostic=Диагностика
+button_exit=Выход
+tray_menu_exit=Выход
+
+button_upload_firmware=Перепрошить
+
+port_state_init=Инициализация...
+port_state_opened=Порт открыт...
+port_state_data_sent=Команда отправлена!
+port_state_analizing_response=Анализирую ответ
+port_state_robot_ok=%d%s найден.    Прошивка=%f
+port_state_timeout=Порт не отвечает!
+port_state_unknown_device=Неизвестное устройство!
+port_state_wrong_version=%d Неправильная версия (%f) прошивки!
+port_state_error=Ошибка порта!
+port_state_closing=Закрываем порт...
+
+
+
+dialog_confirm_update_firmware=Обновить прошивку до версии %f для устройства на порту %p?
+dialog_firmware_ok=Успешно обновлено!
+dialog_firmware_error=Ошибка! Откройте файл firmware.log в дом. каталоге пользователя для доп. информации.
+dialog_firmare_avrdude=Avrdude:
+dialog_firmare_avrdude_version=Версия:
+dialog_firmare_avrdude_not_found=Avrdude not found
+dialog_firmare_avrdude_bad_version=Avrdude слишком стар. Установите версию 6.x.x или старше.
+message_firmwaring=Идет прошивка...
+
+
+dialog_update_new_version_available=Вышла новая версия программы
+dialog_update_open_browser=Доступна новая версия программы на сайте http://robbo.world, перейти на страницу загрузки?
+
+
+are_you_sure=Вы уверены?
+yes=Да
+no=Нет
+
+
+
+device0=ROB-R-1-1-
+device1=ROB-L-1-1-

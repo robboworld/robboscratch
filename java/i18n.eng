@@ -1,0 +1,50 @@
+---ENGLISH---
+title=Control Panel v%v
+
+label_device_list=Device list:
+
+button_search=New lookup
+button_diagnostic=Diagnostic
+button_exit=Exit
+tray_menu_exit=Exit
+
+button_upload_firmware=Upload firmware
+
+port_state_init=Initialization...
+port_state_opened=Port opened...
+port_state_data_sent=Command send!
+port_state_analizing_response=Parsing answer
+port_state_robot_ok=%d%s found.    Firmware=%f
+port_state_timeout=No answer!
+port_state_unknown_device=Unknown Device!
+port_state_wrong_version=Bad firmware version! %d Firmware=%f
+port_state_error=Port error!
+port_state_closing=Closing the port...
+
+
+dialog_confirm_update_firmware=Update firmware to version %f on COM port=%p?
+dialog_firmware_ok=Successful!
+dialog_firmware_error=Error! Plase open file 'firmware.log' in home user dir for any additional info.
+dialog_firmare_avrdude=Avrdude:
+dialog_firmare_avrdude_version=Version:
+dialog_firmare_avrdude_not_found=Avrdude not found
+dialog_firmare_avrdude_bad_version=Avrdude is too old. You have to install 6.x.x version.
+message_firmwaring=Uploading the new version...
+
+
+
+dialog_update_new_version_available=A new version available
+dialog_update_open_browser=A new version available on http://robbo.world website, would you like to open the download page?
+
+
+are_you_sure=Are you sure?
+yes=Yes
+no=No
+
+
+
+
+
+device0=ROB-R-1-1-
+device1=ROB-L-1-1-
+

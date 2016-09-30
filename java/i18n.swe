@@ -1,0 +1,35 @@
+﻿---Swedish---
+
+title=Kontrollpanel v%v
+label_device_list=Enhetslista:
+button_search=Ny sökning
+button_diagnostic=Diagnostik
+button_exit=Avsluta
+tray_menu_exit=Avsluta
+button_upload_firmware=Ladda upp programvara
+port_state_init=Initiering...
+port_state_opened=Port öppnad...
+port_state_data_sent=Kommandot skickat!
+port_state_analizing_response=Analyserar svaret
+port_state_robot_ok=%d%s hittad. Programvara=%f
+port_state_timeout=Inget svar!
+port_state_unknown_device=Okänd enhet!
+port_state_wrong_version=Fel programvaruversion! %d Programvara=%f
+port_state_error=Port fel!
+port_state_closing=Stänger porten...
+dialog_confirm_update_firmware=Uppdatera programvaran till version %f med COM port=%p?
+dialog_firmware_ok=Lyckades!
+dialog_firmware_error=Fel! Öppna filen 'firmware.log' i home user katalogen för mer information.
+dialog_firmare_avrdude=Avrdude:
+dialog_firmare_avrdude_version=Version:
+dialog_firmare_avrdude_not_found=Avrdude kunde inte hittas
+dialog_firmare_avrdude_bad_version=Avrdude versionen är för gammal. Du måste installera version 6.x.x
+message_firmwaring=Laddar upp den nya versionen...
+dialog_update_new_version_available=En ny version är tillgänglig
+dialog_update_open_browser=En ny version är tillgänglig att hämtas på http://robbo.world, vill du öppna nedladdningssidan?
+are_you_sure=Är du säker?
+yes=Ja
+no=Nej
+
+device0=ROB-R-1-1-
+device1=ROB-L-1-1-

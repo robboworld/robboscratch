@@ -2,210 +2,234 @@
  * Created by User on 07.06.2015.
  */
 package connectors {
-import com.as3breeze.air.ane.android.events.BluetoothDataEvent;
 
 import flash.utils.getTimer;
+import flash.net.*;
+
 
 public class AndroidRobotCommunicator implements IRobotCommunicator {
-    private const INTERVAL_SEND:int = 100;//in ms
-    private const MOTOR1_REVERSE_BIT:int = 5;
-    private const MOTOR2_REVERSE_BIT:int = 6;
-    private const MOTOR_ON_BIT:int = 7;
-    private const DEFAULT_POWER:int = (1<<0) + (1<<2) + (1<<4);//in firmware is multiplied by 4 and is set to 100 actually//CHANGE
-    public var maskSend:int = (0<<7) | (3<<5) | DEFAULT_POWER;//motorOn | isReverse1 isReverse2 | motorPower(in firmware this value must be equal 100=25*4)
-    public var lastSend:int = 0;
-    public var isActive:Boolean = false;
-    private var analogs:Array = [0, 0, 0, 0, 0, 0];
-    private var previousData:String = "";
-    private var device:IDevice;
-    private var onDataReceive:Function;
 
-    public function AndroidRobotCommunicator(dev:IDevice, onDataReceive:Function) {
-        this.device = dev;
-        this.onDataReceive = onDataReceive;
-        addDeviceListeners();
-        device.sendByte(maskSend);
+    private var onDataReceiveRobot:Function;
+    private var onDataReceiveLab:Function;
+
+
+
+    public  var lastSendRobot:int = 0;
+
+
+    private var speedLeft:int   = 0;
+    private var speedRight:int  = 0;
+    private var _speedLeft:int;
+    private var _speedRight:int;
+    private var isMotionTerminated:Boolean = false;
+
+    private var isEncoder:Boolean = false;
+
+
+   private var settingsDefaultMotorSpeed:int;
+
+
+
+    public function AndroidRobotCommunicator(settingsDefaultMotorSpeed:int, onDataReceiveRobot:Function, onDataReceiveLab:Function) {
+        trace("Android Connector created");
+        this.settingsDefaultMotorSpeed = settingsDefaultMotorSpeed;
+        this._speedLeft  = settingsDefaultMotorSpeed;
+        this._speedRight = settingsDefaultMotorSpeed;
+
+        this.onDataReceiveRobot = onDataReceiveRobot;
+        this.onDataReceiveLab = onDataReceiveLab;
     }
 
-    public function resetMask():void {
-        maskSend = (0<<7) | (3<<5) | DEFAULT_POWER;
-    }
 
-    public function sendToRobot():Boolean {
-        if (device != null && device.isConnected() && isActive)  {
-            lastSend = getTimer();
-            return device.sendByte(maskSend);
+
+
+
+
+
+
+
+    private function isRobotStopped():Boolean{
+        trace("STOPPED? LEFT=" + speedLeft + " RIGHT=" + speedRight + " TERMINATED=" + isMotionTerminated);
+
+        if((speedLeft == 0 && speedRight == 0) || isMotionTerminated){
+            return true;
         }
-        return false;
+        else{
+            return false;
+        }
     }
 
 
-    public function connected():Boolean {
-        return device != null && device.isConnected();
-    }
+
+
+
+
 
     public function turnLeft():void {
-        if (!connected())
-            return;
-        maskSend = buildMask(isMotorOn(), true, false);
-        if (isMotorOn())
-            sendToRobot();
+        trace("ROBOT LEFT");
+
+        _speedLeft  = -Math.abs(_speedLeft);
+        _speedRight = Math.abs(_speedRight);
+
+        if(isRobotStopped()){
+        }
+        else{
+            speedLeft  = _speedLeft;
+            speedRight = _speedRight;
+            manageRobot();
+        }
     }
 
     public function turnRight():void {
-        if (!connected())
-            return;
-        maskSend = buildMask(isMotorOn(), false, true);
-        if (isMotorOn())
-            sendToRobot();
+        trace("ROBOT RIGHT");
+
+        _speedLeft  = Math.abs(_speedLeft);
+        _speedRight = -Math.abs(_speedRight);
+
+        if(isRobotStopped()){
+        }
+        else{
+            speedLeft  = _speedLeft;
+            speedRight = _speedRight;
+            manageRobot();
+        }
     }
 
     public function goForward():void {
-        if (!connected())
-            return;
-        maskSend = buildMask(isMotorOn(), true, true);
-        if (isMotorOn())
-            sendToRobot();
+        trace("ROBOT FORWARD");
+
+        _speedLeft  = Math.abs(_speedLeft);
+        _speedRight = Math.abs(_speedRight);
+
+        if(isRobotStopped()){
+        }
+        else{
+            speedLeft  = _speedLeft;
+            speedRight = _speedRight;
+            manageRobot();
+        }
+    }
+    public function goBack():void {
+        trace("ROBOT BACRWARD");
+
+        _speedLeft  = -Math.abs(_speedLeft);
+        _speedRight = -Math.abs(_speedRight);
+
+        if(isRobotStopped()){
+        }
+        else{
+            speedLeft  = _speedLeft;
+            speedRight = _speedRight;
+            manageRobot();
+        }
     }
 
-    public function goBack():void {
-        if (!connected())
-            return;
-        maskSend = buildMask(isMotorOn(), false, false);
-        if (isMotorOn())
-            sendToRobot();
-    }
+
+
+
+
+
+
+
+
 
     public function motorOn():void {
-        if (!isMotorOn() && connected()) {
-            maskSend ^= 1<<MOTOR_ON_BIT;
-            sendToRobot();
-        }
-    }
+        trace("ROBOT GO");
 
+        speedLeft  = _speedLeft;
+        speedRight = _speedRight;
+
+
+        isEncoder = false;
+        isMotionTerminated = false;
+
+        manageRobot();
+    }
     public function motorOff():void {
-        if (isMotorOn() && connected()) {
-            maskSend ^= 1<<MOTOR_ON_BIT;
-            sendToRobot();
-        }
-    }
+        trace("ROBOT STOP");
 
-    private function isMotorOn():Boolean {
-        return ((maskSend>>MOTOR_ON_BIT)&1) == 1;
-    }
+//      _speedLeft  = speedLeft;
+//      _speedRight = speedRight;
 
-    private function buildMask(isOn:Boolean, isRev1:Boolean, isRev2:Boolean):int {
-        var bitOn:int = (isOn ? 1 : 0);
-        var bitRev1:int = (isRev1 ? 1 : 0);
-        var bitRev2:int = (isRev2 ? 1 : 0);
-        return (bitOn<<MOTOR_ON_BIT) | (bitRev1<<MOTOR1_REVERSE_BIT) | (bitRev2<<MOTOR2_REVERSE_BIT) | DEFAULT_POWER;
-    }
+        speedLeft  = 0;
+        speedRight = 0;
 
-    private function toBit(a:int):String {
-        var ret:String = "";
-        for (var i:int=7; i >= 0; --i)
-            if ((a>>i)&1) ret += "1";
-            else ret += "0";
-        return ret;
-    }
-
-    private static function fromBit(s:String):int {
-        var ret:int = 0;
-        for (var i:uint = 0; i < s.length; ++i)
-            if (s.charAt(i) == '1')
-                ret += 1<<(s.length - i - 1);
-        return ret;
-    }
-
-
-    private function addDeviceListeners():void {
-        if (device == null)
-            return;
-        device.addReceiveDataListener(function (bev:BluetoothDataEvent):void {
-            var ba:String = bev.message;
-            var len:int = ba.length;
-            var cur:String = bev.message;
-
-            if (previousData.length <= cur.length && cur.substr(0, previousData.length) == previousData) {
-                previousData = cur;
-            } else if (previousData.charAt() == '1') {
-                previousData = previousData + cur;
-            } else {
-                previousData = previousData.substr(8, previousData.length - 8) + cur;
-            }
-
-            if (8 < previousData.length && (previousData.charAt() == '1' && previousData.charAt(8) == '1')) {
-                previousData = previousData.substr(8, previousData.length - 8);
-            }
-
-            //trace("len:", len, "data:", previousData);
-            if (len == 0)
-                return;
-            var i:int = 0;
-            for (; i + 15 < previousData.length; i += 16) {
-                var channel:int = fromBit(previousData.substr(i + 1, 4));
-                if (channel >= 7 || channel == 5 || channel < 0)
-                    continue;
-                if (channel == 6) channel = 5;
-                var value:int = fromBit(previousData.substr(i + 5, 3).concat(previousData.substr(i + 9, 7)));
-                analogs[channel] = value;
-                //setAnalogText(channel, '' + value);
-            }
-            previousData = previousData.substr(i, previousData.length - i);
-            onDataReceive(analogs);
-        });
-    }
-
-    public function removeDeviceListeners():void {
-        if (device != null)
-            device.removeAllListeners();
-    }
-
-
-    public function keepAlive():void {
-        if (getTimer() - lastSend > INTERVAL_SEND) //if programm doesn't send data to a robot on this iteration yet
-            sendToRobot();
-    }
-
-
-    public function setActive(isActive:Boolean):void {
-        this.isActive = isActive;
-    }
-
-    public function finishSession():void {
-        resetMask();
-        if (device != null) {
-            device.removeAllListeners();
-            device.disconnect();
-            device = null;
-        }
-    }
-
-    public function getName():String {
-        if (device == null)
-            return "";
-        return device.getName();
+        isEncoder = false;
+        manageRobot();
     }
 
 
 
-    private var isMotionTerminated:Boolean = false;
+
+
 
 
 
     public function setMotorSpeedNoDirection(left:int, right:int):void {
-      trace("ROBOT SPEED " + left + " " + right);
+        trace("ROBOT SPEED " + left + " " + right);
+
+        if(_speedLeft >= 0){
+            _speedLeft = left;
+        }
+        else{
+            _speedLeft = -left;
+        }
+
+        if(_speedRight >= 0){
+            _speedRight = right;
+        }
+        else{
+            _speedRight = -right;
+        }
+
+
+        if(isRobotStopped()){
+        }
+        else{
+            speedLeft  = _speedLeft;
+            speedRight = _speedRight;
+            manageRobot();
+        }
     }
     public function setMotorSpeedAndDirection(left:int, right:int):void {
-      trace("ROBOT SPEED " + left + " " + right + " TERMINATED=" + isMotionTerminated);
+        trace("ROBOT SPEED " + left + " " + right + " TERMINATED=" + isMotionTerminated);
+
+        _speedLeft = left;
+        _speedRight = right;
+
+        if(isRobotStopped()){
+        }
+        else{
+            speedLeft = left;
+            speedRight = right;
+            manageRobot();
+        }
     }
     public function setMotionLimit(limit:int):void{
-      trace("MOTION LIMIT=" + limit);
+        trace("MOTION LIMIT=" + limit);
+
+        if(isRobotStopped()){
+            speedLeft  = _speedLeft;
+            speedRight = _speedRight;
+
+            if(speedLeft == 0 && speedRight == 0){
+                speedLeft  = settingsDefaultMotorSpeed;
+                speedRight = settingsDefaultMotorSpeed;
+            }
+        }
+
+        setMotorSpeedAndLimit(speedLeft, speedRight, limit);
     }
     public function setMotorSpeedAndLimit(left:int, right:int, limit:int):void{
-      trace("MOTION LEFT=" + left + " RIGHT=" + right + " LIMIT=" + limit);
+        trace("MOTION LEFT=" + left + " RIGHT=" + right + " LIMIT=" + limit);
+
+        isMotionTerminated = false;
+
+        onDataReceiveRobot(RobotANE.powerAndLimit(left, right, limit));
+        isEncoder = true;
     }
     public function setMotionTerminated():void{
+        isMotionTerminated = true;
     }
 
 
@@ -218,6 +242,28 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
     public function robLedOff(led:int):void {
       trace("ROB LED OFF=" + led);
     }
+
+
+
+
+
+    public function manageRobot():void{
+        trace("ROBOT SPEED NORMALIZED " + speedLeft + " " + speedRight);
+
+        if(isEncoder){
+            onDataReceiveRobot(RobotANE.check());
+        }
+        else{
+            onDataReceiveRobot(RobotANE.power(speedLeft, speedRight));
+        }
+    }
+
+
+
+
+
+
+
 
 
 
@@ -255,5 +301,16 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
 
 
 
+
+
+
+
+
+    public function keepAlive():void{
+        trace("Alive?");
+
+        lastSendRobot = getTimer();
+        manageRobot();
+    }
 }
 }

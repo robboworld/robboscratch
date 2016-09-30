@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+
+
+http://www.springframework.org/schema/context
+
+
+http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+   <context:annotation-config/>
+
+   <bean id="os" class="scratchduino.robot.OS" scope="singleton" lazy-init="true">
+   </bean>
+
+   <bean id="config" class="scratchduino.robot.configuration.v1.Configuration" scope="singleton" lazy-init="true">
+      <constructor-arg ref="os"/>
+   </bean>
+
+
+   <bean id="devices" class="scratchduino.robot.commands.v1.DeviceList" scope="singleton" lazy-init="true">
+      <constructor-arg>
+         <map>
+            <entry key="0">
+               <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+                  <constructor-arg value="4"/>
+                  <constructor-arg>
+                     <map>
+                        <entry key="rob_check">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_check.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_power">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_power.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_encoder">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_encoders.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_pow_encoder">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_power_and_encoders.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_light.xml" />
+                           </bean>
+                        </entry>
+                     </map>
+                  </constructor-arg>
+               </bean>
+            </entry>
+
+            <entry key="1">
+               <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+                  <constructor-arg value="3"/>
+                  <constructor-arg>
+                     <map>
+                        <entry key="lab_check">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_check.xml" />
+                           </bean>
+                        </entry>
+
+
+                        <entry key="lab_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_lamps.xml" />
+                           </bean>
+                        </entry>
+
+
+                        <entry key="lab_color_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_color_lamps.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_sound">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_sound.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_on">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_on.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_off">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_off.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_pwm">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_pwm.xml" />
+                           </bean>
+                        </entry>
+                     </map>
+                  </constructor-arg>
+               </bean>
+            </entry>
+         </map>
+      </constructor-arg>
+   </bean>
+
+
+   <bean id="device_locator" class="scratchduino.robot.connector.v1.DeviceLocator" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
+      <constructor-arg ref="devices"/>
+   </bean>
+
+
+
+   <bean id="firmware" class="scratchduino.robot.firmware.v1.FirmwareV1" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
+      <constructor-arg ref="devices"/>
+   </bean>
+
+
+
+
+
+
+   <bean id="ui" class="scratchduino.robot.ui.v1.ControlPanel" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
+      <constructor-arg ref="device_locator"/>
+      <constructor-arg ref="firmware"/>
+   </bean>
+
+
+   <bean id="rest" class="scratchduino.robot.rest.v1.Jersey" scope="singleton" lazy-init="true">
+      <constructor-arg ref="device_locator"/>
+      <constructor-arg ref="devices"/>
+   </bean>
+
+<!--
+   <bean id="flash" class="scratchduino.robot.Flash" scope="singleton" lazy-init="true">
+      <constructor-arg ref="os"/>
+   </bean>
+-->
+
+   <bean id="flash" class="scratchduino.robot.FlashNoGUI" scope="singleton" lazy-init="true">
+      <constructor-arg ref="os"/>
+   </bean>
+
+</beans>

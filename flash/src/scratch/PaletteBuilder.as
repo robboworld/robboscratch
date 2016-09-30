@@ -94,6 +94,7 @@ public class PaletteBuilder {
       updateCheckboxes();
    }
 
+//AZ
    private function addBlocksForCategory(category:int, catColor:int):void {
       var cmdCount:int;
       var targetObj:ScratchObj = app.viewedObj();
@@ -103,7 +104,21 @@ public class PaletteBuilder {
             var defaultArgs:Array = targetObj.defaultArgsFor(spec[3], spec.slice(4));
             var label:String = spec[0];
             if(targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
+
+            if(label == "set motors power %n %"){
+               defaultArgs[0] = app.settingsDefaultMotorSpeed;
+            }
+            if(label == "set motors power L %n R %n %"){
+               defaultArgs[0] = app.settingsDefaultMotorSpeed;
+               defaultArgs[1] = app.settingsDefaultMotorSpeed;
+            }
+            if(label == "L %m.motorDirection R %m.motorDirection set power L %n R %n %"){
+               defaultArgs[2] = app.settingsDefaultMotorSpeed;
+               defaultArgs[3] = app.settingsDefaultMotorSpeed;
+            }
+
             var block:Block = new Block(label, spec[1], blockColor, spec[3], defaultArgs);
+
             //trace("blocks x y ", block.x, block.y, block.width, block.height);
             var showCheckbox:Boolean = isCheckboxReporter(spec[3]);
             if (showCheckbox) addReporterCheckbox(block);
