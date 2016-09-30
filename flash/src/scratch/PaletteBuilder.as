@@ -106,15 +106,15 @@ public class PaletteBuilder {
             if(targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
 
             if(label == "set motors power %n %"){
-               defaultArgs[0] = app.settingsDefaultMotorSpeed;
+               defaultArgs[0] = app.settingsDefaultMotorSpeed.toString();
             }
             if(label == "set motors power L %n R %n %"){
-               defaultArgs[0] = app.settingsDefaultMotorSpeed;
-               defaultArgs[1] = app.settingsDefaultMotorSpeed;
+               defaultArgs[0] = app.settingsDefaultMotorSpeed.toString();
+               defaultArgs[1] = app.settingsDefaultMotorSpeed.toString();
             }
             if(label == "L %m.motorDirection R %m.motorDirection set power L %n R %n %"){
-               defaultArgs[2] = app.settingsDefaultMotorSpeed;
-               defaultArgs[3] = app.settingsDefaultMotorSpeed;
+               defaultArgs[2] = app.settingsDefaultMotorSpeed.toString();
+               defaultArgs[3] = app.settingsDefaultMotorSpeed.toString();
             }
 
             var block:Block = new Block(label, spec[1], blockColor, spec[3], defaultArgs);

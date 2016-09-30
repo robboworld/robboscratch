@@ -111,7 +111,8 @@ import util.UnimplementedError;
 import watchers.ListWatcher;
 
 
-   import flash.net.*;
+import flash.net.*;
+import flash.events.*;
 
 
 public class Scratch extends Sprite {
@@ -233,9 +234,17 @@ public class Scratch extends Sprite {
       loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
       app = this;
 
+      loadSettings();
+   }
 
+   public function loadSettings():void {
       var loaderSettings:URLLoader = new URLLoader();
       loaderSettings.addEventListener(Event.COMPLETE, parseSettings);
+      loaderSettings.addEventListener(IOErrorEvent.IO_ERROR, loadSettings);
+      loaderSettings.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, loadSettings);
+      loaderSettings.addEventListener(IOErrorEvent.NETWORK_ERROR, loadSettings);
+      loaderSettings.addEventListener(ErrorEvent.ERROR, loadSettings);
+      loaderSettings.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loadSettings);
 
       var requestSettings:URLRequest = new URLRequest("http://127.0.0.1:9876/settings");
       loaderSettings.load(requestSettings);
@@ -248,7 +257,7 @@ public class Scratch extends Sprite {
       trace("SETTINGS all: " + loader.data);
 
       var tempArray:Array = loader.data.split("\n");
-      settingsDefaultMotorSpeed = tempArray[0].split("=")[1];
+      settingsDefaultMotorSpeed = int(tempArray[0].split("=")[1]);
 
       trace("SETTINGS default_motor_speed=" + settingsDefaultMotorSpeed);
 
