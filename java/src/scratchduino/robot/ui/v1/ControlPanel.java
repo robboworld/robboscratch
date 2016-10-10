@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.filechooser.*;
 import org.apache.commons.logging.*;
 import scratchduino.robot.*;
 import sun.awt.*;
@@ -119,6 +120,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
    
    
    private String loadFileName = null;
+   private File selectedFile       = null;
    private byte[] loadFileData = null;
    
 
@@ -1065,19 +1067,28 @@ public class ControlPanel extends JFrame implements IControlPanel{
             loadFileName = null;
             loadFileData = null;
             
+            UIManager.put("FileChooser.openDialogTitleText",  ControlPanel.this.config.i18n("dialog_open_title"));
+            UIManager.put("FileChooser.openButtonText",       ControlPanel.this.config.i18n("dialog_open_button_open"));
+            UIManager.put("FileChooser.cancelButtonText",     ControlPanel.this.config.i18n("dialog_open_button_cancel"));
+            UIManager.put("FileChooser.lookInLabelText",      ControlPanel.this.config.i18n("dialog_open_button_look_in"));
+            UIManager.put("FileChooser.filesOfTypeLabelText", ControlPanel.this.config.i18n("dialog_open_button_file_type"));
+            UIManager.put("FileChooser.fileNameLabelText",    ControlPanel.this.config.i18n("dialog_open_button_file_name"));
+            
+            
+            
             try{
                JFileChooser fileChooser = new JFileChooser();
+               fileChooser.setAcceptAllFileFilterUsed(false);
+               fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));                
                int returnValue = fileChooser.showOpenDialog(ControlPanel.this);
                if(returnValue == JFileChooser.APPROVE_OPTION){
-                  File selectedFile = fileChooser.getSelectedFile();
-                  
-                  loadFileName = selectedFile.getName(); 
+                  selectedFile = fileChooser.getSelectedFile();
+                  loadFileName = selectedFile.getName();
                   loadFileData = Files.readAllBytes(Paths.get(selectedFile.getAbsolutePath()));
                }
             }
             catch (Exception e){
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+               log.error(LOG, e);
             }
          }
       });
@@ -1101,24 +1112,46 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
    @Override
    public void dialogSave(final String sName, final byte[] data){
-      SwingUtilities.invokeLater(new Thread(){
-         public void run(){
-            try{
-               JFileChooser fileChooser = new JFileChooser();
-               fileChooser.setSelectedFile(new File(sName));
-               int returnValue = fileChooser.showSaveDialog(ControlPanel.this);
-               if (returnValue == JFileChooser.APPROVE_OPTION) {
-                 File selectedFile = fileChooser.getSelectedFile();
-                 FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
-                 stream.write(data);
-                 stream.close();        
-               }
-            }
-            catch (Exception e){
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-            }
+            
+      try{
+         if(sName.equals(loadFileName)){
+            FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
+            stream.write(data);
+            stream.close();
          }
-      });
+         else{
+            SwingUtilities.invokeLater(new Thread(){
+               public void run(){                        
+                  UIManager.put("FileChooser.saveDialogTitleText",  ControlPanel.this.config.i18n("dialog_save_title"));
+                  UIManager.put("FileChooser.saveButtonText",       ControlPanel.this.config.i18n("dialog_save_button_save"));
+                  UIManager.put("FileChooser.cancelButtonText",     ControlPanel.this.config.i18n("dialog_save_button_cancel"));
+                  UIManager.put("FileChooser.lookInLabelText",      ControlPanel.this.config.i18n("dialog_save_button_look_in"));
+                  UIManager.put("FileChooser.filesOfTypeLabelText", ControlPanel.this.config.i18n("dialog_save_button_file_type"));
+                  UIManager.put("FileChooser.fileNameLabelText",    ControlPanel.this.config.i18n("dialog_save_button_file_name"));
+                  
+            
+                  JFileChooser fileChooser = new JFileChooser();
+                  fileChooser.setSelectedFile(new File(sName));
+                  int returnValue = fileChooser.showSaveDialog(ControlPanel.this);
+                  if(returnValue == JFileChooser.APPROVE_OPTION){
+                     selectedFile = fileChooser.getSelectedFile();
+                     loadFileName = selectedFile.getName();
+                     
+                     try{
+                        FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
+                        stream.write(data);
+                        stream.close();
+                     }
+                     catch (Exception e){
+                        log.error(LOG, e);
+                     }
+                  }
+               }
+            });
+         }
+      }
+      catch (Exception e){
+         log.error(LOG, e);
+      }
    }
 }
