@@ -1285,7 +1285,7 @@ public class Scratch extends Sprite {
         }
 
 
-      m.addItem('Save as', exportProjectToFile);
+      m.addItem('Save as', exportProjectToFileAs);
       if (canUndoRevert()) {
          m.addLine();
          m.addItem('Undo Revert', undoRevert);
@@ -1606,7 +1606,13 @@ public class Scratch extends Sprite {
     *
     */
 
-   protected function exportProjectToFile(fromJS:Boolean = false):void {
+
+   protected function exportProjectToFileAs():void{
+      exportProjectToFile(false, true);
+   }
+
+
+   protected function exportProjectToFile(fromJS:Boolean = false, reset:Boolean = false):void {
 //      TARGET::android {
 //         var projectFileName:String;
 //         var zipData:ByteArray;
@@ -1723,6 +1729,10 @@ public class Scratch extends Sprite {
          function squeakSoundsConvertedDesktop():void {
             scriptsPane.saveScripts(false);
             var defaultName:String = (projectName().length > 0) ? projectName() + '.sb2' : 'project.sb2';
+
+            if(reset){
+               defaultName = "_" + defaultName;
+            }
 
             zipData = projIO.encodeProjectAsZipFile(stagePane);
             trace("SAVE: projIO.encodeProjectAsZipFile ok");
