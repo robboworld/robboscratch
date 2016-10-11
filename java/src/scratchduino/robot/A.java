@@ -1,6 +1,5 @@
 package scratchduino.robot;
 
-import java.util.*;
 import org.apache.commons.logging.*;
 
 
@@ -61,37 +60,37 @@ public class A{
       
       
       
-      ICommand commandForward  = Context.ctx.getBean("commands", IDeviceList.class).getCommand(2, "forward");
-      ICommand commandBackward = Context.ctx.getBean("commands", IDeviceList.class).getCommand(2, "forward");
-
-      long CID = 0;
-      while(true){
-         try{
-            if(sPortRobot == null){
-            }
-            else{
-               commandForward.run(CID, sPortRobot, Collections.<String>emptyList());
-               CID++;
-               commandBackward.run(CID, sPortRobot, Collections.<String>emptyList());
-               CID++;
-            }
-            
-            if(sPortLab == null){
-            }
-            else {
-               for(int f = 0; f < 8; f++){
-                  ICommand commandLed_On  = Context.ctx.getBean("commands", IDeviceList.class).getCommand(3, "led");
-                  ICommand commandLed_Off  = Context.ctx.getBean("commands", IDeviceList.class).getCommand(3, "led");
-                  commandLed_On.run(CID, sPortLab, Collections.<String>emptyList());
-                  CID++;
-                  commandLed_Off.run(CID, sPortLab, Collections.<String>emptyList());
-                  CID++;
-               }
-            }                  
-         }
-         catch (Exception e){
-            log.error(LOG, e);
-         }
-      }
+//      ICommand commandForward  = Context.ctx.getBean("commands", IDeviceList.class).getCommand(2, "forward");
+//      ICommand commandBackward = Context.ctx.getBean("commands", IDeviceList.class).getCommand(2, "forward");
+//
+//      long CID = 0;
+//      while(true){
+//         try{
+//            if(sPortRobot == null){
+//            }
+//            else{
+//               commandForward.run(CID, sPortRobot, Collections.<String>emptyList());
+//               CID++;
+//               commandBackward.run(CID, sPortRobot, Collections.<String>emptyList());
+//               CID++;
+//            }
+//            
+//            if(sPortLab == null){
+//            }
+//            else {
+//               for(int f = 0; f < 8; f++){
+//                  ICommand commandLed_On  = Context.ctx.getBean("commands", IDeviceList.class).getCommand(3, "led");
+//                  ICommand commandLed_Off  = Context.ctx.getBean("commands", IDeviceList.class).getCommand(3, "led");
+//                  commandLed_On.run(CID, sPortLab, Collections.<String>emptyList());
+//                  CID++;
+//                  commandLed_Off.run(CID, sPortLab, Collections.<String>emptyList());
+//                  CID++;
+//               }
+//            }                  
+//         }
+//         catch (Exception e){
+//            log.error(LOG, e);
+//         }
+//      }
    }
 }

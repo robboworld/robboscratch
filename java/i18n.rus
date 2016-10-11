@@ -48,6 +48,7 @@ dialog_open_button_cancel=Отмена
 dialog_open_button_look_in=Мы находимся в
 dialog_open_button_file_type=тип файла
 dialog_open_button_file_name=имя файла
+dialog_open_error_no_file=Выберите существующий файл!
 
 
 dialog_save_title=Выберите файл скретча для сохранения...

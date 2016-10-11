@@ -119,9 +119,9 @@ public class ControlPanel extends JFrame implements IControlPanel{
    
    
    
-   private String loadFileName = null;
-   private File selectedFile       = null;
-   private byte[] loadFileData = null;
+   private volatile String loadFileName = null;
+   private volatile File   selectedFile = null;
+   private volatile byte[] loadFileData = null;
    
 
    public ControlPanel(IConfiguration config, IDeviceLocator locator, IFirmware firmware){
@@ -1080,8 +1080,19 @@ public class ControlPanel extends JFrame implements IControlPanel{
                JFileChooser fileChooser = new JFileChooser();
                fileChooser.setAcceptAllFileFilterUsed(false);
                fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));                
-               int returnValue = fileChooser.showOpenDialog(ControlPanel.this);
-               if(returnValue == JFileChooser.APPROVE_OPTION){
+               
+               int iResult;
+               while (true){
+                  iResult = fileChooser.showOpenDialog(ControlPanel.this);
+                  if(iResult == JFileChooser.APPROVE_OPTION && !fileChooser.getSelectedFile().exists()){
+                     JOptionPane.showMessageDialog(ControlPanel.this, ControlPanel.this.config.i18n("dialog_open_error_no_file"));
+                  }
+                  else{
+                     break;
+                  }
+               }
+               
+               if(iResult == JFileChooser.APPROVE_OPTION){
                   selectedFile = fileChooser.getSelectedFile();
                   loadFileName = selectedFile.getName();
                   loadFileData = Files.readAllBytes(Paths.get(selectedFile.getAbsolutePath()));
@@ -1131,12 +1142,22 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   
             
                   JFileChooser fileChooser = new JFileChooser();
+                  fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));               
                   fileChooser.setSelectedFile(new File(sName));
-                  int returnValue = fileChooser.showSaveDialog(ControlPanel.this);
-                  if(returnValue == JFileChooser.APPROVE_OPTION){
-                     selectedFile = fileChooser.getSelectedFile();
-                     loadFileName = selectedFile.getName();
                      
+
+                  int iResult = fileChooser.showSaveDialog(ControlPanel.this);
+                     
+                  if(iResult == JFileChooser.APPROVE_OPTION){
+                     selectedFile = fileChooser.getSelectedFile();
+                     if(selectedFile.getAbsolutePath().endsWith(".sb2")){
+                     }
+                     else{
+                        selectedFile = new File(selectedFile.getAbsolutePath() + ".sb2");
+                     }
+                     loadFileName = selectedFile.getName();
+
+
                      try{
                         FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
                         stream.write(data);
@@ -1145,7 +1166,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      catch (Exception e){
                         log.error(LOG, e);
                      }
-                  }
+                  }                  
                }
             });
          }

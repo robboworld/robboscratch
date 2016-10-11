@@ -48,6 +48,7 @@ dialog_open_button_cancel=Cancel
 dialog_open_button_look_in=We are at folder
 dialog_open_button_file_type=File type
 dialog_open_button_file_name=File name
+dialog_open_error_no_file=You must select an existing file!
 
 
 dialog_save_title=Please select Scratch file to save...
