@@ -120,6 +120,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
    
    
    private volatile String loadFileName = null;
+   private volatile String saveFileName = null;
    private volatile File   selectedFile = null;
    private volatile byte[] loadFileData = null;
    
@@ -1121,58 +1122,126 @@ public class ControlPanel extends JFrame implements IControlPanel{
    
 
 
+   
+   
    @Override
-   public void dialogSave(final String sName, final byte[] data){
-            
-      try{
-         if(sName.equals(loadFileName)){
+   public void dialogSaveReset(){
+      selectedFile = null;
+      saveFileName = null;
+   }
+   @Override
+   public String dialogSaveCheck(){
+      return saveFileName;
+   }   
+   @Override
+   public void dialogSave(final byte[] data){
+      log.trace(LOG + "save");
+      
+      if(selectedFile == null){
+         dialogSaveAs("project", data);        
+      }
+      else{
+         try{
             FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
             stream.write(data);
             stream.close();
          }
-         else{
-            SwingUtilities.invokeLater(new Thread(){
-               public void run(){                        
-                  UIManager.put("FileChooser.saveDialogTitleText",  ControlPanel.this.config.i18n("dialog_save_title"));
-                  UIManager.put("FileChooser.saveButtonText",       ControlPanel.this.config.i18n("dialog_save_button_save"));
-                  UIManager.put("FileChooser.cancelButtonText",     ControlPanel.this.config.i18n("dialog_save_button_cancel"));
-                  UIManager.put("FileChooser.lookInLabelText",      ControlPanel.this.config.i18n("dialog_save_button_look_in"));
-                  UIManager.put("FileChooser.filesOfTypeLabelText", ControlPanel.this.config.i18n("dialog_save_button_file_type"));
-                  UIManager.put("FileChooser.fileNameLabelText",    ControlPanel.this.config.i18n("dialog_save_button_file_name"));
-                  
-            
-                  JFileChooser fileChooser = new JFileChooser();
-                  fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));               
-                  fileChooser.setSelectedFile(new File(sName));
-                     
-
-                  int iResult = fileChooser.showSaveDialog(ControlPanel.this);
-                     
-                  if(iResult == JFileChooser.APPROVE_OPTION){
-                     selectedFile = fileChooser.getSelectedFile();
-                     if(selectedFile.getAbsolutePath().endsWith(".sb2")){
-                     }
-                     else{
-                        selectedFile = new File(selectedFile.getAbsolutePath() + ".sb2");
-                     }
-                     loadFileName = selectedFile.getName();
-
-
-                     try{
-                        FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
-                        stream.write(data);
-                        stream.close();
-                     }
-                     catch (Exception e){
-                        log.error(LOG, e);
-                     }
-                  }                  
-               }
-            });
+         catch (Exception e){
+            log.error(LOG, e);
          }
       }
-      catch (Exception e){
-         log.error(LOG, e);
+   }
+   
+   
+   
+   
+   @Override
+   public void dialogSaveTmp(final byte[] data){
+      log.trace(LOG + "save");
+      
+      if(selectedFile == null){
       }
+      else{
+         try{
+            StringBuilder sb = new StringBuilder(selectedFile.getAbsolutePath());
+            sb.insert(sb.length() - 4, "_");
+            FileOutputStream stream = new FileOutputStream(sb.toString());
+            stream.write(data);
+            stream.close();
+         }
+         catch (Exception e){
+            log.error(LOG, e);
+         }
+      }
+   }
+   
+
+   
+   
+   
+   
+   @Override
+   public void dialogSaveAs(final String sName, final byte[] data){
+      log.trace(LOG + "save as");
+      
+      saveFileName = null;
+            
+      SwingUtilities.invokeLater(new Thread(){
+         public void run(){                        
+            UIManager.put("FileChooser.saveDialogTitleText",  ControlPanel.this.config.i18n("dialog_save_title"));
+            UIManager.put("FileChooser.saveButtonText",       ControlPanel.this.config.i18n("dialog_save_button_save"));
+            UIManager.put("FileChooser.cancelButtonText",     ControlPanel.this.config.i18n("dialog_save_button_cancel"));
+            UIManager.put("FileChooser.lookInLabelText",      ControlPanel.this.config.i18n("dialog_save_button_look_in"));
+            UIManager.put("FileChooser.filesOfTypeLabelText", ControlPanel.this.config.i18n("dialog_save_button_file_type"));
+            UIManager.put("FileChooser.fileNameLabelText",    ControlPanel.this.config.i18n("dialog_save_button_file_name"));
+            
+      
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));               
+            fileChooser.setSelectedFile(new File(sName));
+               
+
+            while(true){
+               int iResult = fileChooser.showSaveDialog(ControlPanel.this);
+                  
+               if(iResult == JFileChooser.APPROVE_OPTION){
+                  selectedFile = fileChooser.getSelectedFile();
+                  if(selectedFile.getAbsolutePath().endsWith(".sb2")){
+                  }
+                  else{
+                     selectedFile = new File(selectedFile.getAbsolutePath() + ".sb2");
+                  }
+                  saveFileName = selectedFile.getName();
+                  
+                  if(selectedFile.exists()){
+                     
+                     UIManager.put("OptionPane.yesButtonText", ControlPanel.this.config.i18n("yes"));
+                     UIManager.put("OptionPane.noButtonText",  ControlPanel.this.config.i18n("no"));                     
+                     int dialogResult = JOptionPane.showConfirmDialog(null,
+                                                                      ControlPanel.this.config.i18n("dialog_save_confirm_file_exists"),
+                                                                      "",
+                                                                      JOptionPane.YES_NO_OPTION);
+                     if(dialogResult == JOptionPane.NO_OPTION){
+                        continue;
+                     }
+                  }   
+   
+                  try{
+                     FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
+                     stream.write(data);
+                     stream.close();
+                     break;
+                  }
+                  catch (Exception e){
+                     log.error(LOG, e);
+                  }
+               }
+               else{
+                  saveFileName = "---"; 
+                  break;
+               }
+            }
+         }
+      });
    }
 }

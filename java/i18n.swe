@@ -34,21 +34,22 @@ no=Nej
 
 
 
-dialog_open_title=Please select Scratch file to load...
-dialog_open_button_open=Open
-dialog_open_button_cancel=Cancel
-dialog_open_button_look_in=We are at folder
-dialog_open_button_file_type=File type
-dialog_open_button_file_name=File name
-dialog_open_error_no_file=You must select an existing file!
+dialog_open_title=Välj Scratch-filen för att ladda ner
+dialog_open_button_open=Öppna
+dialog_open_button_cancel=Avsluta
+dialog_open_button_look_in=Vi är på filen
+dialog_open_button_file_type=Filformat
+dialog_open_button_file_name=Filnamn
+dialog_open_error_no_file=Välj en existerande fil!
 
-
-dialog_save_title=Please select Scratch file to save...
+dialog_save_title=Välj Scratch-filen för att spara
 dialog_save_button_save=Save
-dialog_save_button_cancel=Cancel
+dialog_save_button_cancel=Avsluta
 dialog_save_button_look_in=We are at folder
-dialog_save_button_file_type=File type
-dialog_save_button_file_name=File name
+dialog_save_button_file_type=Filformat
+dialog_save_button_file_name=Filnamn
+dialog_save_confirm_file_exists=Filen existerar. Vill du ersätta filen?
+
 
 
 

@@ -143,6 +143,8 @@ public class Scratch extends Sprite {
     public var projectIsPrivate:Boolean;
     public var oldWebsiteURL:String = '';
     public var loadInProgress:Boolean;
+    public var saveInProgress:Boolean;
+    public var saveNameSelected:Boolean = false;
     public var debugOps:Boolean = false;
     public var debugOpCmd:String = '';
 
@@ -221,6 +223,7 @@ public class Scratch extends Sprite {
 
 
     public var settingsDefaultMotorSpeed:int;
+
 
 
     /* Default directory for projects */
@@ -1504,7 +1507,20 @@ public class Scratch extends Sprite {
    }
 
    protected function createNewProject(ignore:* = null):void {
+
+      saveInProgress = false;
+      saveNameSelected = false;
+
+
+
       function clearProject():void {
+
+         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/reset?timer=" + getTimer());
+         request.method = URLRequestMethod.GET;
+         var loader:URLLoader = new URLLoader();
+         loader.load(request);
+
+
          startNewProject('', '');
          /*  Empty project has empty string name ("").
           *  Used to determine whether to show project name picker dialog
@@ -1514,7 +1530,8 @@ public class Scratch extends Sprite {
          topBarPart.refresh();
          stagePart.refresh();
       }
-      saveProjectAndThen(clearProject);
+      //saveProjectAndThen(clearProject);
+      clearProject();
    }
 
    protected function saveProjectAndThen(postSaveAction:Function = null):void {
@@ -1607,12 +1624,32 @@ public class Scratch extends Sprite {
     */
 
 
-   protected function exportProjectToFileAs():void{
-      exportProjectToFile(false, true);
+   protected function exportProjectToFile():void {
+      trace("exportProjectToFile()");
+
+
+      if(saveNameSelected){
+         var projIO:ProjectIO = new ProjectIO(this);
+         var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
+         trace("SAVE: projIO.encodeProjectAsZipFile ok");
+         trace("SAVE: file.save length=" + zipData.length);
+
+         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save");
+         request.data = zipData;
+         request.method = URLRequestMethod.POST;
+         var loader:URLLoader = new URLLoader();
+         loader.load(request);
+      }
+      else{
+         exportProjectToFileAs(false);
+      }
    }
 
 
-   protected function exportProjectToFile(fromJS:Boolean = false, reset:Boolean = false):void {
+
+
+
+   protected function exportProjectToFileAs(fromJS:Boolean = false):void {
 //      TARGET::android {
 //         var projectFileName:String;
 //         var zipData:ByteArray;
@@ -1718,57 +1755,79 @@ public class Scratch extends Sprite {
 //         projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
 //      }
       TARGET::desktop {
+         trace("save in progress=" + saveInProgress);
+
+         if(saveInProgress) return;
+         saveInProgress = true;
+
+
          trace("Let's save the project, name=" + projectName());
 
-
-         var file:FileReference = new FileReference();
-         file.addEventListener(Event.SELECT, onFile2SaveSelected);
-
-         var zipData:ByteArray;
 
          function squeakSoundsConvertedDesktop():void {
             scriptsPane.saveScripts(false);
             var defaultName:String = (projectName().length > 0) ? projectName() + '.sb2' : 'project.sb2';
 
-            if(reset){
-               defaultName = "_" + defaultName;
-            }
-
-            zipData = projIO.encodeProjectAsZipFile(stagePane);
+            var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
             trace("SAVE: projIO.encodeProjectAsZipFile ok");
-
-            //file.addEventListener(Event.COMPLETE, fileSaved);
-
             trace("SAVE: file.save length=" + zipData.length);
-            //file.save(zipData, fixFileName(defaultName));
-
-            //file.browse();
 
             var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/" + defaultName);
             request.data = zipData;
             request.method = URLRequestMethod.POST;
             var loader:URLLoader = new URLLoader();
+            loader.addEventListener(Event.COMPLETE, checkSaveIsDone);
             loader.load(request);
 
 
             trace("SAVE: file.save ok");
          }
-         function onFile2SaveSelected(e:Event):void{
-            var request:URLRequest = new URLRequest("http://127.0.0.1:9876/save/" + file.name);
-            request.data = zipData;
-            request.method = URLRequestMethod.POST;
-            var loader:URLLoader = new URLLoader();
-            loader.load(request);
-         }
-         function fileSaved(e:Event):void {
-            if (!fromJS) setProjectName(e.target.name);
-         }
 
          if (loadInProgress) return;
+
          var projIO:ProjectIO = new ProjectIO(this);
          projIO.convertSqueakSounds(stagePane, squeakSoundsConvertedDesktop);
       }
+
+      function initSaveChecker():void {
+         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/check?timer=" + getTimer());
+         request.method = URLRequestMethod.GET;
+         var loader:URLLoader = new URLLoader();
+
+         loader.addEventListener(Event.COMPLETE, saveCheckOk);
+
+         loader.load(request);
+      }
+      function checkSaveIsDone(event:Event):void {
+         initSaveChecker();
+      }
+      function saveCheckOk(event:Event):void {
+         try{
+            var loader2:URLLoader = URLLoader(event.target);
+            //var tempArray:Array=loader2.data.split("\n");
+            trace("SAVE2() " + loader2.data);
+
+            if(loader2.data.length == 0){
+               initSaveChecker();
+               trace("Save: File is not ready yet.");
+            }
+            else if(loader2.data == "---"){
+               saveInProgress = false;
+               trace("Save: cancel");
+            }
+            else{
+               saveInProgress = false;
+               saveNameSelected = true;
+               setProjectName(loader2.data);
+            }
+         }
+         catch (myError:Error){
+            initSaveChecker();
+         }
+      }
    }
+
+
 
    TARGET::android {
       private static function writeBytesToFile(fileName:String, data:ByteArray):void {

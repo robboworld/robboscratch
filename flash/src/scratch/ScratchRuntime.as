@@ -63,7 +63,7 @@ package scratch {
    import watchers.Watcher;
 
    import flash.net.*;
-   import flash.utils.getTimer;
+   import flash.utils.*;
 
 
 public class ScratchRuntime {
@@ -82,22 +82,10 @@ public class ScratchRuntime {
    protected var projectToInstall:ScratchStage;
    protected var saveAfterInstall:Boolean;
 
-   /*Ilya Peresadin, 2014
-      'maskSend' describes state of a robot.
-      Every step in 'stepRuntime' ... this value is sent via 'sendToRobot' to robot except cases
-      when device isn't detected/connected (when connetion was interrupted).
-
-      'turnLeft', 'turnRight', 'forward', 'back', 'motorOn', 'motorOff' change state of
-      'maskSend' but don't send information to robot.
-
-      After every successful call of 'sendToRobot', robot sends respose: state of analogs.
-
-      If connection with robot isn't set up, all commands are executed as usually,
-      but 'sendToRobot' sends nothing.
-   */
-
     public var analogsRobot:Array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     public var analogsLab:Array   = [0, 0, 0, 0, 0, 0, 0, 0];
+
+   private var lastSaved:int = 0;
 
    //runtime functions
    public function ScratchRuntime(app:Scratch, interp:Interpreter) {
@@ -149,6 +137,23 @@ public class ScratchRuntime {
 
       //send to robot
       app.robotCommunicator.keepAlive();
+
+
+
+      if(app.saveNameSelected && (getTimer() - lastSaved > 30000)){
+         var projIO:ProjectIO = new ProjectIO(app);
+         var zipData:ByteArray = projIO.encodeProjectAsZipFile(app.stagePane);
+         trace("SAVE: projIO.encodeProjectAsZipFile ok");
+         trace("SAVE: file.save length=" + zipData.length);
+
+         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save_tmp");
+         request.data = zipData;
+         request.method = URLRequestMethod.POST;
+         var loader:URLLoader = new URLLoader();
+         loader.load(request);
+
+         lastSaved = getTimer();
+      }
    }
 //-------- recording test ---------
    public var recording:Boolean;
@@ -443,6 +448,7 @@ public class ScratchRuntime {
          else{
 
             fileName = loader2.data;
+            this.app.saveNameSelected = true;
 
             var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/load/data?timer=" + getTimer());
             request.method = URLRequestMethod.GET;

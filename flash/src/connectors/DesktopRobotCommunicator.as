@@ -713,8 +713,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
     public function sendCommandLab():void{
-      return;
-
        var baseURL:String = "http://127.0.0.1:9876/default/1/";
        var command:String;
 
@@ -756,20 +754,24 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
        public function keepAlive():void{
-          trace("Alive?");
+          trace("Alive BLYA?");
 
            if(interfaceBusyRobot){
+              trace("Robot: BUSY");
               //actually not so important
            }
            else{
+              trace("Robot: FREE");
               lastSendRobot = getTimer();
               manageRobot();
            }
 
            if(interfaceBusyLab){
+              trace("Lab: BUSY");
               //actually not so important
            }
            else{
+              trace("Lab: FREE");
               lastSendLab = getTimer();
               sendCommandLab();
            }

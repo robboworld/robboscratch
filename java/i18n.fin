@@ -42,22 +42,21 @@ no=Ei
 
 
 
-dialog_open_title=Please select Scratch file to load...
-dialog_open_button_open=Open
-dialog_open_button_cancel=Cancel
-dialog_open_button_look_in=We are at folder
-dialog_open_button_file_type=File type
-dialog_open_button_file_name=File name
-dialog_open_error_no_file=You must select an existing file!
+dialog_open_title=Valitse Scratch tiedosto lataaksesi..
+dialog_open_button_open=Avaa
+dialog_open_button_cancel=Peruuta
+dialog_open_button_look_in=Olemme kansiossa
+dialog_open_button_file_type=Tiedostomuoto
+dialog_open_button_file_name=Tiedostonimi
+dialog_open_error_no_file=Valitse jo olemassa oleva kansio!
 
-
-dialog_save_title=Please select Scratch file to save...
-dialog_save_button_save=Save
-dialog_save_button_cancel=Cancel
-dialog_save_button_look_in=We are at folder
-dialog_save_button_file_type=File type
-dialog_save_button_file_name=File name
-
+dialog_save_title=Valitse Scratch kansio tallentaaksesi…
+dialog_save_button_save=Tallenna
+dialog_save_button_cancel=Peruuta
+dialog_save_button_look_in=Olemme kansiossa
+dialog_save_button_file_type=Tiedostomuoto
+dialog_save_button_file_name=Tiedostonimi
+dialog_save_confirm_file_exists=Kansio on jo olemassa. Haluatko korvata kansion uudella?
 
 device0=ROB-R-1-1-
 device1=ROB-L-1-1-

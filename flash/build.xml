@@ -34,7 +34,7 @@
 
    <!-- Build and output Scratch.swf-->
    <target name="compile" depends="test_10.2,init">
-      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/scratch.swf" target-player="11.4" swf-version="17" debug="false">
+      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/scratch.swf" target-player="11.4" swf-version="17" debug="true">
          <source-path path-element="${SRC_DIR}" />
          <library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
          <library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />

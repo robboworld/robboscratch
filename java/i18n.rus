@@ -57,6 +57,7 @@ dialog_save_button_cancel=Отмена
 dialog_save_button_look_in=Мы находимся в
 dialog_save_button_file_type=тип файла
 dialog_save_button_file_name=имя файла
+dialog_save_confirm_file_exists=Файл уже существует. Перезаписать?
 
 
 

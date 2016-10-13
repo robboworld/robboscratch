@@ -57,6 +57,7 @@ dialog_save_button_cancel=Cancel
 dialog_save_button_look_in=We are at folder
 dialog_save_button_file_type=File type
 dialog_save_button_file_name=File name
+dialog_save_confirm_file_exists=File exists. Overwrite?
 
 
 

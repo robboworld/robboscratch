@@ -108,18 +108,65 @@ public class FEConnector{
    }
    
    
+
    
+   @GET
+   @Path("/dialog/save/reset")
+   @Produces("text/plain; charset=UTF-8")
+   public String dialogSaveReset() throws Exception{      
+      log.trace(LOG + "loadReset()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSaveReset();
+
+      return "";
+   }
+   
+   
+
+   
+   @GET
+   @Path("/dialog/save/check")
+   @Produces("text/plain; charset=UTF-8")
+   public String dialogSaveCheck() throws Exception{      
+      log.trace(LOG + "loadCheck()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      return main.dialogSaveCheck() == null ? "" : main.dialogSaveCheck();  
+   }
    
    
    @POST
+   @Path("/dialog/save")
+   @Produces("text/plain; charset=UTF-8")
+   public String saveScratch(byte[] data) throws Exception{      
+      log.trace(LOG + "SAVE length=" + data.length);
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSave(data);
+      
+      return "";
+   }
+   @POST
+   @Path("/dialog/save_tmp")
+   @Produces("text/plain; charset=UTF-8")
+   public String saveScratchTmp(byte[] data) throws Exception{      
+      log.trace(LOG + "SAVE length=" + data.length);
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSaveTmp(data);
+      
+      return "";
+   }
+   @POST
    @Path("/dialog/save/{NAME}")
    @Produces("text/plain; charset=UTF-8")
-   public String saveScratch(@PathParam("NAME") String sName,
-                             byte[] data) throws Exception{      
+   public String saveScratchAs(@PathParam("NAME") String sName,
+                               byte[] data) throws Exception{      
       log.trace(LOG + "SAVE name=" + sName + ", length=" + data.length);
 
       final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      main.dialogSave(sName, data);
+      main.dialogSaveAs(sName, data);
       
       return "";
    }
