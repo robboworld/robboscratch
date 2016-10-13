@@ -6,14 +6,17 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.io.*;
 import java.lang.reflect.*;
+import java.math.*;
 import java.net.*;
 import java.nio.file.*;
+import java.security.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.*;
 import org.apache.commons.logging.*;
+import org.springframework.util.*;
 import scratchduino.robot.*;
 import sun.awt.*;
 
@@ -1165,12 +1168,44 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
    
    
+   
+   private File getTmpFile(){
+      String sTmpFolder = System.getProperty("java.io.tmpdir");
+      if(sTmpFolder.endsWith("/")){
+         //Windows adds this                  
+      }
+      else{
+         sTmpFolder += "/";
+      }
+      
+      try{
+         MessageDigest m = MessageDigest.getInstance("MD5");
+         m.reset();
+         m.update(System.getProperty("user.name").getBytes());
+         byte[] digest = m.digest();
+         BigInteger bigInt = new BigInteger(1, digest);
+         String hashtext = bigInt.toString(16);
+         // Now we need to zero pad it if you actually want the full 32 chars.
+         while (hashtext.length() < 32){
+            hashtext = "0" + hashtext;
+         }
+         return new File(sTmpFolder + "/" + hashtext + "_" + TEMP_FILE_NAME);
+      }
+      catch (Exception e){
+         throw new Error();
+      }
+   }
+
+
+   
+   
+   
    public byte[] dialogOpenTmp(){
       log.trace(LOG + "openTmp()");
 
       if(config.isAutoSave()){
          try{
-            File tmpFile = new File(System.getProperty("java.io.tmpdir") + TEMP_FILE_NAME);
+            File tmpFile = getTmpFile();
             byte fileContent[] = new byte[(int) tmpFile.length()];
             FileInputStream stream = new FileInputStream(tmpFile);
             stream.read(fileContent);
@@ -1198,7 +1233,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
       synchronized(this){      
          if(config.isAutoSave()){
             try{
-               FileOutputStream stream = new FileOutputStream(System.getProperty("java.io.tmpdir") + TEMP_FILE_NAME);
+               FileOutputStream stream = new FileOutputStream(getTmpFile());
                stream.write(data);
                stream.close();
             }
@@ -1245,7 +1280,6 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   else{
                      selectedFile = new File(selectedFile.getAbsolutePath() + ".sb2");
                   }
-                  saveFileName = selectedFile.getName();
                   
                   if(selectedFile.exists()){
                      
@@ -1258,7 +1292,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      if(dialogResult == JOptionPane.NO_OPTION){
                         continue;
                      }
-                  }   
+                  }
+                  
+                  saveFileName = selectedFile.getName();
+                  
    
                   try{
                      FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());

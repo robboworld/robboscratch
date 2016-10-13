@@ -480,9 +480,13 @@ public class ScratchRuntime {
    private function loadDataOk(event:Event):void{
       var loader2:URLLoader = URLLoader(event.target);
 
+      trace("bytes loaded from server=" + loader2.data.length);
+
       data = loader2.data;
 
-      installProjectFromFile(fileName, data);
+      if(data != null && data.length > 0){
+         installProjectFromFile(fileName, data);
+      }
    }
 
 
