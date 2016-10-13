@@ -93,6 +93,15 @@ public class ScratchRuntime {
       this.interp = interp;
       timerBase = interp.currentMSecs;
       clearKeyDownArray();
+
+      var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/load/data?timer=" + getTimer());
+      request.method = URLRequestMethod.GET;
+      var loader:URLLoader = new URLLoader();
+
+      loader.dataFormat = URLLoaderDataFormat.BINARY;
+      loader.addEventListener(Event.COMPLETE, loadDataOk);
+
+      loader.load(request);
    }
 
    // -----------------------------
@@ -140,7 +149,7 @@ public class ScratchRuntime {
 
 
 
-      if(app.saveNameSelected && (getTimer() - lastSaved > 30000)){
+      if(getTimer() - lastSaved > 30000){
          var projIO:ProjectIO = new ProjectIO(app);
          var zipData:ByteArray = projIO.encodeProjectAsZipFile(app.stagePane);
          trace("SAVE: projIO.encodeProjectAsZipFile ok");

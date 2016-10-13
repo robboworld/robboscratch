@@ -14,7 +14,7 @@ public class OS implements IOS{
    public IOS.TYPE getType(){
       if(cached == null){      
          String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-         log.info(LOG + OS);
+         log.info(LOG + "OS=" + OS);
          log.info(LOG + "PATH=" + new File(".").getAbsolutePath());
          
          if((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)){

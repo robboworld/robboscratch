@@ -21,8 +21,6 @@ public class Main{
    public static void main(String[] args) throws Exception{
       log.info(LOG + "ok, let's start");
       
-      Context.ctx.getBean("flash", IFlash.class).run();
-      
       Context.ctx.getBean("rest", IRest.class);     
 
       final IControlPanel main = Context.ctx.getBean("ui", IControlPanel.class);

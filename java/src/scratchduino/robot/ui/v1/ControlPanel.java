@@ -45,7 +45,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
    public static final PopupMenu popup;
    
    
-   protected final AtomicBoolean bFirstRun = new AtomicBoolean(true); 
+   protected final AtomicBoolean bFirstRun = new AtomicBoolean(true);
+   
+   
+   private final String TEMP_FILE_NAME = "scratch_autosave_21.sb2";
 
    
    
@@ -283,6 +286,11 @@ public class ControlPanel extends JFrame implements IControlPanel{
       fpc.start();
       
       checkNewVersion();
+      
+      
+      
+      loadFileData = dialogOpenTmp();
+      Context.ctx.getBean("flash", IFlash.class).run();      
    }
 
 
@@ -1150,27 +1158,53 @@ public class ControlPanel extends JFrame implements IControlPanel{
             log.error(LOG, e);
          }
       }
+      
+      dialogSaveTmp(data);
    }
+   
+
+   
+   
+   public byte[] dialogOpenTmp(){
+      log.trace(LOG + "openTmp()");
+
+      if(config.isAutoSave()){
+         try{
+            File tmpFile = new File(System.getProperty("java.io.tmpdir") + TEMP_FILE_NAME);
+            byte fileContent[] = new byte[(int) tmpFile.length()];
+            FileInputStream stream = new FileInputStream(tmpFile);
+            stream.read(fileContent);
+            stream.close();
+
+            return fileContent;
+         }
+         catch (Throwable e){
+            log.error(LOG, e);
+         }
+      }
+      
+      return null;
+   }
+   
    
    
    
    
    @Override
    public void dialogSaveTmp(final byte[] data){
-      log.trace(LOG + "save");
+      log.trace(LOG + "saveTmp()");
       
-      if(selectedFile == null){
-      }
-      else{
-         try{
-            StringBuilder sb = new StringBuilder(selectedFile.getAbsolutePath());
-            sb.insert(sb.length() - 4, "_");
-            FileOutputStream stream = new FileOutputStream(sb.toString());
-            stream.write(data);
-            stream.close();
-         }
-         catch (Exception e){
-            log.error(LOG, e);
+      
+      synchronized(this){      
+         if(config.isAutoSave()){
+            try{
+               FileOutputStream stream = new FileOutputStream(System.getProperty("java.io.tmpdir") + TEMP_FILE_NAME);
+               stream.write(data);
+               stream.close();
+            }
+            catch (Throwable e){
+               log.error(LOG, e);
+            }
          }
       }
    }

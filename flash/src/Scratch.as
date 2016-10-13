@@ -1530,8 +1530,7 @@ public class Scratch extends Sprite {
          topBarPart.refresh();
          stagePart.refresh();
       }
-      //saveProjectAndThen(clearProject);
-      clearProject();
+      saveProjectAndThen(clearProject);
    }
 
    protected function saveProjectAndThen(postSaveAction:Function = null):void {

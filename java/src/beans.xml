@@ -146,14 +146,15 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
       <constructor-arg ref="devices"/>
    </bean>
 
-<!--
    <bean id="flash" class="scratchduino.robot.Flash" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
+      <constructor-arg ref="os"/>
+   </bean>
+
+<!--
+   <bean id="flash" class="scratchduino.robot.FlashNoGUI" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
    </bean>
 -->
-
-   <bean id="flash" class="scratchduino.robot.FlashNoGUI" scope="singleton" lazy-init="true">
-      <constructor-arg ref="os"/>
-   </bean>
-
 </beans>

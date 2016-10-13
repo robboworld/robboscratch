@@ -249,5 +249,20 @@ public class Configuration implements IConfiguration{
       else{
          return sValue;
       }
+   }
+
+
+
+   @Override
+   public boolean isAutoSave(){
+      final String KEY = "autosave";
+      String sValue = properties.getProperty(KEY);
+
+      if(sValue == null || "".equals(KEY)){
+         throw new Error("'" + KEY + "' is missed in the server.properties");
+      }
+      else{
+         return Boolean.parseBoolean(sValue);
+      }
    }     
 }

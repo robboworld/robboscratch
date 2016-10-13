@@ -23,4 +23,6 @@ public interface IConfiguration{
    String getFirmwareCommandLine();
 
    String getDefaultMotorSpeed();
+   
+   boolean isAutoSave();
 }

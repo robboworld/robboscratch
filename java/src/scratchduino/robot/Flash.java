@@ -7,10 +7,13 @@ public class Flash implements IFlash{
    private static final String LOG = "[FLASH] ";
    private static Log log = LogFactory.getLog(Flash.class);
    
+   private final IConfiguration config;
    private final IOS os;
    
    
-   public Flash(IOS os){
+   public Flash(IConfiguration config, IOS os){
+      log.trace(LOG + "Flash bean has been instanced.");
+      this.config = config;
       this.os = os;
    }
 
@@ -20,9 +23,10 @@ public class Flash implements IFlash{
    @Override
    public void run(){
       
-      String sBinaryName = "flash";
+      String sBinaryName = "flash" + config.getVersion();
+      log.info(LOG + sBinaryName);
       
-      try {
+      try{
          switch(os.getType()) {
             case WINDOWS:{
                String sNameOS = sBinaryName + ".exe";
@@ -77,10 +81,14 @@ public class Flash implements IFlash{
                input.close();
    
                if(pidInfo.contains(sNameOS)){
+                  log.info(LOG + "Seems already running");
                }
                else{
+                  log.info(LOG + "Not runing yet, let's start.");
                   //not started
                   p = Runtime.getRuntime().exec("./" + sNameOS);
+                  
+                  log.info(LOG + "ok, started");                  
                   CloseConnector cc = new CloseConnector(p);
                   cc.start();
                }
