@@ -16,7 +16,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.*;
 import org.apache.commons.logging.*;
-import org.springframework.util.*;
 import scratchduino.robot.*;
 import sun.awt.*;
 
@@ -142,6 +141,15 @@ public class ControlPanel extends JFrame implements IControlPanel{
       this.setAlwaysOnTop(true);
       
       this.setLayout(null);
+      
+      if(config.getIOS().getType() == IOS.TYPE.MAC){
+         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+         this.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){
+               ControlPanel.this.setState(Frame.ICONIFIED);
+            }
+         });
+      }      
       
       JPanel panel = new JPanel();
       panel.setLayout(null);
@@ -1091,7 +1099,8 @@ public class ControlPanel extends JFrame implements IControlPanel{
             try{
                JFileChooser fileChooser = new JFileChooser();
                fileChooser.setAcceptAllFileFilterUsed(false);
-               fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));                
+               fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));
+               
                
                int iResult;
                while (true){
@@ -1268,8 +1277,14 @@ public class ControlPanel extends JFrame implements IControlPanel{
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));               
             fileChooser.setSelectedFile(new File(sName));
+            
+            if(config.getIOS().getType() == IOS.TYPE.MAC){
+               ControlPanel.this.setVisible(true);
+               ControlPanel.this.setState(Frame.NORMAL);
+            }                  
+            
                
-
+            
             while(true){
                int iResult = fileChooser.showSaveDialog(ControlPanel.this);
                   
@@ -1285,7 +1300,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      
                      UIManager.put("OptionPane.yesButtonText", ControlPanel.this.config.i18n("yes"));
                      UIManager.put("OptionPane.noButtonText",  ControlPanel.this.config.i18n("no"));                     
-                     int dialogResult = JOptionPane.showConfirmDialog(null,
+                     int dialogResult = JOptionPane.showConfirmDialog(ControlPanel.this,
                                                                       ControlPanel.this.config.i18n("dialog_save_confirm_file_exists"),
                                                                       "",
                                                                       JOptionPane.YES_NO_OPTION);
@@ -1295,6 +1310,11 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   }
                   
                   saveFileName = selectedFile.getName();
+                  
+                  
+                  if(config.getIOS().getType() == IOS.TYPE.MAC){
+                     ControlPanel.this.setState(Frame.ICONIFIED);
+                  }                  
                   
    
                   try{

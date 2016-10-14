@@ -5,7 +5,7 @@ label_device_list=Список найденных устройств:
 
 button_search=Поиск новых устройств
 button_diagnostic=Диагностика
-button_exit=Выход
+button_exit=Скрыть
 tray_menu_exit=Выход
 
 button_upload_firmware=Перепрошить

@@ -5,7 +5,7 @@ label_device_list=Laitteet:
 
 button_search=Etsi uudelleen
 button_diagnostic=Vianmääritys
-button_exit=Poistu
+button_exit=Piilota
 tray_menu_exit=Poistu
 
 button_upload_firmware=Päivitä laiteohjelmisto

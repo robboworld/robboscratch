@@ -5,7 +5,7 @@ label_device_list=Device list:
 
 button_search=New lookup
 button_diagnostic=Diagnostic
-button_exit=Exit
+button_exit=Hide
 tray_menu_exit=Exit
 
 button_upload_firmware=Upload firmware
