@@ -101,15 +101,17 @@ public class Server implements IServer {
 //    }
 
 
-
       if(Capabilities.os.indexOf("Windows") >= 0){
-         return fetchAsset('media/' + md5, whenDone);
+//         return fetchAsset('media/' + md5, whenDone);
+         return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
       }
       else if(Capabilities.os.indexOf("Mac") >= 0){
-         return fetchAsset('media/' + md5, whenDone);
+//         return fetchAsset('media/' + md5, whenDone);
+         return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
       }
       else if(Capabilities.os.indexOf("Linux") >= 0){
-         return fetchAsset('/opt/scratchduino2/media/' + md5, whenDone);
+//         return fetchAsset('/opt/ScratchDuino2/media/' + md5, whenDone);
+         return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
       }
       else{
          return fetchAsset('media/' + md5, whenDone);
