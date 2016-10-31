@@ -54,124 +54,6 @@ public class FEConnector{
    
    
    
-   @GET
-   @Path("/settings")
-   @Produces("text/plain; charset=UTF-8")
-   public String settings() throws Exception{      
-      log.trace(LOG + "settings()");
-
-      final IConfiguration config = scratchduino.robot.Context.ctx.getBean("config", IConfiguration.class);
-
-      return "default_motor_speed=" + config.getDefaultMotorSpeed();
-   }
-   
-   
-   
-   
-   
-   
-   @GET
-   @Path("/dialog/load/reset")
-   @Produces("text/plain; charset=UTF-8")
-   public String dialogLoadReset() throws Exception{      
-      log.trace(LOG + "loadReset()");
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      main.dialogLoadReset();
-
-      return "";
-   }
-   
-   
-
-   
-   @GET
-   @Path("/dialog/load/check")
-   @Produces("text/plain; charset=UTF-8")
-   public String dialogLoadCheck() throws Exception{      
-      log.trace(LOG + "loadCheck()");
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      return main.dialogLoadCheck() == null ? "" : main.dialogLoadCheck();  
-   }
-   
-   
-   
-   @GET
-   @Path("/dialog/load/data")
-   @Produces(MediaType.APPLICATION_OCTET_STREAM)   
-   public byte[] dialogLoadData() throws Exception{      
-      log.trace(LOG + "loadData()");
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      return main.dialogLoadData();  
-   }
-   
-   
-
-   
-   @GET
-   @Path("/dialog/save/reset")
-   @Produces("text/plain; charset=UTF-8")
-   public String dialogSaveReset() throws Exception{      
-      log.trace(LOG + "loadReset()");
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      main.dialogSaveReset();
-
-      return "";
-   }
-   
-   
-
-   
-   @GET
-   @Path("/dialog/save/check")
-   @Produces("text/plain; charset=UTF-8")
-   public String dialogSaveCheck() throws Exception{      
-      log.trace(LOG + "loadCheck()");
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      return main.dialogSaveCheck() == null ? "" : main.dialogSaveCheck();  
-   }
-   
-   
-   @POST
-   @Path("/dialog/save")
-   @Produces("text/plain; charset=UTF-8")
-   public String saveScratch(byte[] data) throws Exception{      
-      log.trace(LOG + "SAVE length=" + data.length);
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      main.dialogSave(data);
-      
-      return "";
-   }
-   @POST
-   @Path("/dialog/save_tmp")
-   @Produces("text/plain; charset=UTF-8")
-   public String saveScratchTmp(byte[] data) throws Exception{      
-      log.trace(LOG + "SAVE length=" + data.length);
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      main.dialogSaveTmp(data);
-      
-      return "";
-   }
-   @POST
-   @Path("/dialog/save/{NAME}")
-   @Produces("text/plain; charset=UTF-8")
-   public String saveScratchAs(@PathParam("NAME") String sName,
-                               byte[] data) throws Exception{      
-      log.trace(LOG + "SAVE name=" + sName + ", length=" + data.length);
-
-      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
-      main.dialogSaveAs(sName, data);
-      
-      return "";
-   }
-   
-   
    
 
    
@@ -297,5 +179,127 @@ public class FEConnector{
       response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       response.setHeader("Pragma", "no-cache");
       response.setHeader("Expires", "0");
+   }
+   
+   
+   
+
+   
+   
+   @GET
+   @Path("/settings")
+   @Produces("text/plain; charset=UTF-8")
+   public String settings() throws Exception{      
+      log.trace(LOG + "settings()");
+
+      final IConfiguration config = scratchduino.robot.Context.ctx.getBean("config", IConfiguration.class);
+
+      return "default_motor_speed=" + config.getDefaultMotorSpeed();
+   }
+   
+   
+   
+   
+   
+   
+   @GET
+   @Path("/dialog/load/reset")
+   @Produces("text/plain; charset=UTF-8")
+   public String dialogLoadReset() throws Exception{      
+      log.trace(LOG + "loadReset()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogLoadReset();
+
+      return "";
+   }
+   
+   
+
+   
+   @GET
+   @Path("/dialog/load/check")
+   @Produces("text/plain; charset=UTF-8")
+   public String dialogLoadCheck() throws Exception{      
+      log.trace(LOG + "loadCheck()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      return main.dialogLoadCheck() == null ? "" : main.dialogLoadCheck();  
+   }
+   
+   
+   
+   @GET
+   @Path("/dialog/load/data")
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)   
+   public byte[] dialogLoadData() throws Exception{      
+      log.trace(LOG + "loadData()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      return main.dialogLoadData();  
+   }
+   
+   
+
+   
+   @GET
+   @Path("/dialog/save/reset")
+   @Produces("text/plain; charset=UTF-8")
+   public String dialogSaveReset() throws Exception{      
+      log.trace(LOG + "loadReset()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSaveReset();
+
+      return "";
+   }
+   
+   
+
+   
+   @GET
+   @Path("/dialog/save/check")
+   @Produces("text/plain; charset=UTF-8")
+   public String dialogSaveCheck() throws Exception{      
+      log.trace(LOG + "loadCheck()");
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      return main.dialogSaveCheck() == null ? "" : main.dialogSaveCheck();  
+   }
+   
+   
+   @POST
+   @Path("/dialog/save")
+   @Produces("text/plain; charset=UTF-8")
+   public String saveScratch(byte[] data) throws Exception{      
+      log.trace(LOG + "SAVE length=" + data.length);
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSave(data);
+      
+      return "";
+   }
+   @POST
+   @Path("/dialog/save_tmp")
+   @Produces("text/plain; charset=UTF-8")
+   public String saveScratchTmp(byte[] data) throws Exception{      
+      log.trace(LOG + "SAVE length=" + data.length);
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSaveTmp(data);
+      
+      return "";
+   }
+   @POST
+   @Path("/dialog/save/{NAME}")
+   @Produces("text/plain; charset=UTF-8")
+   public String saveScratchAs(@PathParam("NAME") String sName,
+                               byte[] data) throws Exception{      
+      log.trace(LOG + "SAVE name=" + sName + ", length=" + data.length);
+
+      final IControlPanel main = scratchduino.robot.Context.ctx.getBean("ui", IControlPanel.class);
+      main.dialogSaveAs(sName, data);
+      
+      return "";
    }
 }

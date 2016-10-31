@@ -1,7 +1,9 @@
 package scratchduino.robot.rest.v1;
 
 
+import java.io.*;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.handler.*;
 import org.eclipse.jetty.servlet.*;
 import scratchduino.robot.*;
 
@@ -17,14 +19,17 @@ public class Jersey implements IRest{
       this.deviceList = commandList;
       this.locator = locator;
       
-      Runner runner = new Runner();
+      RunnerREST runner = new RunnerREST();
       runner.start();
+      
+      RunnerWEB runnerWEB = new RunnerWEB();
+      runnerWEB.start();
    }
 
 
 
 
-   private class Runner extends Thread{
+   private class RunnerREST extends Thread{
 
       public void run(){
          ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -43,6 +48,48 @@ public class Jersey implements IRest{
          jerseyServlet.setInitParameter("com.sun.jersey.config.property.packages",
                   "scratchduino.robot.rest.v1");
 
+         try{
+            jettyServer.start();
+            jettyServer.join();
+         }
+         catch(Throwable e){
+            throw new Error(e);
+         }
+         finally{
+            jettyServer.destroy();
+         }
+      }
+   }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   private class RunnerWEB extends Thread{
+
+      public void run(){
+         //File server
+         Server jettyServer = new Server(9877);
+         
+         ResourceHandler resource_handler = new ResourceHandler();
+         resource_handler.setDirectoriesListed(true);
+         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
+         
+         resource_handler.setResourceBase(new File("media").getAbsolutePath());
+
+         HandlerList handlers = new HandlerList();
+         handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+         jettyServer.setHandler(handlers);
+         
+         
          try{
             jettyServer.start();
             jettyServer.join();
