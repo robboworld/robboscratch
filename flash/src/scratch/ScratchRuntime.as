@@ -485,6 +485,9 @@ public class ScratchRuntime {
       data = loader2.data;
 
       if(data != null && data.length > 0){
+         if(fileName == null){
+            fileName = "";
+         }
          installProjectFromFile(fileName, data);
       }
    }
