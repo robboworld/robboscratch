@@ -133,6 +133,10 @@ public class Port implements IPort{
             }
 
 
+            
+            log.debug(LOG + Port.this.portName + " setting params...");
+            
+
             // Something standart
             serialPort.setParams(config.getPortSpeed(),
                                  SerialPort.DATABITS_8,
@@ -145,6 +149,11 @@ public class Port implements IPort{
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
             serialPort.purgePort(255);
 
+            log.debug(LOG + Port.this.portName + " ok, done.");
+
+
+            
+            log.debug(LOG + Port.this.portName + " init delay=" + config.getPortInitDelay());
 
             if(config.getPortInitDelay() > 0) {
                //The MacOS hack
@@ -167,10 +176,13 @@ public class Port implements IPort{
             DetectTimer timer = new DetectTimer();
             timer.start();
 
+            log.debug(LOG + Port.this.portName + " detect timer started.");
+
             //We send a set of "32" now
             //to avoid false detection
             for(int f = 0; f < internalTestID + 1; f++) {
                serialPort.writeByte((byte) 32);
+               log.debug(LOG + Port.this.portName + " 0x32 sent");
             }
 
             log.debug(LOG + Port.this.portName + " Test data sent.");
@@ -239,6 +251,8 @@ public class Port implements IPort{
 
             }
             while(lMaxDetecTime > System.currentTimeMillis());
+            
+            log.info(LOG + Port.this.portName + " time is out.");
          }
          catch (Throwable e){
             log.error(LOG, e);

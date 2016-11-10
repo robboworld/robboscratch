@@ -1279,7 +1279,6 @@ public class ControlPanel extends JFrame implements IControlPanel{
             fileChooser.setSelectedFile(new File(sName));
             
             
-            ControlPanel.this.setAlwaysOnTop(false);
                
             
             while(true){
