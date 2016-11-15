@@ -25,4 +25,6 @@ public interface IConfiguration{
    String getDefaultMotorSpeed();
    
    boolean isAutoSave();
+   
+   String getRootFolder();
 }

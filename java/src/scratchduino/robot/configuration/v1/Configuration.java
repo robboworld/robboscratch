@@ -1,6 +1,8 @@
 package scratchduino.robot.configuration.v1;
 
 import java.io.*;
+import java.net.*;
+import java.nio.file.*;
 import java.util.*;
 import scratchduino.robot.*;
 
@@ -10,30 +12,15 @@ public class Configuration implements IConfiguration{
 
    private static final String CONFIG_FILE = "config.ini";
 
-   private static final Properties properties;
-   private static final Properties i18n;
-
-   static{
-      try{
-         properties = loadFile("/" + CONFIG_FILE);
-      }
-      catch (Throwable e){
-         throw new Error(e);
-      }
-
-      try{
-         i18n = i18n();
-      }
-      catch (Throwable e){
-         throw new Error(e);
-      }
-   }
+   private final Properties properties;
+   private final Properties i18n;
 
 
 
 
 
-   private static Properties i18n() throws Exception{
+
+   private Properties i18n() throws Exception{
       Properties i18n;
 
       try{
@@ -51,12 +38,13 @@ public class Configuration implements IConfiguration{
 
 
 
-   private static Properties loadFile(String sPath) throws Exception{
+   private Properties loadFile(String sPath) throws Exception{
       InputStream isFileProperties = null;
 
       Properties properties = new Properties();
       try{
-         String sFullPath = (new File(".")).getAbsoluteFile() + "/" + sPath;
+         String sFullPath = this.getRootFolder() + "/" + sPath;
+
          System.out.println("Loading the property server file at the path " + sFullPath);
 
          isFileProperties = null;
@@ -78,10 +66,47 @@ public class Configuration implements IConfiguration{
 
 
 
+   private final String ROOT_PATH;
+
+
 
 
    public Configuration(IOS os){
       this.os = os;
+
+
+      try{
+         Path path = Paths.get(Configuration.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+
+         if(new File(path.toFile() + File.separator + CONFIG_FILE).exists()){
+            //IDE
+         }
+         else{
+            path = path.getParent();
+         }
+
+         ROOT_PATH = path.toString().replaceAll("\\\\", "/");
+      }
+      catch (URISyntaxException e){
+         throw new Error(e);
+      }
+
+
+
+      try{
+         properties = loadFile(CONFIG_FILE);
+      }
+      catch (Throwable e){
+         throw new Error(e);
+      }
+
+      try{
+         i18n = i18n();
+      }
+      catch (Throwable e){
+         throw new Error(e);
+      }
+
    }
 
 
@@ -191,9 +216,9 @@ public class Configuration implements IConfiguration{
    public IOS getIOS(){
       return os;
    }
-   
-   
-   
+
+
+
    @Override
    public String getVersion(){
       String sVersion = properties.getProperty("version");
@@ -205,10 +230,10 @@ public class Configuration implements IConfiguration{
          return sVersion;
       }
    }
-   
-   
-   
-   
+
+
+
+
    @Override
    public String getUpdateURL(){
       String sUpdateURL = properties.getProperty("update_url");
@@ -236,8 +261,8 @@ public class Configuration implements IConfiguration{
          return sFirmwareCommandLine;
       }
    }
-   
-   
+
+
    @Override
    public String getDefaultMotorSpeed(){
       final String KEY = "default";
@@ -264,5 +289,14 @@ public class Configuration implements IConfiguration{
       else{
          return Boolean.parseBoolean(sValue);
       }
-   }     
+   }
+
+
+
+
+
+   @Override
+   public String getRootFolder(){
+      return this.ROOT_PATH;
+   }
 }

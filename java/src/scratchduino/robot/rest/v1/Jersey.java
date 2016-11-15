@@ -9,19 +9,21 @@ import scratchduino.robot.*;
 
 public class Jersey implements IRest{
 
+   private final IConfiguration config;
    private final IDeviceList deviceList;
    private final IDeviceLocator locator;
 
 
 
 
-   public Jersey(IDeviceLocator locator, IDeviceList commandList){
+   public Jersey(IConfiguration config, IDeviceLocator locator, IDeviceList commandList){
+      this.config = config;
       this.deviceList = commandList;
       this.locator = locator;
-      
+
       RunnerREST runner = new RunnerREST();
       runner.start();
-      
+
       RunnerWEB runnerWEB = new RunnerWEB();
       runnerWEB.start();
    }
@@ -60,36 +62,36 @@ public class Jersey implements IRest{
          }
       }
    }
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
+
+
+
+
+
+
    private class RunnerWEB extends Thread{
 
       public void run(){
          //File server
          Server jettyServer = new Server(9877);
-         
+
          ResourceHandler resource_handler = new ResourceHandler();
          resource_handler.setDirectoriesListed(true);
          resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-         
-         resource_handler.setResourceBase(new File("media").getAbsolutePath());
+
+         resource_handler.setResourceBase(config.getRootFolder() + "/media");
 
          HandlerList handlers = new HandlerList();
          handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
          jettyServer.setHandler(handlers);
-         
-         
+
+
          try{
             jettyServer.start();
             jettyServer.join();

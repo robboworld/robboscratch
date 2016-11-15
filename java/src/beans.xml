@@ -142,6 +142,7 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 
    <bean id="rest" class="scratchduino.robot.rest.v1.Jersey" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
       <constructor-arg ref="device_locator"/>
       <constructor-arg ref="devices"/>
    </bean>
