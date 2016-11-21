@@ -30,7 +30,7 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
 
                   <!-- Latest avaialble firmware version -->
-                  <constructor-arg value="4"/>
+                  <constructor-arg value="5"/>
 
                   <constructor-arg>
                      <map>
