@@ -539,6 +539,30 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
 
+    public function setClawDegrees(degrees:int):void{
+      trace("CLAW degrees=" + degrees);
+         interfaceBusyRobot = true;
+
+         try{
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+
+            var url:String = sBaseURLRobot + "/rob_claw/" + degrees.toString(16) + "?" + iAnticacheRobot;
+
+            var requestRobot:URLRequest = new URLRequest(url);
+            requestRobot.method = URLRequestMethod.POST;
+            iCounterRequestRobot++;
+
+            trace(getTime() + " [" + iCounterRequestRobot + "] " + url);
+            loaderRobot.load(requestRobot);
+
+            isEncoder = true;
+         }
+         catch (e1:Error){
+            iAnticacheRobot++;
+            interfaceBusyRobot = false;
+            onDataReceiveRobot([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+         }
+    }
 
 
 

@@ -173,8 +173,6 @@ public class Specs {
       ["-"],
 
 
-
-
 //      ["turn motor on for %n secs",         " ", 101, "motorOnFor:elapsed:from:",                   1],
 //      ["motor on",                          " ", 101, "allMotorsOn",                              0.1],
 //      ["motor off",                         " ", 101, "allMotorsOff",                             0.1],
@@ -213,6 +211,11 @@ public class Specs {
       ["turn Lab %m.ledColorMenu led off"," ", 14, "ledColorOff:",          'red'],
       ["turn Robot led in %m.robotLedMenu on",   " ", 13, "robotLedOn:",           'position 1'],
       ["turn Robot led in %m.robotLedMenu off",  " ", 13, "robotLedOff:",          'position 1'],
+
+
+      ["Claw %n degrees",                    " ", 13, "clawDegrees",                      15],
+      ["-"],
+
 
 
       // stage looks

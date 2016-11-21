@@ -34,16 +34,16 @@
 
    <!-- Build and output Scratch.swf-->
    <target name="compile" depends="test_10.2,init">
-      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/flash.swf" target-player="11.4" swf-version="17" debug="true">
+      <mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/flash.swf" target-player="10.2" swf-version="11" debug="true">
          <source-path path-element="${SRC_DIR}" />
          <library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
          <library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
          <library-path file="${LIBS_DIR}/Bluetooth.swc" />
          <library-path file="${LIBS_DIR}/NativeDialogs.swc" />
 
-         <static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
+         <static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
          <default-size width="800" height="600" />
-         <define name="SCRATCH::allow3d" value="true" />
+         <define name="SCRATCH::allow3d" value="false" />
          <define name="TARGET::android"  value="false" />
          <define name="TARGET::desktop"  value="true" />
          <define name="ANDROID::enableDonationButton" value="false" />

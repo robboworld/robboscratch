@@ -92,13 +92,21 @@ public class MotionAndPenPrims {
       primTable["turnRobotLeftDegr:"]     = turnRobotLeftDegr;
 
 
-      primTable["resetPath"]     = resetPath;
+      primTable["resetPath"]       = resetPath;
+      primTable["clawDegrees"]     = clawDegrees;
 
 
 
 
    }
    //block for robots
+
+
+   private function clawDegrees(b:Block):void{
+      var degrees:int  = interp.arg(b, 0);
+      app.robotCommunicator.setClawDegrees(degrees);
+   }
+
 
 
    private function resetPath(b:Block):void{

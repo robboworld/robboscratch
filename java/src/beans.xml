@@ -25,9 +25,13 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
    <bean id="devices" class="scratchduino.robot.commands.v1.DeviceList" scope="singleton" lazy-init="true">
       <constructor-arg>
          <map>
+            <!-- Internal device ID -->
             <entry key="0">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+
+                  <!-- Latest avaialble firmware version -->
                   <constructor-arg value="4"/>
+
                   <constructor-arg>
                      <map>
                         <entry key="rob_check">
@@ -55,14 +59,23 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                               <constructor-arg value="command_robot_light.xml" />
                            </bean>
                         </entry>
+                        <entry key="rob_claw">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_claw.xml" />
+                           </bean>
+                        </entry>
                      </map>
                   </constructor-arg>
                </bean>
             </entry>
 
+            <!-- Internal device ID -->
             <entry key="1">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+
+                  <!-- Latest avaialble firmware version -->
                   <constructor-arg value="3"/>
+
                   <constructor-arg>
                      <map>
                         <entry key="lab_check">
@@ -147,15 +160,16 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
       <constructor-arg ref="devices"/>
    </bean>
 
+<!--
    <bean id="flash" class="scratchduino.robot.Flash" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
    </bean>
+-->
 
-<!--
    <bean id="flash" class="scratchduino.robot.FlashNoGUI" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
    </bean>
--->
+
 </beans>

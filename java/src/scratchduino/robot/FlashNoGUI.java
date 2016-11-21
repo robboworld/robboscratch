@@ -8,7 +8,7 @@ public class FlashNoGUI implements IFlash{
    
    
    
-   public FlashNoGUI(IOS os){
+   public FlashNoGUI(IConfiguration config, IOS os){
       log.info(LOG + "No Flash UI");
    }
 

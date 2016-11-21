@@ -38,6 +38,8 @@ public interface IRobotCommunicator {
 
     function keepAlive():void;
 
+    function setClawDegrees(degrees:int):void;
+
 //    function getName():String;
 //    function setActive(isActive:Boolean):void;
 //    function finishSession():void;
