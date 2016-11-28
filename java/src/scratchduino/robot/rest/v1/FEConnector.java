@@ -1,5 +1,6 @@
 package scratchduino.robot.rest.v1;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import javax.servlet.*;
@@ -60,10 +61,10 @@ public class FEConnector{
    @GET
    @Path("/txt/def/{DEVICE}/{paths:.+}")
    @Produces("text/plain; charset=UTF-8")
-   public String defaultPort(@PathParam("PORT")   String sPortName,
-                             @PathParam("DEVICE") int iDeviceID,
-                             @PathParam("paths")  List<PathSegment> uglyPath,
-                             @Context HttpServletResponse response) throws Exception{
+   public String defaultPortTxt(@PathParam("PORT")   String sPortName,
+                                @PathParam("DEVICE") int iDeviceID,
+                                @PathParam("paths")  List<PathSegment> uglyPath,
+                                @Context HttpServletResponse response) throws Exception{
       resetCache(response);      
       
       IDeviceLocator locator = ((IDeviceLocator) context.getAttribute("locator"));
@@ -83,15 +84,15 @@ public class FEConnector{
    @POST
    @Path("/txt/def/{DEVICE}/{paths:.+}")
    @Produces("text/plain; charset=UTF-8")
-   public String defaultPortPOST(@PathParam("PORT")    String sPortName,
-                                 @PathParam("DEVICE")  int iDeviceID,
-                                 @PathParam("paths") List<PathSegment> uglyPath,
-                                 @Context HttpServletResponse response) throws Exception{
+   public String defaultPortPOSTTxt(@PathParam("PORT")    String sPortName,
+                                    @PathParam("DEVICE")  int iDeviceID,
+                                    @PathParam("paths") List<PathSegment> uglyPath,
+                                    @Context HttpServletResponse response) throws Exception{
       log.trace(LOG + "POST");
       
       resetCache(response);      
       
-      return defaultPort(sPortName, iDeviceID, uglyPath, response);
+      return defaultPortTxt(sPortName, iDeviceID, uglyPath, response);
    }
    
    
@@ -101,7 +102,7 @@ public class FEConnector{
 
 
    @GET
-   @Path("/port/{PORT}/{DEVICE}/{paths:.+}")
+   @Path("/txt/port/{PORT}/{DEVICE}/{paths:.+}")
    @Produces("text/plain; charset=UTF-8")
    public String servicePortTxt(@PathParam("PORT")  String sPortName,
                                 @PathParam("DEVICE")  int iDeviceID,
@@ -180,10 +181,141 @@ public class FEConnector{
       }
    }
    
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   @GET
+   @Path("/bin/def/{DEVICE}/{paths:.+}")
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)   
+   public byte[] defaultPortBin(@PathParam("PORT")   String sPortName,
+                                @PathParam("DEVICE") int iDeviceID,
+                                @PathParam("paths")  List<PathSegment> uglyPath,
+                                @Context HttpServletResponse response) throws Exception{
+      resetCache(response);      
+      
+      IDeviceLocator locator = ((IDeviceLocator) context.getAttribute("locator"));
+      
+      log.debug(LOG + "Status=" + locator.getStatus());
+      
+      if(locator.getStatus() == IDeviceLocator.STATUS.READY){
+         for(IPort port : locator.getPortList()){
+            if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED && port.getDevice().getType() == iDeviceID){
+               return servicePortBin(port.getPortName(), iDeviceID, uglyPath, response);
+            }
+         }
+      }
+      
+      return new byte[0];
+   }
+   @POST
+   @Path("/bin/def/{DEVICE}/{paths:.+}")
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)   
+   public byte[] defaultPortPOSTBin(@PathParam("PORT")    String sPortName,
+                                    @PathParam("DEVICE")  int iDeviceID,
+                                    @PathParam("paths") List<PathSegment> uglyPath,
+                                    @Context HttpServletResponse response) throws Exception{
+      log.trace(LOG + "POST");
+      
+      resetCache(response);      
+      
+      return defaultPortBin(sPortName, iDeviceID, uglyPath, response);
+   }
+   
+   
+   
+   
+   
 
-   
-   
-   
+
+   @GET
+   @Path("/bin/port/{PORT}/{DEVICE}/{paths:.+}")
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)   
+   public byte[] servicePortBin(@PathParam("PORT")  String sPortName,
+                                @PathParam("DEVICE")  int iDeviceID,
+                                @PathParam("paths") List<PathSegment> uglyPath,
+                                @Context HttpServletResponse response) throws Exception{
+      
+      resetCache(response);      
+
+      List<String> listParameters = new ArrayList<String>();
+
+      for(PathSegment pathSegment : uglyPath){
+         listParameters.add(pathSegment.getPath());
+      }
+      
+      String sCommand = listParameters.remove(0);
+      
+      
+      synchronized(FEConnector.class){
+         if(locks.get(sPortName) == null){
+            locks.put(sPortName, sPortName);
+         }
+      }
+      
+      synchronized(locks.get(sPortName)){      
+      
+         IDeviceLocator locator = ((IDeviceLocator) context.getAttribute("locator"));
+         
+         if(locator.getStatus() == IDeviceLocator.STATUS.READY){      
+            try{
+               if(locator.getPortByName().get(sPortName).getDevice().getType() == iDeviceID) { 
+                  IDeviceList listDevices = (IDeviceList) context.getAttribute("devices");
+                  ICommand command = listDevices.getDevice(iDeviceID).getCommand(sCommand);
+                  
+                  if(command == null){
+                     return new byte[0];
+                  }                  
+                  
+                  IResponse reponse = command.run(atomlongCID.getAndIncrement(), locator.getPortByName().get(sPortName), listParameters);
+
+                  StringBuilder sb = new StringBuilder();
+                  ArrayList<String> arliKeys = new ArrayList<String>(reponse.getParsedValues().keySet());
+
+
+                  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                  
+
+                  for(String sKey : arliKeys){
+                     //sb.append(sKey + "=" + reponse.getParsedValues().get(sKey) + "\n");
+                     Object value = reponse.getParsedValues().get(sKey);
+                     
+                     if(value instanceof byte[]){
+                        baos.write((byte[]) value);
+                     }
+                     else{
+                        baos.write((Integer) reponse.getParsedValues().get(sKey));
+                     }
+                  }
+
+                  return baos.toByteArray();
+               }
+               else{
+                  return new byte[0];
+               }
+            }
+            catch (Exception e){
+               return new byte[0];
+            }
+         }
+         else{
+            return new byte[0];
+         }
+      }
+   }
    
    
    

@@ -168,7 +168,8 @@ public class Specs {
       ["-"],
 
 
-      ["Robot %m.analogRobot",               "r", 13, "sensorRobot:",          "sensor 1"],
+      ["Robot %m.analogRobot",               "r", 13, "sensorRobot",          "sensor 1"],
+      ["Robot %m.brightRobot %c",            "r", 13, "brightRobot",          "R"],
       ["Robot start button pressed?",        "b", 13, "robotStartButton"],
       ["-"],
 

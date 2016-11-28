@@ -6,6 +6,8 @@ package connectors {
    import flash.net.*;
    import flash.events.*;
    import flash.utils.getTimer;
+   import flash.utils.ByteArray;
+
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    import flash.globalization.DateTimeFormatter;
@@ -82,6 +84,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
         loaderRobot.addEventListener(IOErrorEvent.NETWORK_ERROR, errorHandlerRobot);
         loaderRobot.addEventListener(ErrorEvent.ERROR, errorHandlerRobot);
         loaderRobot.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandlerRobot);
+        loaderRobot.dataFormat = URLLoaderDataFormat.BINARY;
+
 
 
         loaderLab.addEventListener(Event.COMPLETE, completeHandlerLab);
@@ -90,6 +94,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
         loaderLab.addEventListener(IOErrorEvent.NETWORK_ERROR, errorHandlerLab);
         loaderLab.addEventListener(ErrorEvent.ERROR, errorHandlerLab);
         loaderLab.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandlerLab);
+        loaderLab.dataFormat = URLLoaderDataFormat.BINARY;
     }
 
 
@@ -408,7 +413,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
 
             var url:String = sBaseURLRobot + "/rob_lamps/" + hex + "?" + iAnticacheRobot;
 
@@ -481,7 +486,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
 
             var speedLeftNormalized:int = left * 0.63;
             var speedRightNormalized:int = right * 0.63;
@@ -544,7 +549,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
 
             var url:String = sBaseURLRobot + "/rob_claw/" + degrees.toString(16) + "?" + iAnticacheRobot;
 
@@ -573,7 +578,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot2 = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
 
             var speedLeftNormalized:int = speedLeft * 0.63;
             var speedRightNormalized:int = speedRight * 0.63;
@@ -621,7 +626,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
             var url:String = sBaseURLRobot + "/check?" + iAnticacheRobot;
 
             var requestRobot:URLRequest = new URLRequest(url);
@@ -669,7 +674,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/default/0";
+            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
 
             var speedLeftNormalized:int = speedLeft * 0.63;
             var speedRightNormalized:int = speedRight * 0.63;
@@ -737,7 +742,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
     public function sendCommandLab():void{
-       var baseURL:String = "http://127.0.0.1:9876/default/1/";
+       var baseURL:String = "http://127.0.0.1:9876/bin/def/1/";
        var command:String;
 
          if(interfaceBusyLab){
@@ -839,14 +844,16 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
       {
          try{
             var loader2:URLLoader = URLLoader(event.target);
-            var tempArray:Array=loader2.data.split("\n");
+            //var tempArray:Array=loader2.data.split("\n");
 
             iCounterResponseRobot++;
-            trace(getTime() + " [" + iCounterResponseRobot + "] INCOMING ROBOT:\n" + loader2.data);
+
+//            trace(getTime() + " [" + iCounterResponseRobot + "] INCOMING ROBOT:\n" + loader2.data);
 
 
+            trace(getTime() + " [" + iCounterResponseRobot + "] INCOMING ROBOT:\n" + fromHexArray(loader2.data, true));
+/*
             if(tempArray.length == 11){
-
                for (var i:int = 0; i < 10; i++){
                   //var keyValueArray:Array=tempArray[i].split("=");
                   //trace(keyValueArray);
@@ -859,6 +866,13 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             else{
                onDataReceiveRobot([]);
             }
+*/
+
+            for (var i:int = 0; i < 10; i++){
+               analogsRobot[i] = loader2.data[i];
+            }
+
+            onDataReceiveRobot(analogsRobot);
 
             //trace(tempArray);
          }
@@ -873,14 +887,13 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
       {
          try{
             var loader2:URLLoader = URLLoader(event.target);
-            var tempArray:Array=loader2.data.split("\n");
+//            var tempArray:Array=loader2.data.split("\n");
 
             iCounterResponseLab++;
             trace(getTime() + " [" + iCounterResponseLab + "] INCOMING LAB:\n" + loader2.data);
 
-
+/*
             if(tempArray.length == 8){
-
                for (var i:int = 0; i < 8; i++){
                   //var keyValueArray:Array=tempArray[i].split("=");
                   //trace(keyValueArray);
@@ -893,6 +906,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             else{
                onDataReceiveLab([]);
             }
+*/
+            onDataReceiveLab(loader2.data);
 
             //trace(tempArray);
          }
@@ -930,6 +945,22 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                return result;
            }
        }
+
+
+                public static function fromHexArray(array:ByteArray, colons:Boolean=false):String {
+                        var s:String = "";
+                        for (var i:uint=0;i<array.length;i++) {
+                                s+=("0"+array[i].toString(16)).substr(-2,2);
+                                if (colons) {
+                                        if (i<array.length-1) s+=":";
+                                }
+                        }
+                        return s;
+                }
+
+
+
+
    }
 }
 
@@ -958,3 +989,9 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             return;
          }
 */
+
+
+
+
+
+

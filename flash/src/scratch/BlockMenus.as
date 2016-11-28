@@ -115,6 +115,7 @@ public class BlockMenus implements DragClient {
       if (menuName == 'videoMotionType') menuHandler.videoMotionTypeMenu(evt);
       if (menuName == 'videoState') menuHandler.videoStateMenu(evt);
       if (menuName == 'analogRobot') menuHandler.analogMenuRobot(evt);
+      if (menuName == 'brightRobot') menuHandler.brightMenuRobot(evt);
       if (menuName == 'sensorMenuRobot') menuHandler.sensorMenuRobot(evt);
       if (menuName == 'analogLab') menuHandler.analogMenuLab(evt);
       if (menuName == 'analogMenuLabRaw') menuHandler.analogMenuLabRaw(evt);
@@ -168,6 +169,7 @@ public class BlockMenus implements DragClient {
          handler.videoMotionTypeMenu(evt);
          handler.videoStateMenu(evt);
          handler.analogMenuRobot(evt);
+         handler.brightMenuRobot(evt);
          handler.analogMenuLab(evt);
       }
       return [
@@ -594,6 +596,14 @@ public class BlockMenus implements DragClient {
 */
       m.addItem('trip meter L');
       m.addItem('trip meter R');
+      showMenu(m);
+   }
+   private function brightMenuRobot(evt:MouseEvent):void {
+      var m:Menu = new Menu(setBlockArg, 'analogRobot');
+      m.addItem('R');
+      m.addItem('G');
+      m.addItem('B');
+      m.addItem('Bright');
       showMenu(m);
    }
 

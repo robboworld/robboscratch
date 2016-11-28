@@ -81,7 +81,8 @@ public class SensingPrims {
       primTable['hideVariable:']       = primHideWatcher;
       primTable['showList:']           = primShowListWatcher;
       primTable['hideList:']           = primHideListWatcher;
-      primTable['sensorRobot:']        = primAnalogRobot;
+      primTable['sensorRobot']         = primAnalogRobot;
+      primTable['brightRobot']         = primBrightRobot;
       primTable['sensorLab']           = primAnalogLab;
       primTable['sensorLabRaw']        = sensorLabRaw;
       primTable['sensorLabDigitalRaw'] = sensorLabDigitalRaw;
@@ -135,6 +136,40 @@ public class SensingPrims {
 //      var c:int = a.charCodeAt(a.length - 1) - 48;
 //      return app.runtime.analogsRobot[c];
    }
+
+
+
+
+
+
+   private function primBrightRobot(b:Block):int {
+      var a:String = interp.arg(b, 0);
+
+      if(a == 'R'){
+         return app.runtime.analogsRobotExtended[0][0];
+      }
+      if(a == 'G'){
+         return app.runtime.analogsRobotExtended[0][1];
+      }
+      if(a == 'B'){
+         return app.runtime.analogsRobotExtended[0][2];
+      }
+      if(a == 'Bright'){
+         return app.runtime.analogsRobotExtended[0][3];
+      }
+
+      return 0;
+
+//      var c:int = a.charCodeAt(a.length - 1) - 48;
+//      return app.runtime.analogsRobot[c];
+   }
+
+
+
+
+
+
+
    private function primAnalogLab(b:Block):int {
       var a:String = interp.arg(b, 0);
 

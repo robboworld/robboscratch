@@ -39,7 +39,7 @@
        </value>
        <value>
           <name>Button</name>
-          <type>unsigned byte[4]</type>
+          <type>unsigned byte</type>
        </value>
    </response>
 

@@ -342,7 +342,7 @@ public class Scratch extends Sprite {
 
 
     public function refreshAnalogsRobot(data:Array):void {
-        trace("refreshAnalogsRobot() " + data.length);
+        trace("refreshAnalogsRobot() " + data.length + " data=" + data);
 
         if(data.length == 0){
 
@@ -405,11 +405,26 @@ public class Scratch extends Sprite {
 
 
 
-        var sensor1:int = data[4];
-        var sensor2:int = data[5];
-        var sensor3:int = data[6];
-        var sensor4:int = data[7];
-        var sensor5:int = data[8];
+        //4-5-6-7
+        //8-9-10-11
+        //12-13-14-15
+        //16-17-18-19
+        //20-21-22-23
+
+        var sensor1:int = data[7];
+        var sensorExtended1:Array = [data[4], data[5], data[6], data[7]];
+
+        var sensor2:int = data[11];
+        var sensorExtended2:Array = [data[8], data[9], data[10], data[11]];
+
+        var sensor3:int = data[15];
+        var sensorExtended3:Array = [data[12], data[13], data[14], data[15]];
+
+        var sensor4:int = data[19];
+        var sensorExtended4:Array = [data[16], data[17], data[18], data[19]];
+
+        var sensor5:int = data[23];
+        var sensorExtended5:Array = [data[20], data[21], data[22], data[23]];
 
         if(scratchBoardPart.cbSensor1.state == false){
            runtime.analogsRobot[2] = 0;
@@ -417,6 +432,7 @@ public class Scratch extends Sprite {
         }
         else{
            runtime.analogsRobot[2] = sensor1;
+           runtime.analogsRobotExtended[0] = sensorExtended1;
            setAnalogTextRobot(2, "" + sensor1);
         }
 
@@ -426,6 +442,7 @@ public class Scratch extends Sprite {
         }
         else{
            runtime.analogsRobot[3] = sensor2;
+           runtime.analogsRobotExtended[1] = sensorExtended2;
            setAnalogTextRobot(3, "" + sensor2);
         }
 
@@ -436,6 +453,7 @@ public class Scratch extends Sprite {
         }
         else{
            runtime.analogsRobot[4] = sensor3;
+           runtime.analogsRobotExtended[2] = sensorExtended3;
            setAnalogTextRobot(4, "" + sensor3);
         }
 
@@ -446,6 +464,7 @@ public class Scratch extends Sprite {
         }
         else{
            runtime.analogsRobot[5] = sensor4;
+           runtime.analogsRobotExtended[3] = sensorExtended4;
            setAnalogTextRobot(5, "" + sensor4);
         }
 
@@ -457,11 +476,12 @@ public class Scratch extends Sprite {
         }
         else{
            runtime.analogsRobot[6] = sensor5;
+           runtime.analogsRobotExtended[4] = sensorExtended5;
            setAnalogTextRobot(6, "" + sensor5);
         }
 
 
-        var startButton:int = data[9];
+        var startButton:int = data[25];
 
 
 
