@@ -1223,7 +1223,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             return fileContent;
          }
          catch (Throwable e){
-            log.error(LOG, e);
+            log.info("Can not read the autosave file.");
          }
       }
       

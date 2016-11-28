@@ -58,7 +58,7 @@ public class FEConnector{
 
    
    @GET
-   @Path("/default/{DEVICE}/{paths:.+}")
+   @Path("/txt/def/{DEVICE}/{paths:.+}")
    @Produces("text/plain; charset=UTF-8")
    public String defaultPort(@PathParam("PORT")   String sPortName,
                              @PathParam("DEVICE") int iDeviceID,
@@ -73,7 +73,7 @@ public class FEConnector{
       if(locator.getStatus() == IDeviceLocator.STATUS.READY){
          for(IPort port : locator.getPortList()){
             if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED && port.getDevice().getType() == iDeviceID){
-               return servicePort(port.getPortName(), iDeviceID, uglyPath, response);
+               return servicePortTxt(port.getPortName(), iDeviceID, uglyPath, response);
             }
          }
       }
@@ -81,7 +81,7 @@ public class FEConnector{
       return "error=1";
    }
    @POST
-   @Path("/default/{DEVICE}/{paths:.+}")
+   @Path("/txt/def/{DEVICE}/{paths:.+}")
    @Produces("text/plain; charset=UTF-8")
    public String defaultPortPOST(@PathParam("PORT")    String sPortName,
                                  @PathParam("DEVICE")  int iDeviceID,
@@ -103,10 +103,10 @@ public class FEConnector{
    @GET
    @Path("/port/{PORT}/{DEVICE}/{paths:.+}")
    @Produces("text/plain; charset=UTF-8")
-   public String servicePort(@PathParam("PORT")  String sPortName,
-                             @PathParam("DEVICE")  int iDeviceID,
-                             @PathParam("paths") List<PathSegment> uglyPath,
-                             @Context HttpServletResponse response) throws Exception{
+   public String servicePortTxt(@PathParam("PORT")  String sPortName,
+                                @PathParam("DEVICE")  int iDeviceID,
+                                @PathParam("paths") List<PathSegment> uglyPath,
+                                @Context HttpServletResponse response) throws Exception{
       
       resetCache(response);      
 
@@ -153,7 +153,14 @@ public class FEConnector{
    
                      for(String sKey : arliKeys){
                         //sb.append(sKey + "=" + reponse.getParsedValues().get(sKey) + "\n");
-                        sb.append(reponse.getParsedValues().get(sKey) + "\n");
+                        Object value = reponse.getParsedValues().get(sKey);
+                        
+                        if(value instanceof byte[]) {
+                           sb.append(Arrays.toString((byte[]) value) + "\n");
+                        }
+                        else {
+                           sb.append(reponse.getParsedValues().get(sKey) + "\n");
+                        }
                      }
    
                      return sb.toString();
@@ -174,6 +181,18 @@ public class FEConnector{
    }
    
 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
    private void resetCache(HttpServletResponse response){
       response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");

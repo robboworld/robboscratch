@@ -19,27 +19,27 @@
        </value>
        <value>
           <name>A0</name>
-          <type>unsigned byte</type>
+          <type>unsigned byte[4]</type>
        </value>
        <value>
           <name>A1</name>
-          <type>unsigned byte</type>
+          <type>unsigned byte[4]</type>
        </value>
        <value>
           <name>A2</name>
-          <type>unsigned byte</type>
+          <type>unsigned byte[4]</type>
        </value>
        <value>
           <name>A3</name>
-          <type>unsigned byte</type>
+          <type>unsigned byte[4]</type>
        </value>
        <value>
           <name>A4</name>
-          <type>unsigned byte</type>
+          <type>unsigned byte[4]</type>
        </value>
        <value>
           <name>Button</name>
-          <type>unsigned byte</type>
+          <type>unsigned byte[4]</type>
        </value>
    </response>
 </command>

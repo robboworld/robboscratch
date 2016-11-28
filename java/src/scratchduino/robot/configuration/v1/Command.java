@@ -63,6 +63,9 @@ public class Command implements ICommand{
             else if("unsigned byte".equals(responseValue.type)) {
                iLength += 1;
             }
+            else if(responseValue.type.startsWith("unsigned byte[")){
+               iLength += Integer.parseInt(responseValue.type.substring(14).replaceAll("]", ""));
+            }
             else{
                throw new Exception("Unknown data type=" + responseValue.type);
             }
@@ -105,6 +108,12 @@ public class Command implements ICommand{
             else if("unsigned byte".equals(responseValue.type)) {
                byte byteValue = bbuf.get();
                mapResponse.put(responseValue.name, new Integer(byteValue));
+            }
+            else if(responseValue.type.startsWith("unsigned byte[")){
+               int iPacketLength = Integer.parseInt(responseValue.type.substring(14).replaceAll("]", ""));
+               byte[] value = new byte[iPacketLength];
+               bbuf.get(value);
+               mapResponse.put(responseValue.name, value);
             }
             else{
                throw new Exception("Unknown data type=" + responseValue.type);
