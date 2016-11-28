@@ -505,6 +505,9 @@ public class MotionAndPenPrims {
 
    private function primSetPenColor(b:Block):void {
       var s:ScratchSprite = interp.targetSprite();
+
+      trace("FUCK=" + interp.numarg(b, 0));
+
       if (s != null) s.setPenColor(interp.numarg(b, 0));
    }
 

@@ -428,6 +428,7 @@ public class Scratch extends Sprite {
 
         if(scratchBoardPart.cbSensor1.state == false){
            runtime.analogsRobot[2] = 0;
+           runtime.analogsRobotExtended[0] = [0,0,0,0];
            setAnalogTextRobot(2, "0");
         }
         else{
@@ -438,6 +439,7 @@ public class Scratch extends Sprite {
 
         if(scratchBoardPart.cbSensor2.state == false){
            runtime.analogsRobot[3] = 0;
+           runtime.analogsRobotExtended[1] = [0,0,0,0];
            setAnalogTextRobot(3, "0");
         }
         else{
@@ -449,6 +451,7 @@ public class Scratch extends Sprite {
 
         if(scratchBoardPart.cbSensor3.state == false){
            runtime.analogsRobot[4] = 0;
+           runtime.analogsRobotExtended[2] = [0,0,0,0];
            setAnalogTextRobot(4, "0");
         }
         else{
@@ -460,6 +463,7 @@ public class Scratch extends Sprite {
 
         if(scratchBoardPart.cbSensor4.state == false){
            runtime.analogsRobot[5] = 0;
+           runtime.analogsRobotExtended[3] = [0,0,0,0];
            setAnalogTextRobot(5, "0");
         }
         else{
@@ -472,6 +476,7 @@ public class Scratch extends Sprite {
 
         if(scratchBoardPart.cbSensor5.state == false){
            runtime.analogsRobot[6] = 0;
+           runtime.analogsRobotExtended[4] = [0,0,0,0];
            setAnalogTextRobot(6, "0");
         }
         else{

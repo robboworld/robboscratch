@@ -145,6 +145,16 @@ public class SensingPrims {
    private function primBrightRobot(b:Block):int {
       var a:String = interp.arg(b, 0);
 
+
+      //trace("SUKA=" + b.args[1].argValue);
+
+      //b.args[1].argValue = 0;
+
+      b.base.setColor(app.runtime.analogsRobotExtended[0][0] * 65536 + app.runtime.analogsRobotExtended[0][1] * 256 + app.runtime.analogsRobotExtended[0][2]);
+      b.base.redraw();
+
+
+
       if(a == 'R'){
          return app.runtime.analogsRobotExtended[0][0];
       }
@@ -159,9 +169,6 @@ public class SensingPrims {
       }
 
       return 0;
-
-//      var c:int = a.charCodeAt(a.length - 1) - 48;
-//      return app.runtime.analogsRobot[c];
    }
 
 
