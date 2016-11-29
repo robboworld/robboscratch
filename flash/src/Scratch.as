@@ -591,18 +591,27 @@ public class Scratch extends Sprite {
        }
 
 
+       //0 0
+       //1 1-2-3-4
+       //2 5-6-7-8
+       //3 9-10-11-12
+       //4 13-14-15-16
+       //5 17-18-19-20
+       //6 21-22-23-24
 
 
-       labLight  = int((data[5] / 1023) * 100);
+
+
+       labLight  = int(((data[19]*256 + data[20]) / 1023) * 100);
        labLight  = 1.34 * labLight;
        if(labLight > 100){
           labLight = 100;
        }
 
 
-       labSound  = int((data[4] / 1023) * 100);
+       labSound  = int(((data[15]*256 + data[16]) / 1023) * 100);
 
-       labSlider = 1.34 * Math.abs(75 - int((data[3] / 1023) * 100));
+       labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
        if(labSlider > 100){
           labSlider = 100;
        }
@@ -613,13 +622,12 @@ public class Scratch extends Sprite {
        setAnalogTextLab(7, "" + labSlider);
 
 
-       labAnalogRaw[0] = data[1];
-       labAnalogRaw[1] = data[2];
-       labAnalogRaw[2] = data[3];
-       labAnalogRaw[3] = data[4];
-       labAnalogRaw[4] = data[5];
-       labAnalogRaw[5] = data[6];
-
+       labAnalogRaw[0] = data[3]*256 + data[4];
+       labAnalogRaw[1] = data[7]*256 + data[8];
+       labAnalogRaw[2] = data[11]*256 + data[12];
+       labAnalogRaw[3] = data[15]*256 + data[16];
+       labAnalogRaw[4] = data[19]*256 + data[20];
+       labAnalogRaw[5] = data[23]*256 + data[24];
 
 
 /*

@@ -868,7 +868,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             }
 */
 
-            for (var i:int = 0; i < 10; i++){
+            for (var i:int = 0; i < loader2.data.length; i++){
                analogsRobot[i] = loader2.data[i];
             }
 
@@ -890,7 +890,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 //            var tempArray:Array=loader2.data.split("\n");
 
             iCounterResponseLab++;
-            trace(getTime() + " [" + iCounterResponseLab + "] INCOMING LAB:\n" + loader2.data);
+            trace(getTime() + " [" + iCounterResponseLab + "] INCOMING LAB:\n" + fromHexArray(loader2.data, true));
 
 /*
             if(tempArray.length == 8){
@@ -907,7 +907,12 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                onDataReceiveLab([]);
             }
 */
-            onDataReceiveLab(loader2.data);
+
+            for (var i:int = 0; i < loader2.data.length; i++){
+               analogsLab[i] = loader2.data[i];
+            }
+
+            onDataReceiveLab(analogsLab);
 
             //trace(tempArray);
          }
