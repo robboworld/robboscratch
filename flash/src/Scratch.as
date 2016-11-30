@@ -405,11 +405,12 @@ public class Scratch extends Sprite {
 
 
 
-        //4-5-6-7
-        //8-9-10-11
-        //12-13-14-15
-        //16-17-18-19
-        //20-21-22-23
+        //1 4-5-6-7
+        //2 8-9-10-11
+        //3 12-13-14-15
+        //4 16-17-18-19
+        //5 20-21-22-23
+        //B 24
 
         var sensor1:int = data[7];
         var sensorExtended1:Array = [data[4], data[5], data[6], data[7]];
@@ -486,7 +487,7 @@ public class Scratch extends Sprite {
         }
 
 
-        var startButton:int = data[25];
+        var startButton:int = data[24];
 
 
 
@@ -495,8 +496,8 @@ public class Scratch extends Sprite {
            scratchBoardPart.setAnalogText(7, Translator.map("true"));
         }
         else{
-           scratchBoardPart.setAnalogText(7, Translator.map("false"));
            robotStartButton = false;
+           scratchBoardPart.setAnalogText(7, Translator.map("false"));
         }
 
 
