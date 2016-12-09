@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "00005"
+#define FIRMWARE_VERSION "00006"
 
 
 #include <EEPROM.h>
@@ -231,15 +231,27 @@ void parseSerialNumber(){
     }
 
 
-   if(strcmp(chararrModel, "R") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=0;
-   }
-   else if(strcmp(chararrModel, "L") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=1;
-   }
-   else{
-      MODEL_ID=0;
-   }
+    if(strcmp(chararrModel, "R") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0)){
+
+       MODEL_ID=0;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && strcmp(chararrPart, "1") == 0){
+
+       MODEL_ID=1;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "3") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0)){
+
+       MODEL_ID=2;
+    }
+    else{
+       MODEL_ID=9999;
+    }
 }
 
 
@@ -308,15 +320,35 @@ void printSensors(){
     int sensorValue;
 
     sensorValue = int(analogRead(A1) / 1023.0 * 100);
+    Serial.write(0x00);
+    Serial.write(0x00);
+    Serial.write(0x00);
     Serial.write(sensorValue);
+
     sensorValue = int(analogRead(A2) / 1023.0 * 100);
+    Serial.write(0x00);
+    Serial.write(0x00);
+    Serial.write(0x00);
     Serial.write(sensorValue);
+
     sensorValue = int(analogRead(A3) / 1023.0 * 100);
+    Serial.write(0x00);
+    Serial.write(0x00);
+    Serial.write(0x00);
     Serial.write(sensorValue);
+
     sensorValue = int(analogRead(A4) / 1023.0 * 100);
+    Serial.write(0x00);
+    Serial.write(0x00);
+    Serial.write(0x00);
     Serial.write(sensorValue);
+
     sensorValue = int(analogRead(A5) / 1023.0 * 100);
+    Serial.write(0x00);
+    Serial.write(0x00);
+    Serial.write(0x00);
     Serial.write(sensorValue);
+
     sensorValue = int(analogRead(A0) / 1023.0 * 100);
     Serial.write(sensorValue);
 

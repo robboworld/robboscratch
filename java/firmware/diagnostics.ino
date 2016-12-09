@@ -22,7 +22,7 @@ void parseSerialNumber(){
       iPointer++;
     }
     iPointer++;
-    
+
     int iModelOffset = 0;
     while(chararrSerialRaw[iPointer] != '-'){
       chararrModel[iModelOffset] = chararrSerialRaw[iPointer];
@@ -30,14 +30,14 @@ void parseSerialNumber(){
       iPointer++;
     }
     iPointer++;
-    
+
     int iVersionOffset = 0;
     while(chararrSerialRaw[iPointer] != '-'){
       chararrVersion[iVersionOffset] = chararrSerialRaw[iPointer];
       iVersionOffset++;
       iPointer++;
     }
-    
+
     iPointer++;
 
     int iPartOffset = 0;
@@ -46,7 +46,7 @@ void parseSerialNumber(){
       iPartOffset++;
       iPointer++;
     }
-    
+
     iPointer++;
 
 
@@ -56,17 +56,30 @@ void parseSerialNumber(){
       iSerialOffset++;
       iPointer++;
     }
-    
-    
-   if(strcmp(chararrModel, "R") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=0;
-   }
-   else if(strcmp(chararrModel, "L") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=1;
-   }
-   else{
-      MODEL_ID=0;
-   }    
+
+
+    if(strcmp(chararrModel, "R") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0)){
+
+       MODEL_ID=0;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && strcmp(chararrPart, "1") == 0){
+
+       MODEL_ID=1;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "3") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0)){
+
+       MODEL_ID=2;
+    }
+    else{
+       MODEL_ID=9999;
+    }
+
 }
 
 
@@ -77,7 +90,7 @@ void parseSerialNumber(){
 
 void setup(){
     parseSerialNumber();
-   
+
     Serial.begin(SERIAL_SPEED);
 }
 
@@ -98,14 +111,14 @@ void loop(){
       Serial.write('0');
       }
       Serial.print(MODEL_ID);
-       
+
       Serial.print(F("-00001-"));
-       
+
       for(int f = strlen(chararrSerial); f < 20; f++){
       Serial.write('0');
       }
       Serial.print(chararrSerial);
-      
+
       delay(1000);
 }
 

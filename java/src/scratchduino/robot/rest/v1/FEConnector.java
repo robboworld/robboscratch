@@ -52,6 +52,37 @@ public class FEConnector{
    }
 
 
+
+   
+   
+   
+   
+   
+   @GET
+   @Path("/txt/list")
+   @Produces("text/plain; charset=UTF-8")
+   public String listTxt() throws Exception{
+      
+      IDeviceLocator locator = ((IDeviceLocator) context.getAttribute("locator"));
+      
+      StringBuffer sb = new StringBuffer();
+      
+      if(locator.getStatus() == IDeviceLocator.STATUS.READY){
+         for(IPort port : locator.getPortList()){
+            if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED){
+               if(sb.length() > 0) sb.append("\n");
+               sb.append(port.getDevice().getType());
+            }
+         }
+      }
+      
+      return sb.toString();
+   }
+   
+   
+   
+   
+   
    
    
    

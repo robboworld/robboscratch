@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "00003"
+#define FIRMWARE_VERSION "00004"
 
 #include <EEPROM.h>
 #include "Arduino.h"
@@ -95,18 +95,27 @@ void parseSerialNumber(){
     }
 
 
-   if(strcmp(chararrModel, "R") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=0;
-   }
-   else if(strcmp(chararrModel, "L") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=1;
-   }
-   else if(strcmp(chararrModel, "L") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "2") == 0){
-      MODEL_ID=3;
-   }
-   else{
-      MODEL_ID=65535;
-   }
+    if(strcmp(chararrModel, "R") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0)){
+
+       MODEL_ID=0;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && strcmp(chararrPart, "1") == 0){
+
+       MODEL_ID=1;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "3") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0)){
+
+       MODEL_ID=2;
+    }
+    else{
+       MODEL_ID=9999;
+    }
 }
 
 
@@ -179,26 +188,38 @@ void printSensors(){
 
 
    unsigned int iValue = int(analogRead(0));
+   Serial.write(0x00);
+   Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
 
    iValue = int(analogRead(1));
+   Serial.write(0x00);
+   Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
 
    iValue = int(analogRead(2));
+   Serial.write(0x00);
+   Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
 
    iValue = soundVolume;
+   Serial.write(0x00);
+   Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
 
    iValue = int(analogRead(4));
+   Serial.write(0x00);
+   Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
 
    iValue = int(analogRead(5));
+   Serial.write(0x00);
+   Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
 }
@@ -240,11 +261,11 @@ void loop(){
                }
                Serial.print(MODEL_ID);
 
-      
+
                Serial.write('-');
                Serial.print(FIRMWARE_VERSION);
                Serial.write('-');
-      
+
 
                for(int f = strlen(chararrSerial); f < 20; f++){
                   Serial.write('0');
@@ -490,7 +511,7 @@ void loop(){
    else{
       double peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
       //No more 0.5, the sound is ok without that
-      //soundVolume = peakToPeak * 0.5;  
+      //soundVolume = peakToPeak * 0.5;
       soundVolume = peakToPeak;
 
       startMillis= millis();  // Start of sample window

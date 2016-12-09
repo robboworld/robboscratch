@@ -226,6 +226,11 @@ public class Scratch extends Sprite {
 
 
 
+    public var labVersion:int = 1;
+
+
+
+
     /* Default directory for projects */
     TARGET::android {
         private static const scratchProjectsDirectory:File = File.userDirectory.resolvePath("scratch-projects");
@@ -328,7 +333,7 @@ public class Scratch extends Sprite {
         }
 
         TARGET::desktop {
-            robotCommunicator = new DesktopRobotCommunicator(settingsDefaultMotorSpeed, refreshAnalogsRobot, refreshAnalogsLab);
+            robotCommunicator = new DesktopRobotCommunicator(this, settingsDefaultMotorSpeed, refreshAnalogsRobot, refreshAnalogsLab);
         }
 
         //Analyze.collectAssets(0, 119110);
@@ -612,7 +617,15 @@ public class Scratch extends Sprite {
 
        labSound  = int(((data[15]*256 + data[16]) / 1023) * 100);
 
-       labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
+
+       trace("PIZDA=" + app.labVersion);
+
+       if(labVersion == 1){
+          labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
+       }
+       else if(labVersion == 2){
+          labSlider = int( 2.5 * ((data[11]*256 + data[12]) / 1023) * 100);
+       }
        if(labSlider > 100){
           labSlider = 100;
        }

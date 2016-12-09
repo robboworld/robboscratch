@@ -68,8 +68,13 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
     private var settingsDefaultMotorSpeed:int;
 
 
-    public function DesktopRobotCommunicator(settingsDefaultMotorSpeed:int, onDataReceiveRobot:Function, onDataReceiveLab:Function) {
+    private var app:Scratch;
+
+
+
+    public function DesktopRobotCommunicator(app:Scratch, settingsDefaultMotorSpeed:int, onDataReceiveRobot:Function, onDataReceiveLab:Function) {
         trace("Desktop Connector created");
+        this.app = app;
         this.settingsDefaultMotorSpeed = settingsDefaultMotorSpeed;
         this._speedLeft  = settingsDefaultMotorSpeed;
         this._speedRight = settingsDefaultMotorSpeed;
@@ -742,7 +747,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
     public function sendCommandLab():void{
-       var baseURL:String = "http://127.0.0.1:9876/bin/def/1/";
+       var baseURL:String = "http://127.0.0.1:9876/bin/def/" + app.labVersion + "/";
        var command:String;
 
          if(interfaceBusyLab){
@@ -908,11 +913,28 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             }
 */
 
-            for (var i:int = 0; i < loader2.data.length; i++){
-               analogsLab[i] = loader2.data[i];
-            }
 
-            onDataReceiveLab(analogsLab);
+            trace("ZZZ=" + loader2.data.length);
+
+
+            if(loader2.data.length == 0){
+               onDataReceiveLab([]);
+
+               if(app.labVersion == 1){
+                  app.labVersion = 2;
+               }
+               else if(app.labVersion == 2){
+                  app.labVersion = 1;
+               }
+
+               trace("GGG=" + app.labVersion);
+            }
+            else{
+               for (var i:int = 0; i < loader2.data.length; i++){
+                  analogsLab[i] = loader2.data[i];
+               }
+               onDataReceiveLab(analogsLab);
+            }
 
             //trace(tempArray);
          }

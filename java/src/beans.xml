@@ -30,7 +30,7 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
 
                   <!-- Latest avaialble firmware version -->
-                  <constructor-arg value="5"/>
+                  <constructor-arg value="6"/>
 
                   <constructor-arg>
                      <map>
@@ -125,6 +125,61 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                   </constructor-arg>
                </bean>
             </entry>
+            <entry key="2">
+               <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+
+                  <!-- Latest avaialble firmware version -->
+                  <constructor-arg value="1"/>
+
+                  <constructor-arg>
+                     <map>
+                        <entry key="lab_check">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_check.xml" />
+                           </bean>
+                        </entry>
+
+
+                        <entry key="lab_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_lamps.xml" />
+                           </bean>
+                        </entry>
+
+
+                        <entry key="lab_color_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_color_lamps.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_sound">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_sound.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_on">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_on.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_off">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_off.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_pwm">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_pwm.xml" />
+                           </bean>
+                        </entry>
+                     </map>
+                  </constructor-arg>
+               </bean>
+            </entry>
          </map>
       </constructor-arg>
    </bean>
@@ -160,16 +215,16 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
       <constructor-arg ref="devices"/>
    </bean>
 
-<!--
    <bean id="flash" class="scratchduino.robot.Flash" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
    </bean>
--->
 
+<!--
    <bean id="flash" class="scratchduino.robot.FlashNoGUI" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
    </bean>
+-->
 
 </beans>
