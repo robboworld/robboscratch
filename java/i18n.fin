@@ -14,7 +14,7 @@ port_state_init=Muodostetaan yhteyttä...
 port_state_opened=Yhteys muodostettu...
 port_state_data_sent=Komento lähetetty
 port_state_analizing_response=Luetaan vastausta
-port_state_robot_ok=%d%s found.    Firmware=%f
+port_state_robot_ok=%s found.    Firmware=%f
 port_state_timeout=Ei vastausta!
 port_state_unknown_device=Tuntematon laite!
 port_state_wrong_version=Väärä firmware-versio! %d Firmware=%f
@@ -58,5 +58,3 @@ dialog_save_button_file_type=Tiedostomuoto
 dialog_save_button_file_name=Tiedostonimi
 dialog_save_confirm_file_exists=Kansio on jo olemassa. Haluatko korvata kansion uudella?
 
-device0=ROB-R-1-1-
-device1=ROB-L-1-1-

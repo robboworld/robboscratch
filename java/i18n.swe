@@ -11,7 +11,7 @@ port_state_init=Initiering...
 port_state_opened=Port öppnad...
 port_state_data_sent=Kommandot skickat!
 port_state_analizing_response=Analyserar svaret
-port_state_robot_ok=%d%s hittad. Programvara=%f
+port_state_robot_ok=%s hittad. Programvara=%f
 port_state_timeout=Inget svar!
 port_state_unknown_device=Okänd enhet!
 port_state_wrong_version=Fel programvaruversion! %d Programvara=%f
@@ -52,6 +52,3 @@ dialog_save_confirm_file_exists=Filen existerar. Vill du ersätta filen?
 
 
 
-
-device0=ROB-R-1-1-
-device1=ROB-L-1-1-

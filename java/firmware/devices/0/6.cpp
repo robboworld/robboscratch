@@ -3,8 +3,6 @@
 
 #include <EEPROM.h>
 #include "Arduino.h"
-#include <Servo.h>
-Servo myservo;
 
 #define SERIAL_SPEED 115200
 #define SERIAL_ADDRESS 0
@@ -416,11 +414,34 @@ void loop(){
                }
                Serial.print(MODEL_ID);
 
-               Serial.write('-');
-               Serial.print(FIRMWARE_VERSION);
-               Serial.write('-');
 
 
+               Serial.write('-');
+               Serial.print(F(FIRMWARE_VERSION));
+
+
+               Serial.print(F("-R"));
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrVersion); f < 5; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrVersion);
+
+
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrPart); f < 5; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrPart);
+
+
+
+
+               Serial.print('-');
                for(int f = strlen(chararrSerial); f < 20; f++){
                   Serial.write('0');
                }

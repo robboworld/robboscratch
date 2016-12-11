@@ -914,9 +914,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 */
 
 
-            trace("ZZZ=" + loader2.data.length);
-
-
             if(loader2.data.length == 0){
                onDataReceiveLab([]);
 
@@ -927,7 +924,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                   app.labVersion = 1;
                }
 
-               trace("GGG=" + app.labVersion);
+               trace("LAB VERSION=" + app.labVersion);
             }
             else{
                for (var i:int = 0; i < loader2.data.length; i++){
@@ -974,20 +971,17 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
        }
 
 
-                public static function fromHexArray(array:ByteArray, colons:Boolean=false):String {
-                        var s:String = "";
-                        for (var i:uint=0;i<array.length;i++) {
-                                s+=("0"+array[i].toString(16)).substr(-2,2);
-                                if (colons) {
-                                        if (i<array.length-1) s+=":";
-                                }
-                        }
-                        return s;
-                }
+      public static function fromHexArray(array:ByteArray, colons:Boolean=false):String {
+         var s:String = "";
 
-
-
-
+         for (var i:uint=0; i<array.length; i++) {
+            s += ("0"+array[i].toString(16)).substr(-2,2);
+            if (colons) {
+               if (i<array.length-1) s+=":";
+            }
+         }
+         return s;
+      }
    }
 }
 

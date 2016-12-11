@@ -522,7 +522,7 @@ public class Scratch extends Sprite {
 
 
     public function refreshAnalogsLab(data:Array):void {
-        trace("refreshAnalogsLab() " + data.length);
+        trace("refreshAnalogsRobot() " + data.length + " data=" + data);
 
         if(data.length == 0){
            for(var f:int = 0; f < 8; f++){
@@ -618,13 +618,13 @@ public class Scratch extends Sprite {
        labSound  = int(((data[15]*256 + data[16]) / 1023) * 100);
 
 
-       trace("PIZDA=" + app.labVersion);
+       trace("LAB VERSION=" + app.labVersion);
 
        if(labVersion == 1){
           labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
        }
        else if(labVersion == 2){
-          labSlider = int( 2.5 * ((data[11]*256 + data[12]) / 1023) * 100);
+          labSlider = int( 2.5 * ((data[3]*256 + data[4]) / 1023) * 100);
        }
        if(labSlider > 100){
           labSlider = 100;

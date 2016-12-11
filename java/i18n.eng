@@ -14,7 +14,7 @@ port_state_init=Initialization...
 port_state_opened=Port opened...
 port_state_data_sent=Command send!
 port_state_analizing_response=Parsing answer
-port_state_robot_ok=%d%s found.    Firmware=%f
+port_state_robot_ok=%s found.    Firmware=%f
 port_state_timeout=No answer!
 port_state_unknown_device=Unknown Device!
 port_state_wrong_version=Bad firmware version! %d Firmware=%f
@@ -59,8 +59,4 @@ dialog_save_button_file_type=File type
 dialog_save_button_file_name=File name
 dialog_save_confirm_file_exists=File exists. Overwrite?
 
-
-
-device0=ROB-R-1-1-
-device1=ROB-L-1-1-
 
