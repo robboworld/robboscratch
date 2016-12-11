@@ -188,7 +188,13 @@ public class FEConnector{
                         Object value = reponse.getParsedValues().get(sKey);
                         
                         if(value instanceof byte[]) {
-                           sb.append(Arrays.toString((byte[]) value) + "\n");
+                           StringBuffer sbArray = new StringBuffer();
+                           for(byte element : (byte[]) value){
+                              if(sbArray.length() > 0) sbArray.append(",");
+                              sbArray.append((int) element & 0xff);
+                           }
+                           sbArray.append("\n");
+                           sb.append(sbArray);
                         }
                         else {
                            sb.append(reponse.getParsedValues().get(sKey) + "\n");
