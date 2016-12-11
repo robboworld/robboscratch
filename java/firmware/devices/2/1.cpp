@@ -245,7 +245,6 @@ void loop(){
       if(commandState== COMMAND_STATE_WAITING_COMMAND){
          switch(b){
             case ' ':{
-
                Serial.print(F("ROBBO-"));
                if(MODEL_ID < 10000){
                   Serial.write('0');
@@ -262,11 +261,33 @@ void loop(){
                Serial.print(MODEL_ID);
 
 
+
                Serial.write('-');
-               Serial.print(FIRMWARE_VERSION);
-               Serial.write('-');
+               Serial.print(F(FIRMWARE_VERSION));
 
 
+               Serial.print(F("-R"));
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrVersion); f < 5; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrVersion);
+
+
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrPart); f < 5; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrPart);
+
+
+
+
+               Serial.print('-');
                for(int f = strlen(chararrSerial); f < 20; f++){
                   Serial.write('0');
                }

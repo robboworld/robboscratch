@@ -627,8 +627,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
    
    private String format_id_string(String str, IConnectedDevice device){
       try{
-         return str.replaceAll("%d", ControlPanel.this.config.i18n("device" + device.getType()))
-                   .replaceAll("%s", "" + device.getSerial())
+         return str.replaceAll("%s", "" + device.getSerialCompacted())
                    .replaceAll("%f", String.format("%04d", device.getFirmwareVersion()));
       }
       catch (Exception e){

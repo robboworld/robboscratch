@@ -208,7 +208,7 @@ public class Port implements IPort{
                   
                   log.debug(LOG + Port.this.portName + "=" + data);
                   
-                  if(sb.length() == (38 * (Port.this.internalTestID + 1))){
+                  if(sb.length() == (52 * (Port.this.internalTestID + 1))){
                      //we need THE EXACT acount of bytes
                      //due to false alarms
 
@@ -217,12 +217,12 @@ public class Port implements IPort{
 
                      int iDeviceType   = Integer.parseInt(sb.substring(6,11));
                      int iFirmware     = Integer.parseInt(sb.substring(12,17));
-                     int iSerialNumber = Integer.parseInt(sb.substring(18,38));
+                     String sSerialNumber = sb.substring(18, 52);
 
 
-                     log.info(LOG + "DEVICE=" + iDeviceType + " VERSION=" + iFirmware + " SERIAL=" + iSerialNumber);
+                     log.info(LOG + "DEVICE=" + iDeviceType + " VERSION=" + iFirmware + " SERIAL=" + sSerialNumber);
 
-                     Port.this.device = new ConnectedDevice(iDeviceType, iFirmware, iSerialNumber);
+                     Port.this.device = new ConnectedDevice(iDeviceType, iFirmware, sSerialNumber);
 
                      if(iFirmware >= locator.getDevices().getDevice(iDeviceType).getFirmware()){
                         synchronized (Port.this){

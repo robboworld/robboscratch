@@ -112,10 +112,36 @@ void loop(){
       }
       Serial.print(MODEL_ID);
 
-      Serial.print(F("-00001-"));
 
+
+      Serial.write('-');
+      Serial.print(F("00001"));
+
+
+      Serial.print(F("-R"));
+
+
+      Serial.print('-');
+      for(int f = strlen(chararrVersion); f < 5; f++){
+         Serial.write('0');
+      }
+      Serial.print(chararrVersion);
+
+
+
+
+      Serial.print('-');
+      for(int f = strlen(chararrPart); f < 5; f++){
+         Serial.write('0');
+      }
+      Serial.print(chararrPart);
+
+
+
+
+      Serial.print('-');
       for(int f = strlen(chararrSerial); f < 20; f++){
-      Serial.write('0');
+         Serial.write('0');
       }
       Serial.print(chararrSerial);
 
