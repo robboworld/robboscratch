@@ -604,6 +604,7 @@ public class Scratch extends Sprite {
        //4 13-14-15-16
        //5 17-18-19-20
        //6 21-22-23-24
+       //7 25-26-27-28
 
 
 
@@ -624,7 +625,7 @@ public class Scratch extends Sprite {
           labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
        }
        else if(labVersion == 2){
-          labSlider = int( 2.5 * ((data[3]*256 + data[4]) / 1023) * 100);
+          labSlider = int(((data[27]*256 + data[28]) / 1023) * 100);
        }
        if(labSlider > 100){
           labSlider = 100;
