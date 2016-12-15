@@ -625,7 +625,7 @@ public class Scratch extends Sprite {
           labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
        }
        else if(labVersion == 2){
-          labSlider = int(((data[27]*256 + data[28]) / 1023) * 100);
+          labSlider = Math.abs(100 - int(((data[3]*256 + data[4]) / 1023) * 100));
        }
        if(labSlider > 100){
           labSlider = 100;
