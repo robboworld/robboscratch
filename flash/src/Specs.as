@@ -170,7 +170,7 @@ public class Specs {
 
       ["Robot %m.analogRobot",                             "r", 13, "sensorRobot",          "sensor 1"],
 //      ["Robot Bright Sensor %m.brightRobot %c",            "r", 13, "brightRobot",          "R"],
-      ["Robot Bright Sensor %m.brightRobot",               "r", 13, "brightRobot",          "R"],
+//      ["Robot Bright Sensor %m.brightRobot",               "r", 13, "brightRobot",          "R"],
       ["Robot start button pressed?",                      "b", 13, "robotStartButton"],
       ["-"],
 
@@ -215,7 +215,7 @@ public class Specs {
       ["turn Robot led in %m.robotLedMenu off",  " ", 13, "robotLedOff:",          'position 1'],
 
 
-      ["Claw %n degrees",                    " ", 13, "clawDegrees",                      15],
+//      ["Claw %n degrees",                    " ", 13, "clawDegrees",                      15],
       ["-"],
 
 

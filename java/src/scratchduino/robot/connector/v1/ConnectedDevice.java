@@ -26,7 +26,7 @@ public class ConnectedDevice implements IConnectedDevice{
          }
       }
       
-      this.serialCompacted = sb.toString();
+      this.serialCompacted = "ROB-" + sb.toString();
    }
 
 

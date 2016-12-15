@@ -275,7 +275,7 @@ void setup(){
    //Let's set the PWR timer
    bitSet(TCCR1B, WGM12);
 
-   myservo.attach(7);
+//   myservo.attach(7);
 
 
    commandState=COMMAND_STATE_WAITING_COMMAND;
@@ -420,7 +420,8 @@ void loop(){
                Serial.print(F(FIRMWARE_VERSION));
 
 
-               Serial.print(F("-R"));
+               Serial.write('-');
+               Serial.print(chararrModel);
 
 
                Serial.print('-');
@@ -714,7 +715,7 @@ void loop(){
                   break;
                }
                case 'i':{
-                  myservo.write(bytearrayData[0]);
+//                  myservo.write(bytearrayData[0]);
 
                   printSensors();
                   break;

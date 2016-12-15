@@ -266,7 +266,8 @@ void loop(){
                Serial.print(F(FIRMWARE_VERSION));
 
 
-               Serial.print(F("-R"));
+               Serial.write('-');
+               Serial.print(chararrModel);
 
 
                Serial.print('-');

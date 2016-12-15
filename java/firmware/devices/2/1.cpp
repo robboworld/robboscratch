@@ -187,7 +187,7 @@ void printSensors(){
 
 
 
-   unsigned int iValue = int(analogRead(7));
+   unsigned int iValue = int(analogRead(0));
    Serial.write(0x00);
    Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
@@ -218,6 +218,13 @@ void printSensors(){
    Serial.write((byte)(iValue));
 
    iValue = int(analogRead(5));
+   Serial.write(0x00);
+   Serial.write(0x00);
+   Serial.write((byte)(iValue >> 8));
+   Serial.write((byte)(iValue));
+
+
+   iValue = int(analogRead(7));
    Serial.write(0x00);
    Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
@@ -266,7 +273,8 @@ void loop(){
                Serial.print(F(FIRMWARE_VERSION));
 
 
-               Serial.print(F("-R"));
+               Serial.write('-');
+               Serial.print(chararrModel);
 
 
                Serial.print('-');
