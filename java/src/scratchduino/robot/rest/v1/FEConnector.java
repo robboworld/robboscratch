@@ -319,7 +319,6 @@ public class FEConnector{
                   
                   IResponse reponse = command.run(atomlongCID.getAndIncrement(), locator.getPortByName().get(sPortName), listParameters);
 
-                  StringBuilder sb = new StringBuilder();
                   ArrayList<String> arliKeys = new ArrayList<String>(reponse.getParsedValues().keySet());
 
 
@@ -333,8 +332,16 @@ public class FEConnector{
                      if(value instanceof byte[]){
                         baos.write((byte[]) value);
                      }
+                     else if(value instanceof Integer){
+                        Integer valueInteger = (Integer) value;
+                        baos.write((valueInteger >> 8) & 0xFF);
+                        baos.write(valueInteger & 0xFF);
+                     }
+                     else if(value instanceof Byte){
+                        baos.write(new byte[] {(Byte) value});
+                     }
                      else{
-                        baos.write((Integer) reponse.getParsedValues().get(sKey));
+                        throw new Error("Unsupported response format");
                      }
                   }
 

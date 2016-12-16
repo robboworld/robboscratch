@@ -106,8 +106,8 @@ public class Command implements ICommand{
                mapResponse.put(responseValue.name, new Integer(byteunsignedHigh) * 256 + byteunsignedLow);
             }
             else if("unsigned byte".equals(responseValue.type)) {
-               byte byteValue = bbuf.get();
-               mapResponse.put(responseValue.name, new Integer(byteValue));
+               Byte byteValue = bbuf.get();
+               mapResponse.put(responseValue.name, byteValue);
             }
             else if(responseValue.type.startsWith("unsigned byte[")){
                int iPacketLength = Integer.parseInt(responseValue.type.substring(14).replaceAll("]", ""));

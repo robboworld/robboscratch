@@ -370,23 +370,27 @@ public class Scratch extends Sprite {
 
 
 
-        stepsLeft  = data[0];
-        stepsRight = data[1];
+        stepsLeft  = data[0] * 256 + data[1];
+        stepsRight = data[2] * 256 + data[3];
 
 
-        var encoderLeft:int  = data[0];
-        var encoderRight:int = data[1];
+        var encoderLeft:int  = data[0] * 256 + data[1];
+        var encoderRight:int = data[2] * 256 + data[3];
 
-        if (data[2] < pathLeft){
+
+        var pathNewLeft:int  = data[4] * 256 + data[5];
+        var pathNewRight:int = data[6] * 256 + data[7];
+
+        if (pathNewLeft < pathLeft){
            pathMultiplierLeft++;
         }
-        pathLeft  = data[2];
+        pathLeft  = pathNewLeft;
 
 
-        if (data[3] < pathRight){
+        if (pathNewRight < pathRight){
            pathMultiplierRight++;
         }
-        pathRight = data[3];
+        pathRight = pathNewRight;
 
 
         if(pathLeft == 0 && pathRight == 0){
@@ -410,27 +414,27 @@ public class Scratch extends Sprite {
 
 
 
-        //1 4-5-6-7
-        //2 8-9-10-11
-        //3 12-13-14-15
-        //4 16-17-18-19
-        //5 20-21-22-23
-        //B 24
+        //1 8-9-10-11
+        //2 12-13-14-15
+        //3 16-17-18-19
+        //4 20-21-22-23
+        //5 24-25-26-27
+        //B 28
 
-        var sensor1:int = data[7];
-        var sensorExtended1:Array = [data[4], data[5], data[6], data[7]];
+        var sensor1:int = data[10] * 256 + data[11];
+        var sensorExtended1:Array = [data[8], data[9], data[10], data[11]];
 
-        var sensor2:int = data[11];
-        var sensorExtended2:Array = [data[8], data[9], data[10], data[11]];
+        var sensor2:int = data[14] * 256 + data[15];
+        var sensorExtended2:Array = [data[12], data[13], data[14], data[15]];
 
-        var sensor3:int = data[15];
-        var sensorExtended3:Array = [data[12], data[13], data[14], data[15]];
+        var sensor3:int = data[18] * 256 + data[19];
+        var sensorExtended3:Array = [data[16], data[17], data[18], data[19]];
 
-        var sensor4:int = data[19];
-        var sensorExtended4:Array = [data[16], data[17], data[18], data[19]];
+        var sensor4:int = data[22] * 256 + data[23];
+        var sensorExtended4:Array = [data[20], data[21], data[22], data[23]];
 
-        var sensor5:int = data[23];
-        var sensorExtended5:Array = [data[20], data[21], data[22], data[23]];
+        var sensor5:int = data[26] * 256 + data[27];
+        var sensorExtended5:Array = [data[24], data[25], data[26], data[27]];
 
         if(scratchBoardPart.cbSensor1.state == false){
            runtime.analogsRobot[2] = 0;
@@ -492,7 +496,7 @@ public class Scratch extends Sprite {
         }
 
 
-        var startButton:int = data[24];
+        var startButton:int = data[28];
 
 
 
@@ -522,7 +526,7 @@ public class Scratch extends Sprite {
 
 
     public function refreshAnalogsLab(data:Array):void {
-        trace("refreshAnalogsRobot() " + data.length + " data=" + data);
+        trace("refreshAnalogsLab() " + data.length + " data=" + data);
 
         if(data.length == 0){
            for(var f:int = 0; f < 8; f++){
