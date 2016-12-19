@@ -383,16 +383,6 @@ public class Scratch extends Sprite {
 
 
 
-        if (pathNewLeft < pathLeft){
-           pathMultiplierLeft++;
-        }
-        pathLeft  = pathNewLeft;
-
-
-        if (pathNewRight < pathRight){
-           pathMultiplierRight++;
-        }
-        pathRight = pathNewRight;
 
 
         if(pathLeft == 0 && pathRight == 0){
@@ -400,6 +390,18 @@ public class Scratch extends Sprite {
            pathCorrectionRight = 0;
            pathMultiplierLeft = 0;
            pathMultiplierRight = 0;
+        }
+        else{
+           if(pathNewLeft < pathLeft){
+              pathMultiplierLeft++;
+           }
+           pathLeft  = pathNewLeft;
+
+
+           if(pathNewRight < pathRight){
+              pathMultiplierRight++;
+           }
+           pathRight = pathNewRight;
         }
 
 
