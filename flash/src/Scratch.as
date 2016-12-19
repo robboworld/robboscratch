@@ -385,11 +385,13 @@ public class Scratch extends Sprite {
 
 
 
-        if(pathLeft == 0 && pathRight == 0){
+        if(pathNewLeft == 0 && pathNewRight == 0){
            pathCorrectionLeft  = 0;
            pathCorrectionRight = 0;
            pathMultiplierLeft = 0;
            pathMultiplierRight = 0;
+           pathLeft  = pathNewLeft;
+           pathRight = pathNewRight;
         }
         else{
            if(pathNewLeft < pathLeft){
