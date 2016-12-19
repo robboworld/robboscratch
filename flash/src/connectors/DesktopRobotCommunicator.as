@@ -873,6 +873,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             }
 */
 
+            analogsRobot.splice(0);
             for (var i:int = 0; i < loader2.data.length; i++){
                analogsRobot[i] = loader2.data[i];
             }

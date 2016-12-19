@@ -346,23 +346,33 @@ public class Scratch extends Sprite {
 
 
 
+
+
+
     public function refreshAnalogsRobot(data:Array):void {
         trace("refreshAnalogsRobot() " + data.length + " data=" + data);
 
         if(data.length == 0){
 
-           pathCorrectionLeft  = 0;
-           pathCorrectionRight = 0;
-           pathLeft            = 0;
-           pathRight           = 0;
-           pathMultiplierLeft  = 0;
-           pathMultiplierRight = 0;
-           pathCorrectedLeft   = 0;
-           pathCorrectedRight  = 0;
+
+           if(pathLeft > 0 || pathRight > 0){
+              pathCorrectionLeft  -= pathLeft;
+              pathCorrectionRight -= pathRight;
+
+              pathLeft  = 0;
+              pathRight = 0;
+           }
 
 
-           for(var f:int = 0; f < 8; f++){
-              scratchBoardPart.setAnalogText(f, "-");
+           if(pathCorrectionLeft != 0 || pathCorrectionRight != 0){
+              for(var f:int = 2; f < 8; f++){
+                 scratchBoardPart.setAnalogText(f, "-");
+              }
+           }
+           else{
+              for(var h:int = 0; h < 8; h++){
+                 scratchBoardPart.setAnalogText(h, "-");
+              }
            }
 
            return;
@@ -383,28 +393,16 @@ public class Scratch extends Sprite {
 
 
 
-
-
-        if(pathNewLeft == 0 && pathNewRight == 0){
-           pathCorrectionLeft  = 0;
-           pathCorrectionRight = 0;
-           pathMultiplierLeft = 0;
-           pathMultiplierRight = 0;
-           pathLeft  = pathNewLeft;
-           pathRight = pathNewRight;
+        if(pathNewLeft < pathLeft){
+           pathMultiplierLeft++;
         }
-        else{
-           if(pathNewLeft < pathLeft){
-              pathMultiplierLeft++;
-           }
-           pathLeft  = pathNewLeft;
+        pathLeft  = pathNewLeft;
 
 
-           if(pathNewRight < pathRight){
-              pathMultiplierRight++;
-           }
-           pathRight = pathNewRight;
+        if(pathNewRight < pathRight){
+           pathMultiplierRight++;
         }
+        pathRight = pathNewRight;
 
 
 
