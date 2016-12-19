@@ -382,14 +382,6 @@ public class Scratch extends Sprite {
         var pathNewRight:int = data[6] * 256 + data[7];
 
 
-        if(pathLeft == 0 && pathRight == 0){
-           pathCorrectionLeft  = 0;
-           pathCorrectionRight = 0;
-           pathMultiplierLeft = 0;
-           pathMultiplierRight = 0;
-        }
-
-
 
         if (pathNewLeft < pathLeft){
            pathMultiplierLeft++;
@@ -401,6 +393,15 @@ public class Scratch extends Sprite {
            pathMultiplierRight++;
         }
         pathRight = pathNewRight;
+
+
+        if(pathLeft == 0 && pathRight == 0){
+           pathCorrectionLeft  = 0;
+           pathCorrectionRight = 0;
+           pathMultiplierLeft = 0;
+           pathMultiplierRight = 0;
+        }
+
 
 
         pathCorrectedLeft  = (65536 * pathMultiplierLeft)  + pathLeft  - pathCorrectionLeft;
