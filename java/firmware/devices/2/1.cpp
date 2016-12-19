@@ -187,7 +187,7 @@ void printSensors(){
 
 
 
-   unsigned int iValue = int(analogRead(0));
+   unsigned int iValue = int(analogRead(7));
    Serial.write(0x00);
    Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
@@ -218,13 +218,6 @@ void printSensors(){
    Serial.write((byte)(iValue));
 
    iValue = int(analogRead(5));
-   Serial.write(0x00);
-   Serial.write(0x00);
-   Serial.write((byte)(iValue >> 8));
-   Serial.write((byte)(iValue));
-
-
-   iValue = int(analogRead(7));
    Serial.write(0x00);
    Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));
