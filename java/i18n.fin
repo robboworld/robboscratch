@@ -8,7 +8,7 @@ button_diagnostic=Vianmääritys
 button_exit=Piilota
 tray_menu_exit=Poistu
 
-button_upload_firmware=Päivitä laiteohjelmisto
+button_upload_firmware=Päivitä
 
 port_state_init=Muodostetaan yhteyttä...
 port_state_opened=Yhteys muodostettu...
