@@ -176,7 +176,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
       this.add(lbDeviceList);
       
       pnlComPortList = new JPanel();
-      pnlComPortList.setLayout(new VerticalBagLayout());
+      pnlComPortList.setLayout(new GridBagLayout());
       scrollableList = new JScrollPane(pnlComPortList);
       scrollableList.setBorder(new LineBorder(new Color(150, 150, 150)));
       scrollableList.setBounds(20, 80, 595, 185);

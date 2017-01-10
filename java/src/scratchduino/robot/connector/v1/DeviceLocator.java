@@ -56,6 +56,8 @@ public class DeviceLocator implements IDeviceLocator{
          LogTableFormatter ltf = new LogTableFormatter(1, true);
          int iCounter = 0;
          for(String sPortName : arrPorts){
+            if(config.excludePorts().contains(sPortName.toLowerCase())) continue;
+            
             Port port = new Port(this, sPortName, config, iCounter); 
             
             ltf.addCell(iCounter);

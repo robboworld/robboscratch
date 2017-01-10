@@ -1,11 +1,14 @@
 package scratchduino.robot;
 
+import java.util.*;
+
 
 public interface IConfiguration{
    
    IOS getIOS();
    
    int getPortSpeed();
+   Set<String> excludePorts();
    int getPortInitDelay();
    int getPortCloseDelay();
    public int getDeviceDetectionTime();

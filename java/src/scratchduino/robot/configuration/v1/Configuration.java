@@ -142,6 +142,22 @@ public class Configuration implements IConfiguration{
          }
       }
    }
+   @Override
+   public Set<String> excludePorts(){
+      String KEY = "exclude";
+      String sValue = properties.getProperty(KEY);
+
+      try{
+         Set<String> setPorts = new HashSet<String>();
+         for(String sPort : Arrays.asList(sValue.split(","))){
+            setPorts.add(sPort.trim().toLowerCase());
+         }
+         return setPorts;
+      }
+      catch (Exception e){
+         return Collections.emptySet();
+      }
+   }
 
 
 
