@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.*;
+import javax.swing.table.*;
 import org.apache.commons.logging.*;
 import scratchduino.robot.*;
-import sun.awt.*;
 
 
 
@@ -106,7 +106,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
    private final IConfiguration config;
    private final IFirmware firmware;
    
-   private final JPanel pnlComPortList;
+   private final JTable tblComPortList;
    private final JScrollPane scrollableList;   
    private final JButton btnFind;
    private final JCheckBox cbAutoFind;
@@ -175,9 +175,35 @@ public class ControlPanel extends JFrame implements IControlPanel{
       lbDeviceList.setBounds(20, 60, 595, 20);
       this.add(lbDeviceList);
       
-      pnlComPortList = new JPanel();
-      pnlComPortList.setLayout(new GridBagLayout());
-      scrollableList = new JScrollPane(pnlComPortList);
+
+      String[] columnNames = {"A", "B", "C"};
+      DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames){
+         private static final long serialVersionUID = -8731419365530875480L;
+
+         @Override
+         public boolean isCellEditable(int row, int column) {
+            //all cells false
+            return false;
+         }
+     };      
+      
+      
+      tblComPortList = new JTable(model){
+         private static final long serialVersionUID = 9050870870092600975L;
+
+         public Class<?> getColumnClass(int column){
+            return getValueAt(0, column).getClass();
+         }
+      };
+      tblComPortList.getColumnModel().getColumn(0).setPreferredWidth(0);
+      tblComPortList.getColumnModel().getColumn(1).setPreferredWidth(350);
+      tblComPortList.getColumn("A").setCellRenderer(new LabelRenderer());
+      tblComPortList.getColumn("B").setCellRenderer(new LabelRenderer());
+      tblComPortList.getColumn("C").setCellRenderer(new ButtonRenderer());
+      tblComPortList.setCellSelectionEnabled(false);
+      tblComPortList.setFocusable(false);
+      
+      scrollableList = new JScrollPane(tblComPortList);
       scrollableList.setBorder(new LineBorder(new Color(150, 150, 150)));
       scrollableList.setBounds(20, 80, 595, 185);
       
@@ -396,8 +422,8 @@ public class ControlPanel extends JFrame implements IControlPanel{
          
          SwingUtilities.invokeLater(new Runnable(){
             public void run(){
-               pnlComPortList.removeAll();
-               pnlComPortList.repaint();
+               tblComPortList.removeAll();
+               tblComPortList.repaint();
             }
          });      
          
@@ -418,6 +444,27 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   
                   int iRowCount = 0;
                   for(final IPort port : locator.getPortList()){
+                     
+                     JLabel lbPortName = new JLabel(port.getPortName() + ":");
+                     lbPortName.setPreferredSize(new Dimension(90, 12));
+                     lbPortName.setFont(new Font("Arial", Font.BOLD, 12));
+                     lbPortName.setForeground(new Color(0, 0, 255));
+                     
+                     
+                     JLabel lbPortStatus = mapStatuses.get(port.getPortName());
+                     lbPortStatus.setPreferredSize(new Dimension(350, 16));
+                     lbPortStatus.setFont(new Font("Arial", Font.PLAIN, 11));
+                     lbPortStatus.setForeground(new Color(0, 0, 0));
+                     
+                     
+                     final JButton btnUploadFirmware = new JButton(ControlPanel.this.config.i18n("button_upload_firmware"));
+                     btnUploadFirmware.addActionListener(new ClickFirmwareUpload(port));
+                     mapFirmwareButtons.put(port.getPortName(), btnUploadFirmware);
+                     
+                     //tblComPortList.getColumn("").setCellRenderer(new ButtonRenderer(btnUploadFirmware));      
+                     
+                     
+/*                     
                      final JPanel pnlPort = new JPanel(new FlowLayout(FlowLayout.LEFT));
                      pnlPort.setSize(593, 28);
                      pnlPort.setPreferredSize(new Dimension(593, 28));
@@ -446,6 +493,20 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
                      pnlPort.setBounds(0, iRowCount * 30, 595, 30);
                      pnlComPortList.add(pnlPort);
+*/
+                     
+                     
+                     DefaultTableModel model = (DefaultTableModel) tblComPortList.getModel();
+                     
+                     model.addRow(new Object[]{lbPortName,
+                                               lbPortStatus,
+                                               btnUploadFirmware});
+                     
+                     
+                     tblComPortList.setRowHeight(iRowCount, 22);                   
+                     
+                     
+                     
                      iRowCount++;
                   }
                }
@@ -461,7 +522,11 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
          
          while (ControlPanel.this.locator.getStatus() != IDeviceLocator.STATUS.READY){
+            
+            int iPortNumber = 0;
             for(final IPort port : locator.getPortList()){
+               
+               final int iPortNumber_ = iPortNumber; 
                
                SwingUtilities.invokeLater(new Runnable(){
                   public void run(){
@@ -480,8 +545,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      
                      mapStatuses.get(port.getPortName()).setText(printStatus(port).getText());
                      mapStatuses.get(port.getPortName()).setIcon(printStatus(port).getIcon());
+                     
+                     tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
                   }
                });
+               
+               iPortNumber++;
             }
             
             
@@ -496,7 +565,11 @@ public class ControlPanel extends JFrame implements IControlPanel{
             }
          }
          
+         int iPortNumber = 0;
          for(final IPort port : locator.getPortList()){
+            
+            final int iPortNumber_ = iPortNumber; 
+            
             SwingUtilities.invokeLater(new Runnable(){
                public void run(){
                   if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
@@ -515,8 +588,11 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   
                   mapStatuses.get(port.getPortName()).setText(printStatus(port).getText());
                   mapStatuses.get(port.getPortName()).setIcon(printStatus(port).getIcon());
+                  tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
                }
             });
+            
+            iPortNumber++;
          }
 
          SwingUtilities.invokeLater(new Runnable(){
@@ -538,7 +614,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
    }
    
    
-   protected JLabel printStatus(IPort port){
+   protected JLabel printStatus(IPort port){      
       switch (port.getStatus()){
          case INIT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_init"));
@@ -619,6 +695,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
       JLabel lb = new JLabel("---");
       lb.setIcon(iconYellow);
       trayIcon.setImage(iconYellow.getImage());
+
       return lb;
    }
    
@@ -934,7 +1011,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             btnFind.setText(sMessage);
             btnFind.setIcon(iconWating);
             
-            for(Component component : pnlComPortList.getComponents()){
+            for(Component component : tblComPortList.getComponents()){
                component.setEnabled(false);
                
                if(component instanceof JPanel){
@@ -958,7 +1035,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             btnFind.setText(config.i18n("button_search"));
             btnFind.setIcon(null);
             
-            for(Component component : pnlComPortList.getComponents()){
+            for(Component component : tblComPortList.getComponents()){
                component.setEnabled(true);
                
                if(component instanceof JPanel){
@@ -1332,13 +1409,37 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
    
    
-   class MyFileChooser extends JFileChooser {
+   class MyFileChooser extends JFileChooser{
       private static final long serialVersionUID = 7051835330389929338L;
 
-      protected JDialog createDialog(Component parent) throws HeadlessException {
-          JDialog dialog = super.createDialog(parent);
-          dialog.setAlwaysOnTop(true);
-          return dialog;
-}
-  }   
+      protected JDialog createDialog(Component parent) throws HeadlessException{
+         JDialog dialog = super.createDialog(parent);
+         dialog.setAlwaysOnTop(true);
+         return dialog;
+      }
+   }
+
+   
+   
+   
+   class LabelRenderer implements TableCellRenderer{
+
+      public LabelRenderer(){
+      }
+
+
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
+         return (Component) value;
+      }
+   }
+   
+   
+   
+   
+   
+   class ButtonRenderer implements TableCellRenderer{
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
+         return (Component) value;
+      }
+   }
 }
