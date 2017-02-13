@@ -38,7 +38,7 @@ package ui.parts{
       private const TEXT_DATA_X:int = TEXT_TITLE_X + TEXT_TITLE_WIDTH;        // x-coordinate of labels for sensors' data
                                                  // maybe you need to change it if add new titles in @TITLES
       private const TEXT_Y:int = 32;
-      private const TEXT_VERTICAL_STEP:int = 15;
+      private const TEXT_VERTICAL_STEP:int = 17;
 
       private const TEXT_TITLE_X_LARGE_STAGE:int = TEXT_DATA_X;
       private const TEXT_DATA_X_LARGE_STAGE:int = 5 + TEXT_TITLE_X_LARGE_STAGE + TEXT_TITLE_WIDTH;
@@ -49,11 +49,11 @@ package ui.parts{
       private var titleLabels:Array;
       private var dataLabels:Array;
 
-      public var cbSensor1:CheckBox = new CheckBox();
-      public var cbSensor2:CheckBox = new CheckBox();
-      public var cbSensor3:CheckBox = new CheckBox();
-      public var cbSensor4:CheckBox = new CheckBox();
-      public var cbSensor5:CheckBox = new CheckBox();
+      public var cbSensor1:DeviceSelector = new DeviceSelector(0);
+      public var cbSensor2:DeviceSelector = new DeviceSelector(0);
+      public var cbSensor3:DeviceSelector = new DeviceSelector(0);
+      public var cbSensor4:DeviceSelector = new DeviceSelector(0);
+      public var cbSensor5:DeviceSelector = new DeviceSelector(0);
 
 
       public function ScratchBoardPart(app:Scratch) {
@@ -83,16 +83,16 @@ package ui.parts{
          cbSensor1.y = 65;
          addChild(cbSensor1);
          cbSensor2.x = 102;
-         cbSensor2.y = 80;
+         cbSensor2.y = 82;
          addChild(cbSensor2);
          cbSensor3.x = 102;
-         cbSensor3.y = 95;
+         cbSensor3.y = 99;
          addChild(cbSensor3);
          cbSensor4.x = 102;
-         cbSensor4.y = 110;
+         cbSensor4.y = 116;
          addChild(cbSensor4);
          cbSensor5.x = 102;
-         cbSensor5.y = 125;
+         cbSensor5.y = 133;
          addChild(cbSensor5);
       }
 

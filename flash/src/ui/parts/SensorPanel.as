@@ -3,12 +3,11 @@ package ui.parts{
         import flash.display.Sprite;
         import flash.events.MouseEvent;
 
-
-        public class CheckBox extends Sprite {
+        public class SensorPanel extends Sprite {
                 public var state:Boolean = true;
                 private var _mark:Shape;
 
-                public function CheckBox() {
+                public function SensorPanel() {
                         this.graphics.beginFill(0xcccccc, 1);
                         this.graphics.drawRect(0, 0, 11, 11);
                         this.graphics.endFill();
@@ -26,7 +25,6 @@ package ui.parts{
                 }
 
                 private function turn(e:MouseEvent):void {
-
                         if (state) {
                                 turnOff();
                         }else {

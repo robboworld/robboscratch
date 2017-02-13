@@ -35,7 +35,7 @@ package ui.parts {
       private const TEXT_DATA_X:int = TEXT_TITLE_X + TEXT_TITLE_WIDTH;        // x-coordinate of labels for sensors' data
                                                  // maybe you need to change it if add new titles in @TITLES
       private const TEXT_Y:int = 32;
-      private const TEXT_VERTICAL_STEP:int = 15;
+      private const TEXT_VERTICAL_STEP:int = 17;
 
       private const TEXT_TITLE_X_LARGE_STAGE:int = TEXT_DATA_X;
       private const TEXT_DATA_X_LARGE_STAGE:int = 5 + TEXT_TITLE_X_LARGE_STAGE + TEXT_TITLE_WIDTH;

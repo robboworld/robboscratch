@@ -443,7 +443,7 @@ public class Scratch extends Sprite {
         var sensor5:int = data[26] * 256 + data[27];
         var sensorExtended5:Array = [data[24], data[25], data[26], data[27]];
 
-        if(scratchBoardPart.cbSensor1.state == false){
+        if(scratchBoardPart.cbSensor1.sensor == 0){
            runtime.analogsRobot[2] = 0;
            runtime.analogsRobotExtended[0] = [0,0,0,0];
            setAnalogTextRobot(2, "0");
@@ -454,7 +454,7 @@ public class Scratch extends Sprite {
            setAnalogTextRobot(2, "" + sensor1);
         }
 
-        if(scratchBoardPart.cbSensor2.state == false){
+        if(scratchBoardPart.cbSensor2.sensor == 0){
            runtime.analogsRobot[3] = 0;
            runtime.analogsRobotExtended[1] = [0,0,0,0];
            setAnalogTextRobot(3, "0");
@@ -466,7 +466,7 @@ public class Scratch extends Sprite {
         }
 
 
-        if(scratchBoardPart.cbSensor3.state == false){
+        if(scratchBoardPart.cbSensor3.sensor == 0){
            runtime.analogsRobot[4] = 0;
            runtime.analogsRobotExtended[2] = [0,0,0,0];
            setAnalogTextRobot(4, "0");
@@ -478,7 +478,7 @@ public class Scratch extends Sprite {
         }
 
 
-        if(scratchBoardPart.cbSensor4.state == false){
+        if(scratchBoardPart.cbSensor4.sensor == 0){
            runtime.analogsRobot[5] = 0;
            runtime.analogsRobotExtended[3] = [0,0,0,0];
            setAnalogTextRobot(5, "0");
@@ -491,7 +491,7 @@ public class Scratch extends Sprite {
 
 
 
-        if(scratchBoardPart.cbSensor5.state == false){
+        if(scratchBoardPart.cbSensor5.sensor == 0){
            runtime.analogsRobot[6] = 0;
            runtime.analogsRobotExtended[4] = [0,0,0,0];
            setAnalogTextRobot(6, "0");
@@ -1250,11 +1250,11 @@ public class Scratch extends Sprite {
 
       scratchBoardPart.x = stagePart.x;
       scratchBoardPart.y = stagePart.bottom() + 18; // + 18
-      scratchBoardPart.setWidthHeight(115, 158);
+      scratchBoardPart.setWidthHeight(123, 166);
 
-      scratchLabPart.x = stagePart.x + 122;
+      scratchLabPart.x = stagePart.x + 127;
       scratchLabPart.y = stagePart.bottom() + 18; // + 18
-      scratchLabPart.setWidthHeight(115, 158);
+      scratchLabPart.setWidthHeight(115, 166);
 
 
       libraryPart.x = scratchBoardPart.x;
