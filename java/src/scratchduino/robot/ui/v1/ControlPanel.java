@@ -176,13 +176,15 @@ public class ControlPanel extends JFrame implements IControlPanel{
       this.add(lbDeviceList);
       
 
-      String[] columnNames = {"A", "B", "C"};
+      String[] columnNames = {" ", "  ", "   "};
       DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames){
          private static final long serialVersionUID = -8731419365530875480L;
 
          @Override
          public boolean isCellEditable(int row, int column) {
-            //all cells false
+            if(column == 2){
+               return true;
+            }
             return false;
          }
      };      
@@ -197,11 +199,18 @@ public class ControlPanel extends JFrame implements IControlPanel{
       };
       tblComPortList.getColumnModel().getColumn(0).setPreferredWidth(0);
       tblComPortList.getColumnModel().getColumn(1).setPreferredWidth(350);
-      tblComPortList.getColumn("A").setCellRenderer(new LabelRenderer());
-      tblComPortList.getColumn("B").setCellRenderer(new LabelRenderer());
-      tblComPortList.getColumn("C").setCellRenderer(new ButtonRenderer());
+      tblComPortList.getColumn(" ").setCellRenderer(new LabelRenderer());
+      tblComPortList.getColumn("  ").setCellRenderer(new LabelRenderer());
+      tblComPortList.getColumn("   ").setCellRenderer(new ButtonRenderer());
+      
+      tblComPortList.getColumnModel().getColumn(2).setCellEditor(new ClientsTableRenderer(new JCheckBox()));
+      
+      
       tblComPortList.setCellSelectionEnabled(false);
       tblComPortList.setFocusable(false);
+      tblComPortList.setBackground(new Color(232, 233, 237));
+      tblComPortList.setGridColor(new Color(232, 233, 237));
+      
       
       scrollableList = new JScrollPane(tblComPortList);
       scrollableList.setBorder(new LineBorder(new Color(150, 150, 150)));
@@ -418,6 +427,8 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
          mapStatuses.clear();
          mapFirmwareButtons.clear();
+         DefaultTableModel model = (DefaultTableModel) tblComPortList.getModel();         
+         model.setRowCount(0);
          
          
          SwingUtilities.invokeLater(new Runnable(){
@@ -899,8 +910,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
       private int pointerPad = 4;
       RenderingHints hints;
 
-      TextBubbleBorder(
-              Color color) {
+      TextBubbleBorder(Color color){
           new TextBubbleBorder(color, 4, 8, 7);
       }
 
@@ -1440,6 +1450,87 @@ public class ControlPanel extends JFrame implements IControlPanel{
    class ButtonRenderer implements TableCellRenderer{
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
          return (Component) value;
+      }
+   }
+   
+   
+   
+   
+   
+   
+   
+   public class ClientsTableRenderer extends DefaultCellEditor{
+      private static final long serialVersionUID = 1675293203153976084L;
+      
+      private JButton button;
+      private boolean clicked;
+      @SuppressWarnings("unused")
+      private int row, col;
+      @SuppressWarnings("unused")
+      private JTable table;
+
+
+
+
+
+      public ClientsTableRenderer(JCheckBox checkBox){
+         super(checkBox);
+         button = new JButton();
+         button.setOpaque(true);
+         button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+               fireEditingStopped();
+            }
+         });
+      }
+
+
+
+
+
+      public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column){
+         this.table = table;
+         this.row = row;
+         this.col = column;
+
+         button.setForeground(Color.black);
+         button.setBackground(UIManager.getColor("Button.background"));
+         button.setText(ControlPanel.this.config.i18n("button_upload_firmware"));
+         clicked = true;
+         return button;
+      }
+
+
+
+
+
+      public Object getCellEditorValue(){
+         if(clicked){
+            //JOptionPane.showMessageDialog(button, row);
+            
+            FirmwareUploader uploader = new FirmwareUploader(locator.getPortList().get(row));
+            uploader.start(); 
+         }
+         clicked = false;
+         
+         return new JButton(ControlPanel.this.config.i18n("button_upload_firmware"));
+      }
+
+
+
+
+
+      public boolean stopCellEditing(){
+         clicked = false;
+         return super.stopCellEditing();
+      }
+
+
+
+
+
+      protected void fireEditingStopped(){
+         super.fireEditingStopped();
       }
    }
 }
