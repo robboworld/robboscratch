@@ -64,6 +64,11 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                               <constructor-arg value="command_robot_claw.xml" />
                            </bean>
                         </entry>
+                        <entry key="rob_sensors">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_sensors.xml" />
+                           </bean>
+                        </entry>
                      </map>
                   </constructor-arg>
                </bean>

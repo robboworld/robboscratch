@@ -12,6 +12,7 @@ import java.nio.file.*;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.*;
@@ -134,6 +135,18 @@ public class ControlPanel extends JFrame implements IControlPanel{
       this.locator  = locator;
       this.config   = config;
       this.firmware = firmware;
+      
+      
+      if(this.config.getIOS().getType() == IOS.TYPE.MAC){
+         try{
+            com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+            Image image = ImageIO.read(JFrame.class.getResource("/robbo-control-panel.png"));
+            application.setDockIconImage(image);
+         }
+         catch (IOException e){
+            throw new Error(e);
+         }
+      }      
       
       this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
       this.setResizable(false);
