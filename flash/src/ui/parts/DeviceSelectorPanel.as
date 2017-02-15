@@ -62,6 +62,7 @@ public class DeviceSelectorPanel extends Sprite {
            return function(evt:MouseEvent):void {
               DeviceSelector.dialogBox.cancel();
               DeviceSelector.dialogBox = null;
+              deviceSelector.select(f);
            };
         }
 

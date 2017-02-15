@@ -279,7 +279,7 @@ public:
       if(measuremnet){
         if(measuremnetWaiting){
           if(HIGH == digitalRead(pin)){
-             result = ((millis() - time) *  34000) / 2000;
+             result = ((micros() - time) *  34000) / 2000000;
              reset();
           }
         }
@@ -293,13 +293,13 @@ public:
          if(time == 0){
             pinMode(pin, OUTPUT);
             digitalWrite(pin, LOW );
-            time = millis();
+            time = micros();
          }
          else{
-            if(millis() - time > 15){
+            if(micros() - time > 15000){
                digitalWrite(pin, HIGH );
                pinMode(pin, INPUT);
-               time = millis();
+               time = micros();
                measuremnet = true;
             }
          }

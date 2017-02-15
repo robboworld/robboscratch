@@ -17,7 +17,7 @@ port_state_analizing_response=Анализирую ответ
 port_state_robot_ok=%s найден.    Прошивка=%f
 port_state_timeout=Порт не отвечает!
 port_state_unknown_device=Неизвестное устройство!
-port_state_wrong_version=%d Неправильная версия (%f) прошивки!
+port_state_wrong_version=Неправильная версия (%f) прошивки!
 port_state_error=Ошибка порта!
 port_state_closing=Закрываем порт...
 

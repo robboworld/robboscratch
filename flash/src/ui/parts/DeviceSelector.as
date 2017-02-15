@@ -14,24 +14,27 @@ package ui.parts{
                                       Resources.createBmp('sensor16_Line'),
                                       Resources.createBmp('sensor16_Led'),
                                       Resources.createBmp('sensor16_Light'),
-                                      Resources.createBmp('sensor16_Proximity'),
-                                      Resources.createBmp('sensor16_RGB'),
                                       Resources.createBmp('sensor16_Touch'),
+                                      Resources.createBmp('sensor16_Proximity'),
                                       Resources.createBmp('sensor16_Ultrasonic'),
+                                      Resources.createBmp('sensor16_RGB'),
                                      ];
            private var iconsHover:Array = [Resources.createBmp('sensor16_None_Hover'),
                                            Resources.createBmp('sensor16_Line_Hover'),
                                            Resources.createBmp('sensor16_Led_Hover'),
                                            Resources.createBmp('sensor16_Light_Hover'),
-                                           Resources.createBmp('sensor16_Proximity_Hover'),
-                                           Resources.createBmp('sensor16_RGB_Hover'),
                                            Resources.createBmp('sensor16_Touch_Hover'),
+                                           Resources.createBmp('sensor16_Proximity_Hover'),
                                            Resources.createBmp('sensor16_Ultrasonic_Hover'),
+                                           Resources.createBmp('sensor16_RGB_Hover'),
                                           ];
            public var sensor:int;
 
 
            public static var dialogBox:DialogBox;
+
+           private var functionOver:Function;
+           private var functionOut:Function;
 
            public function DeviceSelector(sensor:int) {
               this.sensor = sensor;
@@ -40,10 +43,12 @@ package ui.parts{
               this.buttonMode = true;
               this.mouseChildren  = false;
 
-              this.addEventListener(MouseEvent.CLICK, turn);
+              this.functionOver = makeOver(sensor, this);
+              this.functionOut  = makeOut(sensor, this);
 
-              this.addEventListener(MouseEvent.MOUSE_OVER, makeOver(sensor, this));
-              this.addEventListener(MouseEvent.MOUSE_OUT, makeOut(sensor, this));
+              this.addEventListener(MouseEvent.MOUSE_OVER, this.functionOver);
+              this.addEventListener(MouseEvent.MOUSE_OUT, this.functionOut);
+              this.addEventListener(MouseEvent.CLICK, turn);
            }
 
 
@@ -59,6 +64,20 @@ package ui.parts{
                  while (sprite.numChildren > 0) sprite.removeChildAt(0);
                  sprite.addChild(icons[f]);
               }
+           }
+
+
+           public function select(sensor: int):void{
+              while (this.numChildren > 0) this.removeChildAt(0);
+              this.sensor = sensor;
+              this.addChild(icons[sensor]);
+              this.removeEventListener(MouseEvent.MOUSE_OVER, functionOver);
+              this.removeEventListener(MouseEvent.MOUSE_OUT, functionOut);
+
+              this.functionOver = makeOver(sensor, this);
+              this.functionOut  = makeOut(sensor, this);
+              this.addEventListener(MouseEvent.MOUSE_OVER, this.functionOver);
+              this.addEventListener(MouseEvent.MOUSE_OUT, this.functionOut);
            }
 
 
