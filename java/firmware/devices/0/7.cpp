@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "00006"
+#define FIRMWARE_VERSION "00007"
 
 
 #include <EEPROM.h>
@@ -257,7 +257,7 @@ void parseSerialNumber(){
 
 
 
-byte sensorMode[5] = {0, 0, 0, 0, 0};
+byte sensorMode[5] = {8, 8, 8, 8, 8};
 
 boolean time = false;
 
@@ -277,17 +277,22 @@ public:
 
    void iteration(){
       if(measuremnet){
-        if(measuremnetWaiting){
-          if(HIGH == digitalRead(pin)){
-             result = ((micros() - time) *  34000) / 2000000;
-             reset();
-          }
-        }
-        else{
-          if(digitalRead(pin) == LOW){
-            measuremnetWaiting = true;
-          }
-        }
+         if(micros() - time > 100000){
+            reset();
+         }
+         else{
+            if(measuremnetWaiting){
+               if(HIGH == digitalRead(pin)){
+                  result = ((micros() - time) *  34000) / 2000000;
+                  reset();
+               }
+            }
+            else{
+               if(digitalRead(pin) == LOW){
+                  measuremnetWaiting = true;
+               }
+            }
+         }
       }
       else{
          if(time == 0){
