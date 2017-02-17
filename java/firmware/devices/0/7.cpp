@@ -259,61 +259,79 @@ void parseSerialNumber(){
 
 byte sensorMode[5] = {8, 8, 8, 8, 8};
 
-boolean time = false;
+//boolean time = false;
 
 struct SonicSensor{
 public:
-   boolean measuremnet;
+   boolean resetMode = true;
    boolean measuremnetWaiting;
    unsigned long time;
    int result = 0;
    int pin;
 
    void reset(){
-      measuremnet = false;
       measuremnetWaiting = false;
-      time = 0;
+      resetMode = true;
+      time = micros();
    }
 
    void iteration(){
-      if(measuremnet){
-         if(micros() - time > 100000){
+     
+      /* reset mode with delay */      
+      if(resetMode){
+        if(micros() - time > 30000){
+            pinMode(pin, OUTPUT);
+            digitalWrite(pin, LOW );
+            delayMicroseconds(9);
+            digitalWrite(pin, HIGH );
+            pinMode(pin, INPUT);
+            time = micros();
+            resetMode = false;
+        }
+        
+        return;
+      }
+      
+
+      /* no response */
+      /* we lost the impulse */      
+      if(micros() - time > 100000){
+         reset();
+         return;
+      }
+      
+      
+      if(measuremnetWaiting){
+         if(HIGH == digitalRead(pin)){
+            result = ((micros() - time) *  34000) / 2000000 - 8;
+            if(result < 0){
+              result = 0;
+            }               
             reset();
-         }
-         else{
-            if(measuremnetWaiting){
-               if(HIGH == digitalRead(pin)){
-                  result = ((micros() - time) *  34000) / 2000000;
-                  reset();
-               }
-            }
-            else{
-               if(digitalRead(pin) == LOW){
-                  measuremnetWaiting = true;
-               }
-            }
          }
       }
       else{
-         if(time == 0){
-            pinMode(pin, OUTPUT);
-            digitalWrite(pin, LOW );
-            time = micros();
-         }
-         else{
-            if(micros() - time > 15000){
-               digitalWrite(pin, HIGH );
-               pinMode(pin, INPUT);
-               time = micros();
-               measuremnet = true;
-            }
+         if(digitalRead(pin) == LOW){
+            measuremnetWaiting = true;
          }
       }
    }
 };
-
-
 SonicSensor arraySonicSensors[5];
+
+
+
+struct ColorSensor{
+  public:
+  int result[4];
+  
+  int frame = 0;
+};
+ColorSensor arrayColorSensors[5];
+
+
+
+
 
 
 
@@ -845,7 +863,7 @@ void loop(){
       }
    }
 
-
+/*
    if(time){
       digitalWrite(7, HIGH);
       time = false;
@@ -854,4 +872,5 @@ void loop(){
       digitalWrite(7, LOW);
       time = true;
    }
+*/   
 }
