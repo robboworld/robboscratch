@@ -406,7 +406,7 @@ class ColorSensor: public ISensor{
    int pin;
    
    
-   byte result[4];
+   byte result[4] = {0, 0, 0, 0};
    byte mode = FRAME_UNKNOWN;
    unsigned long time;
    
