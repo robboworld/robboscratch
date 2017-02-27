@@ -12,11 +12,18 @@
 
 
 
-#define SENSOR_TYPE_COLOR 8
+#define SENSOR_TYPE_COLOR 7
 #define SENSOR_TYPE_ULTRASONIC 8
 
 
+#define DIGITAL_PIN_1 4
+#define DIGITAL_PIN_2 7
+#define DIGITAL_PIN_3 8
+#define DIGITAL_PIN_4 11
+#define DIGITAL_PIN_5 12
 
+
+#define SENSOR_RESPONSE_LENGTH 4
 
 
 
@@ -258,17 +265,76 @@ void parseSerialNumber(){
 
 
 
-byte sensorMode[5] = {8, 8, 8, 8, 8};
 
 //boolean time = false;
 
-struct SonicSensor{
-public:
+class ISensor{
+   public:
+      virtual void iteration();
+      virtual byte* getResult();      
+};
+
+
+
+class AnalogSensor: public ISensor{
+   int pin;
+   
+   public:
+   AnalogSensor(int pin){
+      this -> pin = pin;
+      pinMode(pin, INPUT);
+
+      //Let's set 1 to digital out
+      //So that the the lamps light 
+      switch(pin){
+         case A1:{
+            pinMode(DIGITAL_PIN_1, OUTPUT);
+            break;
+         }
+         case A2:{
+            pinMode(DIGITAL_PIN_2, OUTPUT);
+            break;
+         }
+         case A3:{
+            pinMode(DIGITAL_PIN_3, OUTPUT);
+            break;
+         }
+         case A4:{
+            pinMode(DIGITAL_PIN_4, OUTPUT);
+            break;
+         }
+         case A5:{
+            pinMode(DIGITAL_PIN_5, OUTPUT);
+            break;
+         }
+      }
+   };
+   
+   void iteration(){
+   }
+   
+   byte* getResult(){
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin) / 1023.0 * 100)};
+   }   
+};
+   
+   
+   
+
+
+class SonicSensor: public ISensor{
    boolean resetMode = true;
    boolean measuremnetWaiting;
    unsigned long time;
    int result = 0;
    int pin;
+   
+   public:
+   SonicSensor(int pin){
+      this -> pin = pin;
+   };
+   
+   
 
    void reset(){
       measuremnetWaiting = false;
@@ -277,7 +343,6 @@ public:
    }
 
    void iteration(){
-
       /* reset mode with delay */
       if(resetMode){
         if(micros() - time > 30000){
@@ -317,20 +382,149 @@ public:
          }
       }
    }
+   
+   byte* getResult(){
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
+   }   
 };
-SonicSensor arraySonicSensors[5];
 
 
 
-struct ColorSensor{
-  public:
-  int result[4];
 
-  int frame = 0;
+
+
+
+
+class ColorSensor: public ISensor{
+   #define FRAME_UNKNOWN 0
+   #define FRAME_RED 1
+   #define FRAME_GREEN 2
+   #define FRAME_BLUE 3
+   #define FRAME_BRIGHT 4
+   #define FRAME_MAX_LENGTH 122
+   #define FRAME_STOP_LENGTH 10
+   int pin;
+   
+   
+   byte result[4];
+   byte mode = FRAME_UNKNOWN;
+   unsigned long time;
+   
+   unsigned long timeHigh = 0;
+   unsigned long timeLow  = 0;
+   
+   boolean synchronized = false;
+   boolean terminating = false;
+   
+   public:
+   ColorSensor(int pin){
+      this -> pin = pin;
+      pinMode(pin, INPUT);
+      
+      time = millis();
+      mode = FRAME_UNKNOWN;
+   };
+  
+   void iteration(){
+      //debug current mode
+      //Serial.println(mode);
+      if (mode == FRAME_UNKNOWN){
+         synchronized = false;
+         terminating = false;
+         
+         if(HIGH == digitalRead(pin)){
+            //ok, looks like this is a frame gap
+            
+            if(millis() - time > FRAME_MAX_LENGTH){
+               //ok, it is long enough to be true
+               //let's wait for RED now
+               mode = FRAME_RED;
+            }
+         }
+         else{
+            //nope, let's reset timer and try again
+            time = millis();
+         }
+      }
+      else{
+         if(synchronized){
+            if(LOW == digitalRead(pin)){
+               if(terminating){
+                  switch(mode){
+                     case FRAME_RED:{
+                        result[0] = (byte) timeLow;
+                        mode = FRAME_GREEN;
+                        break;
+                     }
+                     case FRAME_GREEN:{
+                        result[1] = (byte) timeLow;
+                        mode = FRAME_BLUE;
+                        break;
+                     }
+                     case FRAME_BLUE:{
+                        result[2] = (byte) timeLow;
+                        mode = FRAME_BRIGHT;
+                        break;
+                     }
+                     case FRAME_BRIGHT:{
+                        result[3] = (byte) timeLow;
+                        mode = FRAME_UNKNOWN;
+                        break;
+                     }
+                  };
+                  time = millis();
+                  synchronized = true;
+                  terminating = false;
+                  timeHigh = 0;
+                  timeLow = 0;
+               }
+               else{                  
+                  //ok, low level
+                  //Let's just sum the time
+                  timeLow += (millis() - time);
+               }
+            }
+            else{
+               //let's check it is the stop stage             
+               if(timeLow > 0 && timeHigh > 0){
+                  terminating = true;
+               }
+              
+               timeHigh += (millis() - time);
+            }
+            
+            time = millis();
+         }
+         else{
+            if(LOW == digitalRead(pin)){
+               //ok, let's start this frame
+               time = millis();
+               synchronized = true;
+               timeHigh = 0;
+               timeLow = 0;
+            }
+         }
+      }
+   };
+   
+   
+   byte* getResult(){
+      return new byte[SENSOR_RESPONSE_LENGTH]{result[0], result[1], result[2], result[3]};
+   }   
+   
+   
+  
+   #undef FRAME_UNKNOWN
+   #undef FRAME_RED
+   #undef FRAME_GREEN
+   #undef FRAME_BLUE
+   #undef FRAME_MAX_LENGTH
+   #undef FRAME_STOP_LENGTH
 };
-ColorSensor arrayColorSensors[5];
 
 
+
+ISensor* sensors[5]; 
 
 
 
@@ -342,21 +536,12 @@ void setup(){
    //Let's load S/N
    parseSerialNumber();
 
-
    Serial.begin(SERIAL_SPEED);
-
-
-   pinMode(4, OUTPUT);
-   pinMode(7, OUTPUT);
-   pinMode(8, OUTPUT);
-   pinMode(11, OUTPUT);
-   pinMode(12, OUTPUT);
 
    //Let's set the PWR timer
    bitSet(TCCR1B, WGM12);
 
 //   myservo.attach(7);
-
 
    commandState=COMMAND_STATE_WAITING_COMMAND;
 
@@ -364,29 +549,21 @@ void setup(){
    leftMotor.initMotor(10,9);
    rightMotor.initMotor(6,5);
 
-   attachInterrupt(1,onLeftMotorStep,CHANGE);
-   attachInterrupt(0,onRightMotorStep,CHANGE);
-
-   SonicSensor s0;
-   s0.pin = 4;
-   arraySonicSensors[0] = s0;
-
-   SonicSensor s1;
-   s1.pin = 7;
-   arraySonicSensors[1] = s1;
-
-   SonicSensor s2;
-   s2.pin = 8;
-   arraySonicSensors[2] = s2;
-
-   SonicSensor s3;
-   s3.pin = 11;
-   arraySonicSensors[3] = s3;
-
-   SonicSensor s4;
-   s4.pin = 12;
-   arraySonicSensors[4] = s4;
+   attachInterrupt(1, onLeftMotorStep,  CHANGE);
+   attachInterrupt(0, onRightMotorStep, CHANGE);
+   
+   
+   sensors[0]  = new AnalogSensor(A1);
+//   sensors[0]  = new ColorSensor(DIGITAL_PIN_1);
+   sensors[1]  = new AnalogSensor(A2);
+   sensors[2]  = new AnalogSensor(A3);
+   sensors[3]  = new AnalogSensor(A4);
+   sensors[4]  = new AnalogSensor(A5);
 }
+
+
+
+
 
 
 
@@ -405,76 +582,17 @@ void printSensors(){
     Serial.write( (byte)((leftMotor.stepsPath) & 0xff));
     Serial.write( (byte)((rightMotor.stepsPath >> 8) & 0xff));
     Serial.write( (byte)((rightMotor.stepsPath) & 0xff));
-
-
-
-
-
-
-
-
-
-
-    int sensorValue;
-
-    if(sensorMode[0] == SENSOR_TYPE_ULTRASONIC){
-       sensorValue = arraySonicSensors[0].result;
+    
+    
+    for(int i = 0; i < 5; i++){
+       byte* result = sensors[i] -> getResult();
+       Serial.write(result, SENSOR_RESPONSE_LENGTH);
+       
+       delete[] result;
     }
-    else{
-       sensorValue = int(analogRead(A1) / 1023.0 * 100);
-    }
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(0x00);
+
+    int sensorValue = int(analogRead(A0) / 1023.0 * 100);
     Serial.write(sensorValue);
-
-    if(sensorMode[1] == SENSOR_TYPE_ULTRASONIC){
-       sensorValue = arraySonicSensors[1].result;
-    }
-    else{
-       sensorValue = int(analogRead(A2) / 1023.0 * 100);
-    }
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(sensorValue);
-
-    if(sensorMode[2] == SENSOR_TYPE_ULTRASONIC){
-       sensorValue = arraySonicSensors[2].result;
-    }
-    else{
-       sensorValue = int(analogRead(A3) / 1023.0 * 100);
-    }
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(sensorValue);
-
-    if(sensorMode[3] == SENSOR_TYPE_ULTRASONIC){
-       sensorValue = arraySonicSensors[3].result;
-    }
-    else{
-       sensorValue = int(analogRead(A4) / 1023.0 * 100);
-    }
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(sensorValue);
-
-    if(sensorMode[4] == SENSOR_TYPE_ULTRASONIC){
-       sensorValue = arraySonicSensors[4].result;
-    }
-    else{
-       sensorValue = int(analogRead(A5) / 1023.0 * 100);
-    }
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(0x00);
-    Serial.write(sensorValue);
-
-    sensorValue = int(analogRead(A0) / 1023.0 * 100);
-    Serial.write(sensorValue);
-
 }
 
 
@@ -840,11 +958,86 @@ void loop(){
                   break;
                }
                case 'i':{
-                  sensorMode[0] = bytearrayData[0];
-                  sensorMode[1] = bytearrayData[1];
-                  sensorMode[2] = bytearrayData[2];
-                  sensorMode[3] = bytearrayData[3];
-                  sensorMode[4] = bytearrayData[4];
+                  for(int f = 0; f < 5; f++){
+                     delete sensors[f];
+                     switch(bytearrayData[f]){                        
+                        case 0:{
+                           switch(f){
+                              case 0:{
+                                 sensors[f]  = new AnalogSensor(A1);
+                                 break;
+                              }
+                              case 1:{
+                                 sensors[f]  = new AnalogSensor(A2);
+                                 break;
+                              }
+                              case 2:{
+                                 sensors[f]  = new AnalogSensor(A3);
+                                 break;
+                              }
+                              case 3:{
+                                 sensors[f]  = new AnalogSensor(A4);
+                                 break;
+                              }
+                              case 4:{
+                                 sensors[f]  = new AnalogSensor(A5);
+                                 break;
+                              }
+                           }
+                           break;
+                        }
+                        case SENSOR_TYPE_COLOR:{
+                           switch(f){
+                              case 0:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_1);
+                                 break;
+                              }
+                              case 1:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_2);
+                                 break;
+                              }
+                              case 2:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_3);
+                                 break;
+                              }
+                              case 3:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_4);
+                                 break;
+                              }
+                              case 4:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_5);
+                                 break;
+                              }
+                           }
+                           break;
+                        }
+                        case SENSOR_TYPE_ULTRASONIC:{
+                           switch(f){
+                              case 0:{
+                                 sensors[f]  = new SonicSensor(DIGITAL_PIN_1);
+                                 break;
+                              }
+                              case 1:{
+                                 sensors[f]  = new SonicSensor(DIGITAL_PIN_2);
+                                 break;
+                              }
+                              case 2:{
+                                 sensors[f]  = new SonicSensor(DIGITAL_PIN_3);
+                                 break;
+                              }
+                              case 3:{
+                                 sensors[f]  = new SonicSensor(DIGITAL_PIN_4);
+                                 break;
+                              }
+                              case 4:{
+                                 sensors[f]  = new SonicSensor(DIGITAL_PIN_5);
+                                 break;
+                              }
+                           }
+                           break;
+                        }
+                     }
+                  }
 
 //                  myservo.write(bytearrayData[0]);
 
@@ -859,9 +1052,7 @@ void loop(){
 
 
    for(int f = 0; f < 5; f++){
-      if(sensorMode[f] == SENSOR_TYPE_ULTRASONIC){
-         arraySonicSensors[f].iteration();
-      }
+      sensors[f] -> iteration();
    }
 
 /*
