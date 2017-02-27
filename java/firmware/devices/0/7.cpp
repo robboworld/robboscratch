@@ -12,6 +12,7 @@
 
 
 
+#define SENSOR_TYPE_COLOR 8
 #define SENSOR_TYPE_ULTRASONIC 8
 
 
@@ -276,8 +277,8 @@ public:
    }
 
    void iteration(){
-     
-      /* reset mode with delay */      
+
+      /* reset mode with delay */
       if(resetMode){
         if(micros() - time > 30000){
             pinMode(pin, OUTPUT);
@@ -288,25 +289,25 @@ public:
             time = micros();
             resetMode = false;
         }
-        
+
         return;
       }
-      
+
 
       /* no response */
-      /* we lost the impulse */      
+      /* we lost the impulse */
       if(micros() - time > 100000){
          reset();
          return;
       }
-      
-      
+
+
       if(measuremnetWaiting){
          if(HIGH == digitalRead(pin)){
             result = ((micros() - time) *  34000) / 2000000 - 8;
             if(result < 0){
               result = 0;
-            }               
+            }
             reset();
          }
       }
@@ -324,7 +325,7 @@ SonicSensor arraySonicSensors[5];
 struct ColorSensor{
   public:
   int result[4];
-  
+
   int frame = 0;
 };
 ColorSensor arrayColorSensors[5];
@@ -872,5 +873,5 @@ void loop(){
       digitalWrite(7, LOW);
       time = true;
    }
-*/   
+*/
 }
