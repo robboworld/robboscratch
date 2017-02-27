@@ -230,6 +230,10 @@ public class Scratch extends Sprite {
 
 
 
+   public var sensorTypes:Array = [0, 0, 0, 0, 0];
+
+
+
 
     /* Default directory for projects */
     TARGET::android {

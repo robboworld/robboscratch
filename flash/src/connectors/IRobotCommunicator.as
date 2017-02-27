@@ -40,6 +40,10 @@ public interface IRobotCommunicator {
 
     function setClawDegrees(degrees:int):void;
 
+
+    function setSensorTypes(sensorTypes:Array):void;
+
+
 //    function getName():String;
 //    function setActive(isActive:Boolean):void;
 //    function finishSession():void;

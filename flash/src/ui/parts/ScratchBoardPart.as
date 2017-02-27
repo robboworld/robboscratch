@@ -49,15 +49,23 @@ package ui.parts{
       private var titleLabels:Array;
       private var dataLabels:Array;
 
-      public var cbSensor1:DeviceSelector = new DeviceSelector(0);
-      public var cbSensor2:DeviceSelector = new DeviceSelector(0);
-      public var cbSensor3:DeviceSelector = new DeviceSelector(0);
-      public var cbSensor4:DeviceSelector = new DeviceSelector(0);
-      public var cbSensor5:DeviceSelector = new DeviceSelector(0);
+      public var cbSensor1:DeviceSelector;
+      public var cbSensor2:DeviceSelector;
+      public var cbSensor3:DeviceSelector;
+      public var cbSensor4:DeviceSelector;
+      public var cbSensor5:DeviceSelector;
 
 
       public function ScratchBoardPart(app:Scratch) {
          this.app = app;
+
+         cbSensor1 = new DeviceSelector(app, 1, 0);
+         cbSensor2 = new DeviceSelector(app, 2, 0);
+         cbSensor3 = new DeviceSelector(app, 3, 0);
+         cbSensor4 = new DeviceSelector(app, 4, 0);
+         cbSensor5 = new DeviceSelector(app, 5, 0);
+
+
          addChild(shape = new Shape());
 
          titleLabels = new Array();

@@ -71,6 +71,10 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
     private var app:Scratch;
 
 
+    private var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
+
+
+
 
     public function DesktopRobotCommunicator(app:Scratch, settingsDefaultMotorSpeed:int, onDataReceiveRobot:Function, onDataReceiveLab:Function) {
         trace("Desktop Connector created");
@@ -418,8 +422,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
-
             var url:String = sBaseURLRobot + "/rob_lamps/" + hex + "?" + iAnticacheRobot;
 
             var requestRobot:URLRequest = new URLRequest(url);
@@ -491,8 +493,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
-
             var speedLeftNormalized:int = left * 0.63;
             var speedRightNormalized:int = right * 0.63;
 
@@ -554,8 +554,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
-
             var url:String = sBaseURLRobot + "/rob_claw/" + degrees.toString(16) + "?" + iAnticacheRobot;
 
             var requestRobot:URLRequest = new URLRequest(url);
@@ -577,14 +575,44 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
 
+   public function setSensorTypes(sensorTypes:Array):void{
+      trace("Sensor Types [" + sensorTypes + "]");
+         interfaceBusyRobot = true;
+
+         try{
+            var url:String = sBaseURLRobot + "/rob_sensors";
+
+            for (var i:uint=0; i < sensorTypes.length; i++) {
+               url += "/" + sensorTypes[i].toString(16);
+            }
+            url += "?" + iAnticacheRobot;
+
+            var requestRobot:URLRequest = new URLRequest(url);
+            requestRobot.method = URLRequestMethod.POST;
+            iCounterRequestRobot++;
+
+            trace(getTime() + " [" + iCounterRequestRobot + "] " + url);
+            loaderRobot.load(requestRobot);
+
+            isEncoder = true;
+         }
+         catch (e1:Error){
+            iAnticacheRobot++;
+            interfaceBusyRobot = false;
+            onDataReceiveRobot([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+         }
+   }
+
+
+
+
+
 
     public function manageRobot2():void{
 
          interfaceBusyRobot2 = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
-
             var speedLeftNormalized:int = speedLeft * 0.63;
             var speedRightNormalized:int = speedRight * 0.63;
 
@@ -631,7 +659,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
             var url:String = sBaseURLRobot + "/check?" + iAnticacheRobot;
 
             var requestRobot:URLRequest = new URLRequest(url);
@@ -679,8 +706,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
          interfaceBusyRobot = true;
 
          try{
-            var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/0";
-
             var speedLeftNormalized:int = speedLeft * 0.63;
             var speedRightNormalized:int = speedRight * 0.63;
 

@@ -35,8 +35,12 @@ package ui.parts{
 
            private var functionOver:Function;
            private var functionOut:Function;
+           private var app:Scratch;
+           private var number:int;
 
-           public function DeviceSelector(sensor:int) {
+           public function DeviceSelector(app:Scratch, number:int, sensor:int) {
+              this.app = app;
+              this.number = number;
               this.sensor = sensor;
               this.addChild(icons[sensor]);
 
@@ -78,6 +82,16 @@ package ui.parts{
               this.functionOut  = makeOut(sensor, this);
               this.addEventListener(MouseEvent.MOUSE_OVER, this.functionOver);
               this.addEventListener(MouseEvent.MOUSE_OUT, this.functionOut);
+
+              if(sensor < 6){
+                 this.app.sensorTypes[number - 1] = 0;
+              }
+              else{
+                 this.app.sensorTypes[number - 1] = sensor;
+              }
+
+
+              this.app.robotCommunicator.setSensorTypes(this.app.sensorTypes);
            }
 
 
