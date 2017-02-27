@@ -143,29 +143,52 @@ public class SensingPrims {
 
 
    private function primBrightRobot(b:Block):int {
-      var a:String = interp.arg(b, 0);
-
+      var sensor:String  = interp.arg(b, 0);
+      var channel:String = interp.arg(b, 1);
 
       //trace("SUKA=" + b.args[1].argValue);
-
       //b.args[1].argValue = 0;
 
-      b.base.setColor(app.runtime.analogsRobotExtended[0][0] * 65536 + app.runtime.analogsRobotExtended[0][1] * 256 + app.runtime.analogsRobotExtended[0][2]);
+
+      var sensorNumber:int;
+
+
+      if(sensor == 'sensor 1'){
+         sensorNumber = 0;
+      }
+      if(sensor == 'sensor 2'){
+         sensorNumber = 1;
+      }
+      if(sensor == 'sensor 3'){
+         sensorNumber = 2;
+      }
+      if(sensor == 'sensor 4'){
+         sensorNumber = 3;
+      }
+      if(sensor == 'sensor 5'){
+         sensorNumber = 4;
+      }
+
+
+
+      b.base.setColor(  app.runtime.analogsRobotExtended[sensorNumber][0] * 65536
+                      + app.runtime.analogsRobotExtended[sensorNumber][1] * 256
+                      + app.runtime.analogsRobotExtended[sensorNumber][2]);
       b.base.redraw();
 
 
 
-      if(a == 'R'){
-         return app.runtime.analogsRobotExtended[0][0];
+      if(channel == 'R'){
+         return app.runtime.analogsRobotExtended[sensorNumber][0];
       }
-      if(a == 'G'){
-         return app.runtime.analogsRobotExtended[0][1];
+      if(channel == 'G'){
+         return app.runtime.analogsRobotExtended[sensorNumber][1];
       }
-      if(a == 'B'){
-         return app.runtime.analogsRobotExtended[0][2];
+      if(channel == 'B'){
+         return app.runtime.analogsRobotExtended[sensorNumber][2];
       }
-      if(a == 'Bright'){
-         return app.runtime.analogsRobotExtended[0][3];
+      if(channel == 'Bright'){
+         return app.runtime.analogsRobotExtended[sensorNumber][3];
       }
 
       return 0;
