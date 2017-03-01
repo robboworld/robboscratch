@@ -96,6 +96,7 @@ public class BlockMenus implements DragClient {
       if (menuName == 'ledMenu')      menuHandler.ledMenu(evt);
       if (menuName == 'ledColorMenu') menuHandler.ledColorMenu(evt);
       if (menuName == 'robotLedMenu') menuHandler.robotLedMenu(evt);
+      if (menuName == 'robotClawMenu') menuHandler.robotClawMenu(evt);
       if (menuName == 'note') menuHandler.notePicker(evt);
       if (menuName == 'noteLab')  menuHandler.notePickerLab(evt);
       if (menuName == 'procMenu') menuHandler.procMenu(evt);
@@ -191,6 +192,8 @@ public class BlockMenus implements DragClient {
       this.blockArg = blockArg;
       this.block = block;
    }
+
+
 
    public static function shouldTranslateItemForMenu(item:String, menuName:String):Boolean {
       // Return true if the given item from the given menu parameter slot should be
@@ -361,6 +364,17 @@ public class BlockMenus implements DragClient {
       for each (var op:String in ops) m.addItem(op);
       showMenu(m);
    }
+
+
+
+   private function robotClawMenu(evt:MouseEvent):void {
+      var m:Menu = new Menu(setBlockArg, 'robotSelectClawPosition');
+      m.addItem("Open");
+      m.addItem("Half-open");
+      m.addItem("Closed");
+      showMenu(m);
+   }
+
 
 
 

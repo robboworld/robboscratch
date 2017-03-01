@@ -3,6 +3,7 @@
 
 #include <EEPROM.h>
 #include "Arduino.h"
+#include "servotimer2.h"
 
 #define SERIAL_SPEED 115200
 #define SERIAL_ADDRESS 0
@@ -21,6 +22,10 @@
 #define DIGITAL_PIN_3 8
 #define DIGITAL_PIN_4 11
 #define DIGITAL_PIN_5 12
+
+
+
+ServoTimer2 myservo;
 
 
 #define SENSOR_RESPONSE_LENGTH 4
@@ -271,21 +276,21 @@ void parseSerialNumber(){
 class ISensor{
    public:
       virtual void iteration();
-      virtual byte* getResult();      
+      virtual byte* getResult();
 };
 
 
 
 class AnalogSensor: public ISensor{
    int pin;
-   
+
    public:
    AnalogSensor(int pin){
       this -> pin = pin;
       pinMode(pin, INPUT);
 
       //Let's set 1 to digital out
-      //So that the the lamps light 
+      //So that the the lamps light
       switch(pin){
          case A1:{
             pinMode(DIGITAL_PIN_1, OUTPUT);
@@ -309,17 +314,17 @@ class AnalogSensor: public ISensor{
          }
       }
    };
-   
+
    void iteration(){
    }
-   
+
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin) / 1023.0 * 100)};
-   }   
+   }
 };
-   
-   
-   
+
+
+
 
 
 class SonicSensor: public ISensor{
@@ -328,13 +333,13 @@ class SonicSensor: public ISensor{
    unsigned long time;
    int result = 0;
    int pin;
-   
+
    public:
    SonicSensor(int pin){
       this -> pin = pin;
    };
-   
-   
+
+
 
    void reset(){
       measuremnetWaiting = false;
@@ -382,10 +387,10 @@ class SonicSensor: public ISensor{
          }
       }
    }
-   
+
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
-   }   
+   }
 };
 
 
@@ -404,37 +409,37 @@ class ColorSensor: public ISensor{
    #define FRAME_MAX_LENGTH 122
    #define FRAME_STOP_LENGTH 10
    int pin;
-   
-   
+
+
    byte result[4] = {0, 0, 0, 0};
    byte mode = FRAME_UNKNOWN;
    unsigned long time;
-   
+
    unsigned long timeHigh = 0;
    unsigned long timeLow  = 0;
-   
+
    boolean synchronized = false;
    boolean terminating = false;
-   
+
    public:
    ColorSensor(int pin){
       this -> pin = pin;
       pinMode(pin, INPUT);
-      
+
       time = millis();
       mode = FRAME_UNKNOWN;
    };
-  
+
    void iteration(){
       //debug current mode
       //Serial.println(mode);
       if (mode == FRAME_UNKNOWN){
          synchronized = false;
          terminating = false;
-         
+
          if(HIGH == digitalRead(pin)){
             //ok, looks like this is a frame gap
-            
+
             if(millis() - time > FRAME_MAX_LENGTH){
                //ok, it is long enough to be true
                //let's wait for RED now
@@ -478,21 +483,21 @@ class ColorSensor: public ISensor{
                   timeHigh = 0;
                   timeLow = 0;
                }
-               else{                  
+               else{
                   //ok, low level
                   //Let's just sum the time
                   timeLow += (millis() - time);
                }
             }
             else{
-               //let's check it is the stop stage             
+               //let's check it is the stop stage
                if(timeLow > 0 && timeHigh > 0){
                   terminating = true;
                }
-              
+
                timeHigh += (millis() - time);
             }
-            
+
             time = millis();
          }
          else{
@@ -506,14 +511,14 @@ class ColorSensor: public ISensor{
          }
       }
    };
-   
-   
+
+
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{result[0], result[1], result[2], result[3]};
-   }   
-   
-   
-  
+   }
+
+
+
    #undef FRAME_UNKNOWN
    #undef FRAME_RED
    #undef FRAME_GREEN
@@ -524,7 +529,7 @@ class ColorSensor: public ISensor{
 
 
 
-ISensor* sensors[5]; 
+ISensor* sensors[5];
 
 
 
@@ -541,7 +546,7 @@ void setup(){
    //Let's set the PWR timer
    bitSet(TCCR1B, WGM12);
 
-//   myservo.attach(7);
+   myservo.attach(13);
 
    commandState=COMMAND_STATE_WAITING_COMMAND;
 
@@ -551,8 +556,8 @@ void setup(){
 
    attachInterrupt(1, onLeftMotorStep,  CHANGE);
    attachInterrupt(0, onRightMotorStep, CHANGE);
-   
-   
+
+
    sensors[0]  = new AnalogSensor(A1);
 //   sensors[0]  = new ColorSensor(DIGITAL_PIN_1);
    sensors[1]  = new AnalogSensor(A2);
@@ -582,12 +587,12 @@ void printSensors(){
     Serial.write( (byte)((leftMotor.stepsPath) & 0xff));
     Serial.write( (byte)((rightMotor.stepsPath >> 8) & 0xff));
     Serial.write( (byte)((rightMotor.stepsPath) & 0xff));
-    
-    
+
+
     for(int i = 0; i < 5; i++){
        byte* result = sensors[i] -> getResult();
        Serial.write(result, SENSOR_RESPONSE_LENGTH);
-       
+
        delete[] result;
     }
 
@@ -750,6 +755,12 @@ void loop(){
                command = b;
                break;
             }
+            case 'j':{
+               commandState = COMMAND_STATE_WAITING_DATA;
+               byteDataTail = 0;
+               command = b;
+               break;
+            }
          }
       }
       else if(commandState==COMMAND_STATE_WAITING_DATA){
@@ -795,6 +806,12 @@ void loop(){
             }
             case 'i':{
                if(byteDataTail > 4){
+                  commandState=COMMAND_STATE_WAITING_CRC;
+               }
+               break;
+            }
+            case 'j':{
+               if(byteDataTail > 0){
                   commandState=COMMAND_STATE_WAITING_CRC;
                }
                break;
@@ -960,7 +977,7 @@ void loop(){
                case 'i':{
                   for(int f = 0; f < 5; f++){
                      delete sensors[f];
-                     switch(bytearrayData[f]){                        
+                     switch(bytearrayData[f]){
                         case 0:{
                            switch(f){
                               case 0:{
@@ -1039,7 +1056,11 @@ void loop(){
                      }
                   }
 
-//                  myservo.write(bytearrayData[0]);
+                  printSensors();
+                  break;
+               }
+               case 'j':{
+                  myservo.write(bytearrayData[0] * 10);
 
                   printSensors();
                   break;
@@ -1066,3 +1087,4 @@ void loop(){
    }
 */
 }
+

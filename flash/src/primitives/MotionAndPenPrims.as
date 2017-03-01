@@ -94,10 +94,7 @@ public class MotionAndPenPrims {
 
       primTable["resetPath"]       = resetPath;
       primTable["clawDegrees"]     = clawDegrees;
-
-
-
-
+      primTable["clawPosition"]    = clawPosition;
    }
    //block for robots
 
@@ -105,6 +102,24 @@ public class MotionAndPenPrims {
    private function clawDegrees(b:Block):void{
       var degrees:int  = interp.arg(b, 0);
       app.robotCommunicator.setClawDegrees(degrees);
+   }
+   private function clawPosition(b:Block):void{
+      var position:String = interp.arg(b, 0);
+
+      switch(position){
+         case "Open":{
+            app.robotCommunicator.setClawDegrees(110);
+            break;
+         }
+         case "Half-open":{
+            app.robotCommunicator.setClawDegrees(150);
+            break;
+         }
+         case "Closed":{
+            app.robotCommunicator.setClawDegrees(220);
+            break;
+         }
+      }
    }
 
 
