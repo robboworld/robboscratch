@@ -215,7 +215,7 @@ public class Specs {
       ["turn Robot led in %m.robotLedMenu off",  " ", 13, "robotLedOff:",          'position 1'],
 
 
-      ["Claw %n degrees",                 " ", 13, "clawDegrees",                   15],
+      ["Claw closed %n %",                " ", 13, "clawDegrees",                   15],
       ["Claw %m.robotClawMenu",           " ", 13, "clawPosition",                  "Open"],
       ["-"],
 

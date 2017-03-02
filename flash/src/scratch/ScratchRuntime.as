@@ -82,8 +82,8 @@ public class ScratchRuntime {
    protected var projectToInstall:ScratchStage;
    protected var saveAfterInstall:Boolean;
 
-    public var analogsRobot:Array         = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    public var analogsRobotExtended:Array = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+//    public var analogsRobot:Array         = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//    public var analogsRobotExtended:Array = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
     public var analogsLab:Array   = [0, 0, 0, 0, 0, 0, 0, 0];
 
    private var lastSaved:int = 0;

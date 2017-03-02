@@ -8,6 +8,7 @@ package ui.parts{
    import flash.display.Shape;
    import flash.text.TextField;
    import flash.text.TextFormat;
+   import flash.display.Sprite;
 
    import translation.Translator;
 
@@ -48,30 +49,28 @@ package ui.parts{
 
       private var titleLabels:Array;
       private var dataLabels:Array;
+      private var dataSprites:Array;
 
-      public var cbSensor1:DeviceSelector;
-      public var cbSensor2:DeviceSelector;
-      public var cbSensor3:DeviceSelector;
-      public var cbSensor4:DeviceSelector;
-      public var cbSensor5:DeviceSelector;
+      public var arraySensors:Array;
 
 
       public function ScratchBoardPart(app:Scratch) {
          this.app = app;
-
-         cbSensor1 = new DeviceSelector(app, 1, 0);
-         cbSensor2 = new DeviceSelector(app, 2, 0);
-         cbSensor3 = new DeviceSelector(app, 3, 0);
-         cbSensor4 = new DeviceSelector(app, 4, 0);
-         cbSensor5 = new DeviceSelector(app, 5, 0);
 
 
          addChild(shape = new Shape());
 
          titleLabels = new Array();
          dataLabels = new Array();
+         dataSprites = new Array();
 
          for (var i:int = 0; i < TITLES.length; i++) {
+            var deviceSelector:DeviceSelector = new DeviceSelector(app, i + 1, 0);
+            arraySensors[i] = deviceSelector;
+            deviceSelector.x = 102;
+            deviceSelector.y = 65 + i * 17;
+            addChild(deviceSelector);
+
             var str:String = TITLES[i];
             var label:TextField;
 
@@ -81,27 +80,16 @@ package ui.parts{
 
             label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
             dataLabels.push(label);
-            addChild(label);
+
+            var sprite:Sprite = new Sprite();
+            dataSprites[i] = sprite;
+            sprite.addChild(label);
+
+            addChild(sprite);
          }
 
          spritesTitle = makeLabel(Translator.map('Robot'), CSS.titleFormat, 10, 5);
          addChild(spritesTitle);
-
-         cbSensor1.x = 102;
-         cbSensor1.y = 65;
-         addChild(cbSensor1);
-         cbSensor2.x = 102;
-         cbSensor2.y = 82;
-         addChild(cbSensor2);
-         cbSensor3.x = 102;
-         cbSensor3.y = 99;
-         addChild(cbSensor3);
-         cbSensor4.x = 102;
-         cbSensor4.y = 116;
-         addChild(cbSensor4);
-         cbSensor5.x = 102;
-         cbSensor5.y = 133;
-         addChild(cbSensor5);
       }
 
       public function setWidthHeight(w:int, h:int):void {

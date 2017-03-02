@@ -1060,7 +1060,7 @@ void loop(){
                   break;
                }
                case 'j':{
-                  myservo.write(bytearrayData[0] * 10);
+                  myservo.write(bytearrayData[0] * 30);
 
                   printSensors();
                   break;

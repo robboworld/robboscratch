@@ -83,15 +83,16 @@ package ui.parts{
               this.addEventListener(MouseEvent.MOUSE_OVER, this.functionOver);
               this.addEventListener(MouseEvent.MOUSE_OUT, this.functionOut);
 
+
               if(sensor < 6){
-                 this.app.sensorTypes[number - 1] = 0;
+                 this.app.robotSensors[number - 1] = 0;
               }
               else{
-                 this.app.sensorTypes[number - 1] = sensor;
+                 this.app.robotSensors[number - 1] = sensor;
               }
 
 
-              this.app.robotCommunicator.setSensorTypes(this.app.sensorTypes);
+              this.app.robotCommunicator.setSensorType(sensor);
            }
 
 

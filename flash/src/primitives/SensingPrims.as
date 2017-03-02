@@ -116,19 +116,19 @@ public class SensingPrims {
          return app.runtime.analogsRobot[1];
       }
       if(a == 'sensor 1'){
-         return app.runtime.analogsRobot[2];
+         return app.robotSensors[0].analog[3];
       }
       if(a == 'sensor 2'){
-         return app.runtime.analogsRobot[3];
+         return app.robotSensors[1].analog[3];
       }
       if(a == 'sensor 3'){
-         return app.runtime.analogsRobot[4];
+         return app.robotSensors[2].analog[3];
       }
       if(a == 'sensor 4'){
-         return app.runtime.analogsRobot[5];
+         return app.robotSensors[3].analog[3];
       }
       if(a == 'sensor 5'){
-         return app.runtime.analogsRobot[6];
+         return app.robotSensors[4].analog[3];
       }
 
       return 0;
@@ -171,24 +171,24 @@ public class SensingPrims {
 
 
 
-      b.base.setColor(  app.runtime.analogsRobotExtended[sensorNumber][0] * 65536
-                      + app.runtime.analogsRobotExtended[sensorNumber][1] * 256
-                      + app.runtime.analogsRobotExtended[sensorNumber][2]);
+      b.base.setColor(  app.robotSensors[sensorNumber].analog[0] * 65536
+                      + app.robotSensors[sensorNumber].analog[1] * 256
+                      + app.robotSensors[sensorNumber].analog[2]);
       b.base.redraw();
 
 
 
       if(channel == 'R'){
-         return app.runtime.analogsRobotExtended[sensorNumber][0];
+         return app.robotSensors[sensorNumber].analog[0];
       }
       if(channel == 'G'){
-         return app.runtime.analogsRobotExtended[sensorNumber][1];
+         return app.robotSensors[sensorNumber].analog[1];
       }
       if(channel == 'B'){
-         return app.runtime.analogsRobotExtended[sensorNumber][2];
+         return app.robotSensors[sensorNumber].analog[2];
       }
       if(channel == 'Bright'){
-         return app.runtime.analogsRobotExtended[sensorNumber][3];
+         return app.robotSensors[sensorNumber].analog[3];
       }
 
       return 0;

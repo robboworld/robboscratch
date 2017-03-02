@@ -122,6 +122,13 @@ public class Scratch extends Sprite {
     private static const DONATE_URL:String = 'https://play.google.com/store/apps/details?id=air.ru.scratchduino.android.appdonate';
     public static var app:Scratch; // static reference to the app, used for debugging
 
+
+    public static const ROBOT_SENSOR_COUNT = 5;
+    public var robotSensors:Array = new Array();
+    public var robotMotorLeft:Motor  = new RobotMotor();
+    public var robotMotorRight:Motor = new RobotMotor();
+
+
     // Display modes
     public var editMode:Boolean; // true when project editor showing, false when only the player is showing
     public var isOffline:Boolean; // true when running as an offline (i.e. stand-alone) app
@@ -185,25 +192,7 @@ public class Scratch extends Sprite {
     public var speedRight:int = 0;
 
     public var stepLimit:int = 0;
-
-    public var stepsLeft:int = 0;
-    public var stepsRight:int = 0;
-    public var _stepsLeft:int = 0;
-    public var _stepsRight:int = 0;
     public var lastTimeMoved:int = 0;
-
-
-    public var pathCorrectionLeft:int  = 0;
-    public var pathCorrectionRight:int = 0;
-
-    public var pathLeft:int  = 0;
-    public var pathRight:int = 0;
-
-    public var pathMultiplierLeft:int = 0;
-    public var pathMultiplierRight:int = 0;
-
-    public var pathCorrectedLeft:int = 0;
-    public var pathCorrectedRight:int = 0;
 
 
 
@@ -228,9 +217,6 @@ public class Scratch extends Sprite {
 
     public var labVersion:int = 1;
 
-
-
-   public var sensorTypes:Array = [0, 0, 0, 0, 0];
 
 
 
@@ -359,16 +345,16 @@ public class Scratch extends Sprite {
         if(data.length == 0){
 
 
-           if(pathLeft > 0 || pathRight > 0){
-              pathCorrectionLeft  -= pathLeft;
-              pathCorrectionRight -= pathRight;
+           if(robotMotorLeft.path > 0 || robotMotorRight.path > 0){
+              robotMotorLeft.pathCorrection  -= robotMotorLeft.path;
+              robotMotorRight.pathCorrection -= robotMotorRight.path;
 
-              pathLeft  = 0;
-              pathRight = 0;
+              robotMotorLeft.path  = 0;
+              robotMotorRight.path = 0;
            }
 
 
-           if(pathCorrectionLeft != 0 || pathCorrectionRight != 0){
+           if(robotMotorLeft.pathCorrection != 0 || robotMotorLeft.pathCorrection != 0){
               for(var f:int = 2; f < 8; f++){
                  scratchBoardPart.setAnalogText(f, "-");
               }
@@ -416,22 +402,35 @@ public class Scratch extends Sprite {
 
 
 
-        setAnalogTextRobot(0, "" + pathCorrectedLeft);
-        setAnalogTextRobot(1, "" + pathCorrectedRight);
+//        setAnalogTextRobot(0, "" + pathCorrectedLeft);
+//        setAnalogTextRobot(1, "" + pathCorrectedRight);
 
 
-        runtime.analogsRobot[0] = pathCorrectedLeft;
-        runtime.analogsRobot[1] = pathCorrectedRight;
+//        runtime.analogsRobot[0] = pathCorrectedLeft;
+//        runtime.analogsRobot[1] = pathCorrectedRight;
 
 
+        //encoder[0-1], encoder[2-3]
+        //encoder[4-5], encoder[6-7]
 
+        //sensors:
         //1 8-9-10-11
         //2 12-13-14-15
         //3 16-17-18-19
         //4 20-21-22-23
         //5 24-25-26-27
+
+        //button
         //B 28
 
+        robotMotorLeft.path  = pathCorrectedLeft;
+        robotMotorRight.path = pathCorrectedRight;
+
+        for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
+           robotSensors[i].analog = [data[8 + i], data[9 + i], data[10 + i], data[11 + i]];
+        }
+
+/*
         var sensor1:int = data[10] * 256 + data[11];
         var sensorExtended1:Array = [data[8], data[9], data[10], data[11]];
 
@@ -447,6 +446,7 @@ public class Scratch extends Sprite {
         var sensor5:int = data[26] * 256 + data[27];
         var sensorExtended5:Array = [data[24], data[25], data[26], data[27]];
 
+
         if(scratchBoardPart.cbSensor1.sensor == 0){
            runtime.analogsRobot[2] = 0;
            runtime.analogsRobotExtended[0] = [0,0,0,0];
@@ -457,6 +457,10 @@ public class Scratch extends Sprite {
            runtime.analogsRobotExtended[0] = sensorExtended1;
            setAnalogTextRobot(2, "" + sensor1);
         }
+
+
+
+
 
         if(scratchBoardPart.cbSensor2.sensor == 0){
            runtime.analogsRobot[3] = 0;
@@ -519,7 +523,7 @@ public class Scratch extends Sprite {
            robotStartButton = false;
            scratchBoardPart.setAnalogText(7, Translator.map("false"));
         }
-
+*/
 
 
 
@@ -2388,3 +2392,19 @@ public class Scratch extends Sprite {
       throw new IllegalOperationError('Must override this function.');
    }
 }}
+
+
+class RobotSensor{
+   public var type:int = 0;
+   public var analog:Array = [0, 0, 0, 0];
+}
+
+class RobotMotor{
+   public var steps:int  = 0;
+   public var _steps:int = 0;
+   public var path:int   = 0;
+   public var pathCorrection:int = 0;
+   public var pathMultiplier:int = 0;
+   public var pathCorrected:int = 0;
+}
+
