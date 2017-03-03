@@ -13,6 +13,12 @@
 
 
 
+#define SENSOR_TYPE_NONE 0
+#define SENSOR_TYPE_LINE 1
+#define SENSOR_TYPE_LED  2
+#define SENSOR_TYPE_LIGHT 3
+#define SENSOR_TYPE_TOUCH 4
+#define SENSOR_TYPE_PROXIMITY 5
 #define SENSOR_TYPE_ULTRASONIC 6
 #define SENSOR_TYPE_COLOR 7
 
@@ -978,7 +984,12 @@ void loop(){
                   for(int f = 0; f < 5; f++){
                      delete sensors[f];
                      switch(bytearrayData[f]){
-                        case 0:{
+                        case SENSOR_TYPE_NONE:
+                        case SENSOR_TYPE_LINE:
+                        case SENSOR_TYPE_LED:
+                        case SENSOR_TYPE_LIGHT:
+                        case SENSOR_TYPE_TOUCH:
+                        case SENSOR_TYPE_PROXIMITY:{
                            switch(f){
                               case 0:{
                                  sensors[f]  = new AnalogSensor(A1);
@@ -998,31 +1009,6 @@ void loop(){
                               }
                               case 4:{
                                  sensors[f]  = new AnalogSensor(A5);
-                                 break;
-                              }
-                           }
-                           break;
-                        }
-                        case SENSOR_TYPE_COLOR:{
-                           switch(f){
-                              case 0:{
-                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_1);
-                                 break;
-                              }
-                              case 1:{
-                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_2);
-                                 break;
-                              }
-                              case 2:{
-                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_3);
-                                 break;
-                              }
-                              case 3:{
-                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_4);
-                                 break;
-                              }
-                              case 4:{
-                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_5);
                                  break;
                               }
                            }
@@ -1052,6 +1038,31 @@ void loop(){
                               }
                            }
                            break;
+                        }                        
+                        case SENSOR_TYPE_COLOR:{
+                           switch(f){
+                              case 0:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_1);
+                                 break;
+                              }
+                              case 1:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_2);
+                                 break;
+                              }
+                              case 2:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_3);
+                                 break;
+                              }
+                              case 3:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_4);
+                                 break;
+                              }
+                              case 4:{
+                                 sensors[f]  = new ColorSensor(DIGITAL_PIN_5);
+                                 break;
+                              }
+                           }
+                           break;
                         }
                      }
                   }
@@ -1060,7 +1071,7 @@ void loop(){
                   break;
                }
                case 'j':{
-                  myservo.write(bytearrayData[0] * 30);
+                  myservo.write(800 + bytearrayData[0] * 22);
 
                   printSensors();
                   break;
