@@ -118,6 +118,22 @@ package ui.parts{
       }
       public function disable(index:int):void {
          while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
+
+         var label:TextField = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP);
+         label.text = "--";
+         dataSprites[index].addChild(label);
+      }
+      public function setColor(index:int, color:int):void {
+         trace("color=" + color);
+
+         while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
+
+         var sprite:Sprite = new Sprite();
+
+         sprite.graphics.beginFill(color);
+         sprite.graphics.drawRect(TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 2, 11, 11);
+         sprite.graphics.endFill();
+         dataSprites[index].addChild(sprite);
       }
 
       private function fixLayout():void {

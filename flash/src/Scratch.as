@@ -437,7 +437,7 @@ public class Scratch extends Sprite {
 
         for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
            robotSensors[i].analog = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
-           trace("sensor" + i + "=" + robotSensors[i].analog);
+           trace("sensor" + (i + 1) + "=" + robotSensors[i].analog);
 
            switch(robotSensors[i].type){
               case ROBOT_SENSOR_TYPE_NONE:
@@ -457,6 +457,7 @@ public class Scratch extends Sprite {
                  break;
               }
               case ROBOT_SENSOR_TYPE_COLOR: {
+                 scratchBoardPart.setColor(i, robotSensors[i].analog[0]*65536*2.5 + robotSensors[i].analog[1]*256*2.5 + robotSensors[i].analog[2]*2.5);
                  break;
               }
            }
