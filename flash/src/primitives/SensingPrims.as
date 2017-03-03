@@ -110,10 +110,10 @@ public class SensingPrims {
       }
 */
       if(a == 'trip meter L'){
-         return app.runtime.analogsRobot[0];
+         return app.robotMotorLeft.pathCorrected;
       }
       if(a == 'trip meter R'){
-         return app.runtime.analogsRobot[1];
+         return app.robotMotorRight.pathCorrected;
       }
       if(a == 'sensor 1'){
          return app.robotSensors[0].analog[3];

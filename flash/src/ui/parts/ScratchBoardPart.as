@@ -51,7 +51,7 @@ package ui.parts{
       private var dataLabels:Array;
       private var dataSprites:Array;
 
-      public var arraySensors:Array;
+      public var arraySensors:Array = new Array();
 
 
       public function ScratchBoardPart(app:Scratch) {
@@ -79,7 +79,7 @@ package ui.parts{
             addChild(label);
 
             label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
-            dataLabels.push(label);
+//            dataLabels.push(label);
 
             var sprite:Sprite = new Sprite();
             dataSprites[i] = sprite;
@@ -106,11 +106,18 @@ package ui.parts{
          if (app.viewedObj()) refresh(); // refresh, but not during initialization
       }
 
-      public function setAnalogText(index:int, text:String):void {
+      public function setText(index:int, text:String):void {
+         trace("index=" + index + " text=" + text);
          if (index < 0 || index >= TITLES.length) return;
 
-         var label:TextField = dataLabels[index];
+         while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
+
+         var label:TextField = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP);
          label.text = text;
+         dataSprites[index].addChild(label);
+      }
+      public function disable(index:int):void {
+         while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
       }
 
       private function fixLayout():void {

@@ -44,7 +44,6 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
     private var robLamps:int = 0;
 
 
-    private var analogsRobot:Array = [];
     private var analogsLab:Array   = [];
 
 
@@ -882,23 +881,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
             trace(getTime() + " [" + iCounterResponseRobot + "] INCOMING ROBOT:\n" + fromHexArray(loader2.data, true));
-/*
-            if(tempArray.length == 11){
-               for (var i:int = 0; i < 10; i++){
-                  //var keyValueArray:Array=tempArray[i].split("=");
-                  //trace(keyValueArray);
-                  //analogsRobot[i] = keyValueArray[1];
-                  analogsRobot[i] = tempArray[i];
-               }
+            var analogsRobot:Array = new Array();
 
-               onDataReceiveRobot(analogsRobot);
-            }
-            else{
-               onDataReceiveRobot([]);
-            }
-*/
-
-            analogsRobot.splice(0);
             for (var i:int = 0; i < loader2.data.length; i++){
                analogsRobot[i] = loader2.data[i];
             }

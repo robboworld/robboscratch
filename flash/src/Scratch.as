@@ -123,10 +123,10 @@ public class Scratch extends Sprite {
     public static var app:Scratch; // static reference to the app, used for debugging
 
 
-    public static const ROBOT_SENSOR_COUNT = 5;
+    public static const ROBOT_SENSOR_COUNT:int = 5;
     public var robotSensors:Array = new Array();
-    public var robotMotorLeft:Motor  = new RobotMotor();
-    public var robotMotorRight:Motor = new RobotMotor();
+    public var robotMotorLeft:RobotMotor  = new RobotMotor();
+    public var robotMotorRight:RobotMotor = new RobotMotor();
 
 
     // Display modes
@@ -231,6 +231,11 @@ public class Scratch extends Sprite {
    public function Scratch() {
       loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
       app = this;
+
+
+      for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
+         robotSensors[i] = new RobotSensor(0);
+      }
 
       loadSettings(null);
    }
@@ -342,9 +347,8 @@ public class Scratch extends Sprite {
     public function refreshAnalogsRobot(data:Array):void {
         trace("refreshAnalogsRobot() " + data.length + " data=" + data);
 
+
         if(data.length == 0){
-
-
            if(robotMotorLeft.path > 0 || robotMotorRight.path > 0){
               robotMotorLeft.pathCorrection  -= robotMotorLeft.path;
               robotMotorRight.pathCorrection -= robotMotorRight.path;
@@ -356,12 +360,12 @@ public class Scratch extends Sprite {
 
            if(robotMotorLeft.pathCorrection != 0 || robotMotorLeft.pathCorrection != 0){
               for(var f:int = 2; f < 8; f++){
-                 scratchBoardPart.setAnalogText(f, "-");
+                 scratchBoardPart.disable(f);
               }
            }
            else{
               for(var h:int = 0; h < 8; h++){
-                 scratchBoardPart.setAnalogText(h, "-");
+                 scratchBoardPart.disable(h);
               }
            }
 
@@ -370,34 +374,29 @@ public class Scratch extends Sprite {
 
 
 
-        stepsLeft  = data[0] * 256 + data[1];
-        stepsRight = data[2] * 256 + data[3];
+        robotMotorLeft.steps  = data[0] * 256 + data[1];
+        robotMotorRight.steps = data[2] * 256 + data[3];
 
-
-        var encoderLeft:int  = data[0] * 256 + data[1];
-        var encoderRight:int = data[2] * 256 + data[3];
-
-
-        var pathNewLeft:int  = data[4] * 256 + data[5];
-        var pathNewRight:int = data[6] * 256 + data[7];
+        robotMotorLeft.pathNew  = data[4] * 256 + data[5];
+        robotMotorRight.pathNew = data[6] * 256 + data[7];
 
 
 
-        if(pathNewLeft < pathLeft){
-           pathMultiplierLeft++;
+        if(robotMotorLeft.pathNew < robotMotorLeft.path){
+           robotMotorLeft.pathMultiplier++;
         }
-        pathLeft  = pathNewLeft;
+        robotMotorLeft.path = robotMotorLeft.pathNew;
 
 
-        if(pathNewRight < pathRight){
-           pathMultiplierRight++;
+        if(robotMotorRight.pathNew < robotMotorRight.path){
+           robotMotorRight.pathMultiplier++;
         }
-        pathRight = pathNewRight;
+        robotMotorRight.path = robotMotorRight.pathNew;
 
 
 
-        pathCorrectedLeft  = (65536 * pathMultiplierLeft)  + pathLeft  - pathCorrectionLeft;
-        pathCorrectedRight = (65536 * pathMultiplierRight) + pathRight - pathCorrectionRight;
+        robotMotorLeft.pathCorrected  = (65536 * robotMotorLeft.pathMultiplier)  + robotMotorLeft.path  - robotMotorLeft.pathCorrection;
+        robotMotorRight.pathCorrected = (65536 * robotMotorRight.pathMultiplier) + robotMotorRight.path - robotMotorRight.pathCorrection;
 
 
 
@@ -423,11 +422,12 @@ public class Scratch extends Sprite {
         //button
         //B 28
 
-        robotMotorLeft.path  = pathCorrectedLeft;
-        robotMotorRight.path = pathCorrectedRight;
+//        robotMotorLeft.path  = pathCorrectedLeft;
+//        robotMotorRight.path = pathCorrectedRight;
 
         for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
            robotSensors[i].analog = [data[8 + i], data[9 + i], data[10 + i], data[11 + i]];
+           scratchBoardPart.setText(i, robotSensors[i].analog[3]);
         }
 
 /*
@@ -690,10 +690,11 @@ public class Scratch extends Sprite {
 //    }
 
 
-
+/*
    public function setAnalogTextRobot(index:int, text:String):void {
       scratchBoardPart.setAnalogText(index, text);
    }
+*/
    public function setAnalogTextLab(index:int, text:String):void {
       scratchLabPart.setAnalogText(index, text);
    }
@@ -703,20 +704,20 @@ public class Scratch extends Sprite {
    public function robotMoveFinished():Boolean{
       if(robotEncoderActivated){
 
-         if(stepsLeft >= stepLimit || stepsRight >= stepLimit){
+         if(robotMotorLeft.steps >= stepLimit || robotMotorRight.steps >= stepLimit){
             robotEncoderActivated = false;
 
             robotCommunicator.setMotionTerminated();
 
-            trace("FINISHED LIMIT:" + stepLimit + " L:" + stepsLeft + " R:" + stepsRight);
+            trace("FINISHED LIMIT:" + stepLimit + " L:" + robotMotorLeft.steps + " R:" + robotMotorRight.steps);
             return true;
          }
 
-         if(app.stepsLeft > app._stepsLeft || app.stepsRight > app._stepsRight){
+         if(robotMotorLeft.steps > robotMotorLeft._steps || robotMotorRight.steps > robotMotorRight._steps){
             app.lastTimeMoved = getTimer();
 
-            app._stepsLeft  = app.stepsLeft;
-            app._stepsRight = app.stepsRight;
+            robotMotorLeft._steps  = robotMotorLeft.steps;
+            robotMotorRight._steps = robotMotorRight.steps;
 
             return false;
          }
@@ -2397,12 +2398,17 @@ public class Scratch extends Sprite {
 class RobotSensor{
    public var type:int = 0;
    public var analog:Array = [0, 0, 0, 0];
+
+   public function RobotSensor(type:int){
+      this.type = type;
+   }
 }
 
 class RobotMotor{
    public var steps:int  = 0;
    public var _steps:int = 0;
    public var path:int   = 0;
+   public var pathNew:int = 0;
    public var pathCorrection:int = 0;
    public var pathMultiplier:int = 0;
    public var pathCorrected:int = 0;

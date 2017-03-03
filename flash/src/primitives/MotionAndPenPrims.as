@@ -125,8 +125,8 @@ public class MotionAndPenPrims {
 
 
    private function resetPath(b:Block):void{
-      app.pathCorrectionLeft  = (65536 * app.pathMultiplierLeft)   + app.pathLeft;
-      app.pathCorrectionRight = (65536 * app.pathMultiplierRight)  + app.pathRight;
+      app.robotMotorLeft.pathCorrection  = (65536 * app.robotMotorLeft.pathMultiplier)  + app.robotMotorLeft.path;
+      app.robotMotorRight.pathCorrection = (65536 * app.robotMotorRight.pathMultiplier) + app.robotMotorRight.path;
    }
 
 
@@ -179,10 +179,10 @@ public class MotionAndPenPrims {
       if (s == null) return;
 
       if (interp.activeThread.firstTime){
-         app.stepsLeft = 0;
-         app.stepsRight = 0;
-         app._stepsLeft = 0;
-         app._stepsRight = 0;
+         app.robotMotorLeft.steps = 0;
+         app.robotMotorRight.steps = 0;
+         app.robotMotorLeft._steps = 0;
+         app.robotMotorRight._steps = 0;
          app.lastTimeMoved = getTimer();
          app.robotEncoderActivated = true;
          app.stepLimit = check0_65535(interp.numarg(b, 0) / DEGREE_RATIO);
@@ -213,10 +213,10 @@ public class MotionAndPenPrims {
       if (s == null) return;
 
       if (interp.activeThread.firstTime){
-         app.stepsLeft = 0;
-         app.stepsRight = 0;
-         app._stepsLeft = 0;
-         app._stepsRight = 0;
+         app.robotMotorLeft.steps = 0;
+         app.robotMotorRight.steps = 0;
+         app.robotMotorLeft._steps = 0;
+         app.robotMotorRight._steps = 0;
          app.lastTimeMoved = getTimer();
          app.robotEncoderActivated = true;
          app.stepLimit = check0_65535(interp.numarg(b, 0) / DEGREE_RATIO);
@@ -249,10 +249,10 @@ public class MotionAndPenPrims {
       if (s == null) return;
 
       if (interp.activeThread.firstTime){
-         app.stepsLeft = 0;
-         app.stepsRight = 0;
-         app._stepsLeft = 0;
-         app._stepsRight = 0;
+         app.robotMotorLeft.steps = 0;
+         app.robotMotorRight.steps = 0;
+         app.robotMotorLeft._steps = 0;
+         app.robotMotorRight._steps = 0;
          app.lastTimeMoved = getTimer();
          app.robotEncoderActivated = true;
          app.stepLimit = check0_65535(interp.numarg(b, 0));

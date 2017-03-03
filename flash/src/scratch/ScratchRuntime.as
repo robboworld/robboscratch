@@ -110,7 +110,7 @@ public class ScratchRuntime {
    //------------------------------
 
    ///my shit
-
+/*
    public function resetAnalogsRobot():void {
       for (var i:int = 0; i < analogsRobot.length; ++i) {
          analogsRobot[i] = 0;
@@ -123,6 +123,7 @@ public class ScratchRuntime {
          app.setAnalogTextLab(i, '0');
       }
    }
+*/
 
    public function stepRuntime():void {
       if (projectToInstall != null && app.isOffline) {

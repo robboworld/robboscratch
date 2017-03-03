@@ -92,7 +92,11 @@ package ui.parts{
               }
 
 
-              this.app.robotCommunicator.setSensorType(sensor);
+              var tmpSensors:Array = new Array();
+              for (var i:int = 0; i < Scratch.ROBOT_SENSOR_COUNT; i++) {
+                 tmpSensors.push()
+              }
+              this.app.robotCommunicator.setSensorTypes(tmpSensors);
            }
 
 
