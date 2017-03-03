@@ -436,7 +436,8 @@ public class Scratch extends Sprite {
 //        robotMotorRight.path = pathCorrectedRight;
 
         for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
-           robotSensors[i].analog = [data[8 + i], data[9 + i], data[10 + i], data[11 + i]];
+           robotSensors[i].analog = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
+           trace("sensor" + i + "=" + robotSensors[i].analog);
 
            switch(robotSensors[i].type){
               case ROBOT_SENSOR_TYPE_NONE:

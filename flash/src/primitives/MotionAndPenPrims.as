@@ -108,15 +108,15 @@ public class MotionAndPenPrims {
 
       switch(position){
          case "Open":{
-            app.robotCommunicator.setClawDegrees(110);
+            app.robotCommunicator.setClawDegrees(0);
             break;
          }
          case "Half-open":{
-            app.robotCommunicator.setClawDegrees(150);
+            app.robotCommunicator.setClawDegrees(50);
             break;
          }
          case "Closed":{
-            app.robotCommunicator.setClawDegrees(220);
+            app.robotCommunicator.setClawDegrees(100);
             break;
          }
       }
