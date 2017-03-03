@@ -17,7 +17,7 @@ package ui.parts{
                                       Resources.createBmp('sensor16_Touch'),
                                       Resources.createBmp('sensor16_Proximity'),
                                       Resources.createBmp('sensor16_Ultrasonic'),
-                                      Resources.createBmp('sensor16_RGB'),
+                                      Resources.createBmp('sensor16_Color'),
                                      ];
            private var iconsHover:Array = [Resources.createBmp('sensor16_None_Hover'),
                                            Resources.createBmp('sensor16_Line_Hover'),
@@ -26,7 +26,7 @@ package ui.parts{
                                            Resources.createBmp('sensor16_Touch_Hover'),
                                            Resources.createBmp('sensor16_Proximity_Hover'),
                                            Resources.createBmp('sensor16_Ultrasonic_Hover'),
-                                           Resources.createBmp('sensor16_RGB_Hover'),
+                                           Resources.createBmp('sensor16_Color_Hover'),
                                           ];
            public var sensor:int;
 
@@ -84,17 +84,12 @@ package ui.parts{
               this.addEventListener(MouseEvent.MOUSE_OUT, this.functionOut);
 
 
-              if(sensor < 6){
-                 this.app.robotSensors[number - 1] = 0;
-              }
-              else{
-                 this.app.robotSensors[number - 1] = sensor;
-              }
+              this.app.robotSensors[number - 1].type = sensor;
 
 
               var tmpSensors:Array = new Array();
               for (var i:int = 0; i < Scratch.ROBOT_SENSOR_COUNT; i++) {
-                 tmpSensors.push()
+                 tmpSensors.push(this.app.robotSensors[i].type);
               }
               this.app.robotCommunicator.setSensorTypes(tmpSensors);
            }

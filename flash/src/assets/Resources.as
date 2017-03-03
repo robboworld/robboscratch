@@ -359,7 +359,7 @@ public class Resources {
         [Embed(source='UI/devices/16/sensor_led.png')]              private static const sensor16_Led:Class;
         [Embed(source='UI/devices/16/sensor_light.png')]            private static const sensor16_Light:Class;
         [Embed(source='UI/devices/16/sensor_proximity.png')]        private static const sensor16_Proximity:Class;
-        [Embed(source='UI/devices/16/sensor_rgb.png')]              private static const sensor16_RGB:Class;
+        [Embed(source='UI/devices/16/sensor_color.png')]              private static const sensor16_Color:Class;
         [Embed(source='UI/devices/16/sensor_touch.png')]            private static const sensor16_Touch:Class;
         [Embed(source='UI/devices/16/sensor_ultrasonic.png')]       private static const sensor16_Ultrasonic:Class;
         [Embed(source='UI/devices/16/sensor_nosensor_hover.png')]   private static const sensor16_None_Hover:Class;
@@ -367,7 +367,7 @@ public class Resources {
         [Embed(source='UI/devices/16/sensor_led_hover.png')]        private static const sensor16_Led_Hover:Class;
         [Embed(source='UI/devices/16/sensor_light_hover.png')]      private static const sensor16_Light_Hover:Class;
         [Embed(source='UI/devices/16/sensor_proximity_hover.png')]  private static const sensor16_Proximity_Hover:Class;
-        [Embed(source='UI/devices/16/sensor_rgb_hover.png')]        private static const sensor16_RGB_Hover:Class;
+        [Embed(source='UI/devices/16/sensor_color_hover.png')]      private static const sensor16_Color_Hover:Class;
         [Embed(source='UI/devices/16/sensor_touch_hover.png')]      private static const sensor16_Touch_Hover:Class;
         [Embed(source='UI/devices/16/sensor_ultrasonic_hover.png')] private static const sensor16_Ultrasonic_Hover:Class;
 
@@ -380,7 +380,7 @@ public class Resources {
         [Embed(source='UI/devices/32/sensor_led.png')]              private static const sensor32_Led:Class;
         [Embed(source='UI/devices/32/sensor_light.png')]            private static const sensor32_Light:Class;
         [Embed(source='UI/devices/32/sensor_proximity.png')]        private static const sensor32_Proximity:Class;
-        [Embed(source='UI/devices/32/sensor_rgb.png')]              private static const sensor32_RGB:Class;
+        [Embed(source='UI/devices/32/sensor_color.png')]            private static const sensor32_Color:Class;
         [Embed(source='UI/devices/32/sensor_touch.png')]            private static const sensor32_Touch:Class;
         [Embed(source='UI/devices/32/sensor_ultrasonic.png')]       private static const sensor32_Ultrasonic:Class;
         [Embed(source='UI/devices/32/sensor_nosensor_hover.png')]   private static const sensor32_None_Hover:Class;
@@ -388,7 +388,7 @@ public class Resources {
         [Embed(source='UI/devices/32/sensor_led_hover.png')]        private static const sensor32_Led_Hover:Class;
         [Embed(source='UI/devices/32/sensor_light_hover.png')]      private static const sensor32_Light_Hover:Class;
         [Embed(source='UI/devices/32/sensor_proximity_hover.png')]  private static const sensor32_Proximity_Hover:Class;
-        [Embed(source='UI/devices/32/sensor_rgb_hover.png')]        private static const sensor32_RGB_Hover:Class;
+        [Embed(source='UI/devices/32/sensor_color_hover.png')]      private static const sensor32_Color_Hover:Class;
         [Embed(source='UI/devices/32/sensor_touch_hover.png')]      private static const sensor32_Touch_Hover:Class;
         [Embed(source='UI/devices/32/sensor_ultrasonic_hover.png')] private static const sensor32_Ultrasonic_Hover:Class;
 

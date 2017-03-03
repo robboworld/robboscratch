@@ -30,7 +30,7 @@ public class DeviceSelectorPanel extends Sprite {
                                       Resources.createBmp('sensor32_Touch'),
                                       Resources.createBmp('sensor32_Proximity'),
                                       Resources.createBmp('sensor32_Ultrasonic'),
-                                      Resources.createBmp('sensor32_RGB')
+                                      Resources.createBmp('sensor32_Color')
                                      ];
            private var iconsHover:Array = [Resources.createBmp('sensor32_None_Hover'),
                                            Resources.createBmp('sensor32_Line_Hover'),
@@ -39,7 +39,7 @@ public class DeviceSelectorPanel extends Sprite {
                                            Resources.createBmp('sensor32_Touch_Hover'),
                                            Resources.createBmp('sensor32_Proximity_Hover'),
                                            Resources.createBmp('sensor32_Ultrasonic_Hover'),
-                                           Resources.createBmp('sensor32_RGB_Hover')
+                                           Resources.createBmp('sensor32_Color_Hover')
                                          ];
 
 

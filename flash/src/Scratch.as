@@ -124,7 +124,17 @@ public class Scratch extends Sprite {
 
 
     public static const ROBOT_SENSOR_COUNT:int = 5;
-    public var robotSensors:Array = new Array();
+
+    public static const ROBOT_SENSOR_TYPE_NONE:int       = 0;
+    public static const ROBOT_SENSOR_TYPE_LINE:int       = 1;
+    public static const ROBOT_SENSOR_TYPE_LED:int        = 2;
+    public static const ROBOT_SENSOR_TYPE_LIGHT:int      = 3;
+    public static const ROBOT_SENSOR_TYPE_TOUCH:int      = 4;
+    public static const ROBOT_SENSOR_TYPE_PROXIMITY:int  = 5;
+    public static const ROBOT_SENSOR_TYPE_ULTRASONIC:int = 6;
+    public static const ROBOT_SENSOR_TYPE_COLOR:int      = 7;
+
+    public var robotSensors:Array = new Array(ROBOT_SENSOR_COUNT);
     public var robotMotorLeft:RobotMotor  = new RobotMotor();
     public var robotMotorRight:RobotMotor = new RobotMotor();
 
@@ -234,7 +244,7 @@ public class Scratch extends Sprite {
 
 
       for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
-         robotSensors[i] = new RobotSensor(0);
+         robotSensors[i] = new RobotSensor(ROBOT_SENSOR_TYPE_NONE);
       }
 
       loadSettings(null);
@@ -427,7 +437,28 @@ public class Scratch extends Sprite {
 
         for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
            robotSensors[i].analog = [data[8 + i], data[9 + i], data[10 + i], data[11 + i]];
-           scratchBoardPart.setText(i, robotSensors[i].analog[3]);
+
+           switch(robotSensors[i].type){
+              case ROBOT_SENSOR_TYPE_NONE:
+              case ROBOT_SENSOR_TYPE_LED: {
+                 scratchBoardPart.disable(i);
+                 break;
+              }
+              case ROBOT_SENSOR_TYPE_LINE:
+              case ROBOT_SENSOR_TYPE_LIGHT:
+              case ROBOT_SENSOR_TYPE_TOUCH:
+              case ROBOT_SENSOR_TYPE_PROXIMITY: {
+                 scratchBoardPart.setText(i, robotSensors[i].analog[3]);
+                 break;
+              }
+              case ROBOT_SENSOR_TYPE_ULTRASONIC: {
+                 scratchBoardPart.setText(i, robotSensors[i].analog[2]*256 + robotSensors[i].analog[3]);
+                 break;
+              }
+              case ROBOT_SENSOR_TYPE_COLOR: {
+                 break;
+              }
+           }
         }
 
 /*
@@ -2396,7 +2427,7 @@ public class Scratch extends Sprite {
 
 
 class RobotSensor{
-   public var type:int = 0;
+   public var type:int;
    public var analog:Array = [0, 0, 0, 0];
 
    public function RobotSensor(type:int){
