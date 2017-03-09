@@ -54,6 +54,7 @@ package ui.parts{
 
       private var labelLeftMotor:TextField;
       private var labelRightMotor:TextField;
+      private var labelStartButton:TextField;
 
 
       public function ScratchBoardPart(app:Scratch) {
@@ -66,12 +67,6 @@ package ui.parts{
          dataSprites = new Array();
 
          for (var i:int = 0; i < TITLES.length; i++) {
-            var deviceSelector:DeviceSelector = new DeviceSelector(app, i + 1, 0);
-            arraySensors[i] = deviceSelector;
-            deviceSelector.x = 102;
-            deviceSelector.y = 65 + i * 17;
-            addChild(deviceSelector);
-
             var str:String = TITLES[i];
             var label:TextField;
 
@@ -82,13 +77,24 @@ package ui.parts{
             var sprite:Sprite = new Sprite();
             dataSprites[i] = sprite;
             addChild(sprite);
-
-
-            labelLeftMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 0  * TEXT_VERTICAL_STEP);
-            addChild(labelLeftMotor);
-            labelRightMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 1 * TEXT_VERTICAL_STEP);
-            addChild(labelRightMotor);
          }
+
+         for (var f:int = 0; f < Scratch.ROBOT_SENSOR_COUNT; f++) {
+            var deviceSelector:DeviceSelector = new DeviceSelector(app, f + 1, 0);
+            arraySensors[f] = deviceSelector;
+            deviceSelector.x = 102;
+            deviceSelector.y = 65 + f * 17;
+            addChild(deviceSelector);
+         }
+
+
+         labelLeftMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 0  * TEXT_VERTICAL_STEP);
+         addChild(labelLeftMotor);
+         labelRightMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 1 * TEXT_VERTICAL_STEP);
+         addChild(labelRightMotor);
+         labelStartButton = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 7 * TEXT_VERTICAL_STEP);
+         addChild(labelStartButton);
+
 
          spritesTitle = makeLabel(Translator.map('Robot'), CSS.titleFormat, 10, 5);
          addChild(spritesTitle);
@@ -148,6 +154,16 @@ package ui.parts{
       }
       public function setRightPathDisabled():void {
          labelRightMotor.text = "--";
+      }
+
+
+      public function setStartButton(state:Boolean):void{
+         if(state){
+            labelStartButton.text = "+";
+         }
+         else{
+            labelStartButton.text = "-";
+         }
       }
 
 

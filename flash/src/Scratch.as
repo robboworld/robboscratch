@@ -137,6 +137,7 @@ public class Scratch extends Sprite {
     public var robotSensors:Array = new Array(ROBOT_SENSOR_COUNT);
     public var robotMotorLeft:RobotMotor  = new RobotMotor();
     public var robotMotorRight:RobotMotor = new RobotMotor();
+    public var robotStartButton:Boolean = false;
 
 
     // Display modes
@@ -205,8 +206,6 @@ public class Scratch extends Sprite {
     public var lastTimeMoved:int = 0;
 
 
-
-    public var robotStartButton:Boolean = false;
 
     public var robotEncoderActivated:Boolean = false;
 
@@ -380,6 +379,8 @@ public class Scratch extends Sprite {
               for(var h:int = 0; h < ROBOT_SENSOR_COUNT; h++){
                  scratchBoardPart.disable(h);
               }
+
+              scratchBoardPart.setStartButton(false);
            }
 
            return;
@@ -473,6 +474,10 @@ public class Scratch extends Sprite {
               }
            }
         }
+
+        robotStartButton = data[28] > 0;
+        scratchBoardPart.setStartButton(robotStartButton);
+
 
 /*
         var sensor1:int = data[10] * 256 + data[11];
