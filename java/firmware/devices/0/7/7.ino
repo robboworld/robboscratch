@@ -463,22 +463,22 @@ class ColorSensor: public ISensor{
                if(terminating){
                   switch(mode){
                      case FRAME_RED:{
-                        result[0] = (byte) timeLow;
+                        result[0] = (unsigned byte) timeLow;
                         mode = FRAME_GREEN;
                         break;
                      }
                      case FRAME_GREEN:{
-                        result[1] = (byte) timeLow;
+                        result[1] = (unsigned byte) timeLow;
                         mode = FRAME_BLUE;
                         break;
                      }
                      case FRAME_BLUE:{
-                        result[2] = (byte) timeLow;
+                        result[2] = (unsigned byte) timeLow;
                         mode = FRAME_BRIGHT;
                         break;
                      }
                      case FRAME_BRIGHT:{
-                        result[3] = (byte) timeLow;
+                        result[3] = (unsigned byte) timeLow;
                         mode = FRAME_UNKNOWN;
                         break;
                      }
@@ -511,6 +511,7 @@ class ColorSensor: public ISensor{
                //ok, let's start this frame
                time = millis();
                synchronized = true;
+               terminating = false;
                timeHigh = 0;
                timeLow = 0;
             }

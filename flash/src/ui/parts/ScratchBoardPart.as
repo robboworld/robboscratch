@@ -48,10 +48,12 @@ package ui.parts{
       private var spritesTitle:TextField;
 
       private var titleLabels:Array;
-      private var dataLabels:Array;
       private var dataSprites:Array;
 
       public var arraySensors:Array = new Array();
+
+      private var labelLeftMotor:TextField;
+      private var labelRightMotor:TextField;
 
 
       public function ScratchBoardPart(app:Scratch) {
@@ -61,7 +63,6 @@ package ui.parts{
          addChild(shape = new Shape());
 
          titleLabels = new Array();
-         dataLabels = new Array();
          dataSprites = new Array();
 
          for (var i:int = 0; i < TITLES.length; i++) {
@@ -78,14 +79,15 @@ package ui.parts{
             titleLabels.push(label);
             addChild(label);
 
-            label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
-//            dataLabels.push(label);
-
             var sprite:Sprite = new Sprite();
             dataSprites[i] = sprite;
-            sprite.addChild(label);
-
             addChild(sprite);
+
+
+            labelLeftMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 0  * TEXT_VERTICAL_STEP);
+            addChild(labelLeftMotor);
+            labelRightMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 1 * TEXT_VERTICAL_STEP);
+            addChild(labelRightMotor);
          }
 
          spritesTitle = makeLabel(Translator.map('Robot'), CSS.titleFormat, 10, 5);
@@ -135,6 +137,19 @@ package ui.parts{
          sprite.graphics.endFill();
          dataSprites[index].addChild(sprite);
       }
+      public function setLeftPath(path:int):void {
+         labelLeftMotor.text = path.toString();
+      }
+      public function setLeftPathDisabled():void {
+         labelLeftMotor.text = "--";
+      }
+      public function setRightPath(path:int):void {
+         labelRightMotor.text = path.toString();
+      }
+      public function setRightPathDisabled():void {
+         labelRightMotor.text = "--";
+      }
+
 
       private function fixLayout():void {
 /*

@@ -369,12 +369,15 @@ public class Scratch extends Sprite {
 
 
            if(robotMotorLeft.pathCorrection != 0 || robotMotorLeft.pathCorrection != 0){
-              for(var f:int = 2; f < 8; f++){
+              for(var f:int = 2; f < ROBOT_SENSOR_COUNT; f++){
                  scratchBoardPart.disable(f);
               }
            }
            else{
-              for(var h:int = 0; h < 8; h++){
+              scratchBoardPart.setLeftPathDisabled();
+              scratchBoardPart.setRightPathDisabled();
+
+              for(var h:int = 0; h < ROBOT_SENSOR_COUNT; h++){
                  scratchBoardPart.disable(h);
               }
            }
@@ -409,6 +412,9 @@ public class Scratch extends Sprite {
         robotMotorRight.pathCorrected = (65536 * robotMotorRight.pathMultiplier) + robotMotorRight.path - robotMotorRight.pathCorrection;
 
 
+        scratchBoardPart.setLeftPath(robotMotorLeft.pathCorrected);
+        scratchBoardPart.setRightPath(robotMotorRight.pathCorrected);
+
 
 
 //        setAnalogTextRobot(0, "" + pathCorrectedLeft);
@@ -437,6 +443,7 @@ public class Scratch extends Sprite {
 
         for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
            robotSensors[i].analog = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
+           robotSensors[i].analog[0] = int(robotSensors[i].analog[0] * 0.9);
            trace("sensor" + (i + 1) + "=" + robotSensors[i].analog);
 
            switch(robotSensors[i].type){
@@ -458,9 +465,9 @@ public class Scratch extends Sprite {
               }
               case ROBOT_SENSOR_TYPE_COLOR: {
                  var color:uint = 0;
-                 color += (robotSensors[i].analog[0]*2.5) << 16;
-                 color += (robotSensors[i].analog[1]*2.5) << 8;
-                 color += (robotSensors[i].analog[2]*2.5);
+                 color += (robotSensors[i].analog[0] * 2.5) << 16;
+                 color += (robotSensors[i].analog[1] * 2.5) << 8;
+                 color += (robotSensors[i].analog[2] * 2.5);
                  scratchBoardPart.setColor(i, color);
                  break;
               }
