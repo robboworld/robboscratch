@@ -475,7 +475,7 @@ public class Scratch extends Sprite {
            }
         }
 
-        robotStartButton = data[28] > 0;
+        robotStartButton = data[28] == 0;
         scratchBoardPart.setStartButton(robotStartButton);
 
 

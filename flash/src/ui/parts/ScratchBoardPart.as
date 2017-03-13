@@ -159,10 +159,10 @@ package ui.parts{
 
       public function setStartButton(state:Boolean):void{
          if(state){
-            labelStartButton.text = "+";
+            labelStartButton.text = Translator.map("true");
          }
          else{
-            labelStartButton.text = "-";
+            labelStartButton.text = Translator.map("false");
          }
       }
 
