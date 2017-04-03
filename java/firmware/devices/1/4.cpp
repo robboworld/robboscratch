@@ -97,7 +97,7 @@ void parseSerialNumber(){
 
     if(strcmp(chararrModel, "R") == 0
        && strcmp(chararrVersion, "1") == 0
-       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0)){
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0 || strcmp(chararrPart, "4") == 0)){
 
        MODEL_ID=0;
     }
@@ -109,13 +109,15 @@ void parseSerialNumber(){
     }
     else if(strcmp(chararrModel, "L") == 0
        && strcmp(chararrVersion, "3") == 0
-       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0)){
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0)){
 
        MODEL_ID=2;
     }
     else{
        MODEL_ID=9999;
     }
+
+
 }
 
 
