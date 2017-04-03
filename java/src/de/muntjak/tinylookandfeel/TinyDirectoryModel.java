@@ -9,21 +9,14 @@
 
 package de.muntjak.tinylookandfeel;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListDataEvent;
-import javax.swing.filechooser.FileSystemView;
-import javax.swing.plaf.basic.BasicDirectoryModel;
-import javax.swing.plaf.basic.BasicFileChooserUI;
-
-import sun.awt.shell.ShellFolder;
+import java.beans.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.filechooser.*;
+import javax.swing.plaf.basic.*;
+import sun.awt.shell.*;
 
 /**
  * A copy of BasicDirectoryModel with access to the fileCache.
@@ -203,7 +196,7 @@ public class TinyDirectoryModel extends BasicDirectoryModel {
 	}
 
 	protected void sort(Vector v) {
-		ShellFolder.sortFiles(v);
+		ShellFolder.sort(v);
 	}
 
 	// Obsolete - not used

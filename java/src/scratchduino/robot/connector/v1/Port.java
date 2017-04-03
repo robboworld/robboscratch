@@ -146,7 +146,13 @@ public class Port implements IPort{
             // Hardware Overflow
             //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
             //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT);
-            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            
+            if(config.getPortFlowControl() == IConfiguration.PORT_FLOW_CONTROL.NONE){
+               serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            }
+            else{
+               serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+            }
             serialPort.purgePort(255);
 
             log.debug(LOG + Port.this.portName + " ok, done.");

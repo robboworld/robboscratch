@@ -109,22 +109,6 @@ public class ScratchRuntime {
    // Running and stopping
    //------------------------------
 
-   ///my shit
-/*
-   public function resetAnalogsRobot():void {
-      for (var i:int = 0; i < analogsRobot.length; ++i) {
-         analogsRobot[i] = 0;
-         app.setAnalogTextRobot(i, '0');
-      }
-   }
-   public function resetAnalogsLab():void {
-      for (var i:int = 0; i < analogsLab.length; ++i) {
-         analogsLab[i] = 0;
-         app.setAnalogTextLab(i, '0');
-      }
-   }
-*/
-
    public function stepRuntime():void {
       if (projectToInstall != null && app.isOffline) {
          installProject(projectToInstall);
@@ -499,47 +483,46 @@ public class ScratchRuntime {
 
 
    public function selectProjectFile():void {
-      // Prompt user for a file name and load that file.
-      //var fileName:String, data:ByteArray;
+       // Prompt user for a file name and load that file.
+       //var fileName:String, data:ByteArray;
 
-      var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/load/reset?timer=" + getTimer());
-      request.method = URLRequestMethod.GET;
-      var loader:URLLoader = new URLLoader();
-
-      loader.addEventListener(Event.COMPLETE, loadResetOk);
-
-      loader.load(request);
+       stopAll();
 
 
-//        var fileReference:FileReference = new FileReference();
+       TARGET::desktop{
+           var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/load/reset?timer=" + getTimer());
+           request.method = URLRequestMethod.GET;
+           var loader:URLLoader = new URLLoader();
 
-//        var urlRequest:URLRequest = new URLRequest("http://127.0.0.1:9876/load");
-//        fileReference.download(urlRequest);
+           loader.addEventListener(Event.COMPLETE, loadResetOk);
+
+           loader.load(request);
+       }
 
 
+      TARGET::android{
+         function fileLoadHandler(event:Event):void {
+            var file:FileReference = FileReference(event.target);
+            fileName = file.name;
+            data = file.data;
+            if (app.stagePane.isEmpty()) {
+               doInstall();
+            } else {
+               DialogBox.confirm(Translator.map('Replace contents of the current project?'), app.stage, doInstall);
+            }
+         }
+         function doInstall(ignore:* = null):void {
+            installProjectFromFile(fileName, data);
+         }
 
-//      function fileLoadHandler(event:Event):void {
-//         var file:FileReference = FileReference(event.target);
-//         fileName = file.name;
-//         data = file.data;
-//         if (app.stagePane.isEmpty()) {
-//            doInstall();
-//         } else {
-//            DialogBox.confirm(Translator.map('Replace contents of the current project?'), app.stage, doInstall);
-//         }
-//      }
-//      function doInstall(ignore:* = null):void {
-//         installProjectFromFile(fileName, data);
-//      }
-      stopAll();
-
-      /* These filters are not actually used, because File.browse() method
-       * doesn't work properly on Android platform. Instead of it there's used
-       * NativeDialog and File.getDirectoryListing() to show selecton dialog.
-       */
-      //var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
-      //var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-//      Scratch.loadSingleFile(fileLoadHandler);
+         /* These filters are not actually used, because File.browse() method
+         * doesn't work properly on Android platform. Instead of it there's used
+         * NativeDialog and File.getDirectoryListing() to show selecton dialog.
+         */
+         var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
+         var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
+         Scratch.loadSingleFile(fileLoadHandler);
+      }
    }
 
    public function installProjectFromFile(fileName:String, data:ByteArray):void {

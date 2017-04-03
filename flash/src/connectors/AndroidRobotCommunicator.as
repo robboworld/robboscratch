@@ -15,27 +15,26 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
 
 
     public  var lastSendRobot:int = 0;
+    public  var lastSendLab:int = 0;
 
 
     private var speedLeft:int   = 0;
     private var speedRight:int  = 0;
-    private var _speedLeft:int;
-    private var _speedRight:int;
+    private var _speedLeft:int  = 20;
+    private var _speedRight:int = 20;
     private var isMotionTerminated:Boolean = false;
 
     private var isEncoder:Boolean = false;
 
 
-   private var settingsDefaultMotorSpeed:int;
+    private var ledState:Array = [false, false, false, false, false, false, false, false];
+    private var ledStateColor:Array = [false, false, false];
+
 
 
 
     public function AndroidRobotCommunicator(settingsDefaultMotorSpeed:int, onDataReceiveRobot:Function, onDataReceiveLab:Function) {
         trace("Android Connector created");
-        this.settingsDefaultMotorSpeed = settingsDefaultMotorSpeed;
-        this._speedLeft  = settingsDefaultMotorSpeed;
-        this._speedRight = settingsDefaultMotorSpeed;
-
         this.onDataReceiveRobot = onDataReceiveRobot;
         this.onDataReceiveLab = onDataReceiveLab;
     }
@@ -213,8 +212,8 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
             speedRight = _speedRight;
 
             if(speedLeft == 0 && speedRight == 0){
-                speedLeft  = settingsDefaultMotorSpeed;
-                speedRight = settingsDefaultMotorSpeed;
+                speedLeft  = 20;
+                speedRight = 20;
             }
         }
 
@@ -225,7 +224,7 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
 
         isMotionTerminated = false;
 
-        onDataReceiveRobot(RobotANE.powerAndLimit(left, right, limit));
+        onDataReceiveRobot(RobotANE.robotPowerAndLimit(left, right, limit));
         isEncoder = true;
     }
     public function setMotionTerminated():void{
@@ -237,10 +236,10 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
 
 
     public function robLedOn(led:int):void {
-      trace("ROB LED ON=" + led);
+        trace("ROB LED ON=" + led);
     }
     public function robLedOff(led:int):void {
-      trace("ROB LED OFF=" + led);
+        trace("ROB LED OFF=" + led);
     }
 
 
@@ -251,12 +250,34 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
         trace("ROBOT SPEED NORMALIZED " + speedLeft + " " + speedRight);
 
         if(isEncoder){
-            onDataReceiveRobot(RobotANE.check());
+            onDataReceiveRobot(RobotANE.robotCheck());
         }
         else{
-            onDataReceiveRobot(RobotANE.power(speedLeft, speedRight));
+            onDataReceiveRobot(RobotANE.robotPower(speedLeft, speedRight));
         }
     }
+
+
+
+
+
+
+
+
+    public function setClawDegrees(degrees:int):void{
+        trace("CLAW degrees=" + degrees);
+        onDataReceiveRobot(RobotANE.setClawDegrees(degrees));
+    }
+
+
+
+
+    public function setSensorTypes(sensorTypes:Array):void{
+        trace("Sensor Types [" + sensorTypes + "]");
+
+        onDataReceiveRobot(RobotANE.robotSensorTypes(sensorTypes[0], sensorTypes[1], sensorTypes[2], sensorTypes[3], sensorTypes[4]));
+    }
+
 
 
 
@@ -269,35 +290,71 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
 
 
     public function ledOn(led:int):void {
-      trace("LED ON=" + led);
+        trace("LED ON=" + led);
+
+        if(ledState[led] == false) {
+            ledState[led] = true;
+            onDataReceiveLab(RobotANE.labLamp(ledState[0], ledState[1], ledState[2], ledState[3], ledState[4], ledState[5], ledState[6], ledState[7]));
+        }
     }
     public function ledOff(led:int):void {
-      trace("LED OFF=" + led);
+        trace("LED OFF=" + led);
+
+        if(ledState[led] == true) {
+            ledState[led] = false;
+            onDataReceiveLab(RobotANE.labLamp(ledState[0], ledState[1], ledState[2], ledState[3], ledState[4], ledState[5], ledState[6], ledState[7]));
+        }
     }
 
     public function ledColorOn(led:String):void {
-      trace("LED ON=" + led);
+        trace("LED ON=" + led);
+
+        if(led == "r" && ledStateColor[0] == false) {
+            ledStateColor[0] = true;
+            onDataReceiveLab(RobotANE.labLampColor(ledStateColor[0], ledStateColor[1], ledStateColor[2]));
+        }
+        if(led == "y" && ledStateColor[1] == false) {
+            ledStateColor[1] = true;
+            onDataReceiveLab(RobotANE.labLampColor(ledStateColor[0], ledStateColor[1], ledStateColor[2]));
+        }
+        if(led == "g" && ledStateColor[2] == false) {
+            ledStateColor[2] = true;
+            onDataReceiveLab(RobotANE.labLampColor(ledStateColor[0], ledStateColor[1], ledStateColor[2]));
+        }
     }
     public function ledColorOff(led:String):void {
-      trace("LED OFF=" + led);
+        if(led == "r" && ledStateColor[0] == true) {
+            ledStateColor[0] = false;
+            onDataReceiveLab(RobotANE.labLampColor(ledStateColor[0], ledStateColor[1], ledStateColor[2]));
+        }
+        if(led == "y" && ledStateColor[1] == true) {
+            ledStateColor[1] = false;
+            onDataReceiveLab(RobotANE.labLampColor(ledStateColor[0], ledStateColor[1], ledStateColor[2]));
+        }
+        if(led == "g" && ledStateColor[2] == true) {
+            ledStateColor[2] = false;
+            onDataReceiveLab(RobotANE.labLampColor(ledStateColor[0], ledStateColor[1], ledStateColor[2]));
+        }
     }
 
     public function playNote(note:int):void{
-      trace("PLAY=" + note);
+        trace("PLAY=" + note);
+
+        onDataReceiveLab(RobotANE.labSound(note));
     }
 
 
 
-   public function setLabDigital(pin:int, value:Boolean):void{
-      trace("SET LAB DIGITAL PIN=" + pin + " VALUE=" + value);
-   }
+    public function setLabDigital(pin:int, value:Boolean):void{
+        trace("SET LAB DIGITAL PIN=" + pin + " VALUE=" + value);
+    }
 
 
 
 
-   public function setLabDigitalPwm(pin:int, value:int):void{
-      trace("SET LAB DIGITAL PWM PIN=" + pin + " VALUE=" + value);
-   }
+    public function setLabDigitalPwm(pin:int, value:int):void{
+        trace("SET LAB DIGITAL PWM PIN=" + pin + " VALUE=" + value);
+    }
 
 
 
@@ -311,6 +368,14 @@ public class AndroidRobotCommunicator implements IRobotCommunicator {
 
         lastSendRobot = getTimer();
         manageRobot();
+
+        //Let's send it once per 100ms
+        if(getTimer() - lastSendLab > 100) {
+            onDataReceiveLab(RobotANE.labCheck());
+//            onDataReceiveLab(RobotANE.labLamp(true, true, true, true, true, true, true, true));
+
+            lastSendLab = getTimer();
+        }
     }
 }
 }

@@ -5,9 +5,12 @@ import java.util.*;
 
 public interface IConfiguration{
    
+   
    IOS getIOS();
    
    int getPortSpeed();
+   enum PORT_FLOW_CONTROL{NONE, RTS_CTS};   
+   PORT_FLOW_CONTROL getPortFlowControl();   
    Set<String> excludePorts();
    int getPortInitDelay();
    int getPortCloseDelay();

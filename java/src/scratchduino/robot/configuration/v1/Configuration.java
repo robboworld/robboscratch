@@ -142,6 +142,28 @@ public class Configuration implements IConfiguration{
          }
       }
    }
+   
+   @Override
+   public PORT_FLOW_CONTROL getPortFlowControl(){
+      String sPortSpeed = properties.getProperty("flow");
+
+      if(sPortSpeed == null || "".equals(sPortSpeed)){
+         throw new Error("'flow' is missed in the server.properties");
+      }
+      else{
+         switch(sPortSpeed){
+            case "none":{
+               return PORT_FLOW_CONTROL.NONE; 
+            }
+            case "rts/cts":{
+               return PORT_FLOW_CONTROL.RTS_CTS; 
+            }
+            default:{
+               throw new Error("'flow' can be 'none' or 'rts/cts'");
+            }
+         }
+      }
+   }
    @Override
    public Set<String> excludePorts(){
       String KEY = "exclude";

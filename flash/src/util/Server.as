@@ -100,22 +100,26 @@ public class Server implements IServer {
 //       return null;
 //    }
 
-
-      if(Capabilities.os.indexOf("Windows") >= 0){
+       TARGET::desktop{
+           if (Capabilities.os.indexOf("Windows") >= 0) {
 //         return fetchAsset('media/' + md5, whenDone);
-         return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
-      }
-      else if(Capabilities.os.indexOf("Mac") >= 0){
+               return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
+           }
+           else if (Capabilities.os.indexOf("Mac") >= 0) {
 //         return fetchAsset('media/' + md5, whenDone);
-         return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
-      }
-      else if(Capabilities.os.indexOf("Linux") >= 0){
+               return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
+           }
+           else if (Capabilities.os.indexOf("Linux") >= 0) {
 //         return fetchAsset('/opt/ScratchDuino2/media/' + md5, whenDone);
-         return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
-      }
-      else{
-         return fetchAsset('media/' + md5, whenDone);
-      }
+               return fetchAsset('http://127.0.0.1:9877/' + md5, whenDone);
+           }
+           else {
+               return fetchAsset('media/' + md5, whenDone);
+           }
+       }
+       TARGET::android{
+           return fetchAsset('http://servers4.me/robbo/media/' + md5, whenDone);
+       }
    }
 
    public function getMediaLibrary(whenDone:Function, assetType:String):URLLoader {

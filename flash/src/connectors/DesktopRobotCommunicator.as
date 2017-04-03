@@ -62,6 +62,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
     private var labDigitalOut:Array = [false, false, false, false, false, false, false, false, false, false, false, false, false];
+    private var robClawActual:int = 0;
+    private var robClawTarget:int = 0;
 
 
     private var settingsDefaultMotorSpeed:int;
@@ -548,27 +550,9 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
 
-    public function setClawDegrees(degrees:int):void{
+   public function setClawDegrees(degrees:int):void{
       trace("CLAW degrees=" + degrees);
-         interfaceBusyRobot = true;
-
-         try{
-            var url:String = sBaseURLRobot + "/rob_claw/" + degrees.toString(16) + "?" + iAnticacheRobot;
-
-            var requestRobot:URLRequest = new URLRequest(url);
-            requestRobot.method = URLRequestMethod.POST;
-            iCounterRequestRobot++;
-
-            trace(getTime() + " [" + iCounterRequestRobot + "] " + url);
-            loaderRobot.load(requestRobot);
-
-            isEncoder = true;
-         }
-         catch (e1:Error){
-            iAnticacheRobot++;
-            interfaceBusyRobot = false;
-            onDataReceiveRobot([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-         }
+      this.robClawTarget = degrees;
     }
 
 
@@ -596,6 +580,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             isEncoder = true;
          }
          catch (e1:Error){
+
             iAnticacheRobot++;
             interfaceBusyRobot = false;
             onDataReceiveRobot([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -696,15 +681,37 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
 
-   public function manageRobot():void{
+   public function manageRobot():void {
 
-         if(interfaceBusyRobot){
-            return;
+      if (interfaceBusyRobot) {
+         return;
+      }
+
+      interfaceBusyRobot = true;
+
+      var url:String;
+      var requestRobot:URLRequest;
+      if (this.robClawActual != this.robClawTarget){
+         try {
+            url = sBaseURLRobot + "/rob_claw/" + this.robClawTarget.toString(16) + "?" + iAnticacheRobot;
+
+            requestRobot = new URLRequest(url);
+            requestRobot.method = URLRequestMethod.POST;
+            iCounterRequestRobot++;
+
+            trace(getTime() + " [" + iCounterRequestRobot + "] " + url);
+            loaderRobot.load(requestRobot);
+
+            this.robClawActual = this.robClawTarget;
          }
-
-         interfaceBusyRobot = true;
-
-         try{
+         catch (e1:Error) {
+            iAnticacheRobot++;
+            interfaceBusyRobot = false;
+            onDataReceiveRobot([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+         }
+      }
+      else {
+         try {
             var speedLeftNormalized:int = speedLeft * 0.63;
             var speedRightNormalized:int = speedRight * 0.63;
 
@@ -714,24 +721,20 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             var speedLeftShifted:int;
             var speedRightShifted:int;
 
-            if(speedLeftNormalized >= 0){
+            if (speedLeftNormalized >= 0) {
                speedLeftShifted = speedLeftNormalized;
             }
-            else{
+            else {
                speedLeftShifted = (0 - speedLeftNormalized) + 64;
             }
-            if(speedRightNormalized >= 0){
+            if (speedRightNormalized >= 0) {
                speedRightShifted = speedRightNormalized;
             }
-            else{
+            else {
                speedRightShifted = (0 - speedRightNormalized) + 64;
             }
 
-
-            var url:String;
-            var requestRobot:URLRequest;
-
-            if(isEncoder){
+            if (isEncoder) {
                url = sBaseURLRobot + "/rob_check?" + iAnticacheRobot;
 
                requestRobot = new URLRequest(url);
@@ -741,7 +744,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                trace(getTime() + " [" + iCounterRequestRobot + "] " + url);
                loaderRobot.load(requestRobot);
             }
-            else{
+            else {
                url = sBaseURLRobot + "/rob_power/" + speedLeftShifted.toString(16) + "/" + speedRightShifted.toString(16) + "?" + iAnticacheRobot;
 
                requestRobot = new URLRequest(url);
@@ -752,12 +755,13 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                loaderRobot.load(requestRobot);
             }
          }
-         catch (e1:Error){
+         catch (e1:Error) {
             iAnticacheRobot++;
             interfaceBusyRobot = false;
             onDataReceiveRobot([]);
          }
-    }
+      }
+   }
 
 
 

@@ -50,6 +50,20 @@ TARGET::android {
    import flash.filesystem.FileMode;
    import flash.filesystem.FileStream;
 }
+
+TARGET::android {
+    import pl.mateuszmackowiak.nativeANE.dialogs.NativeAlertDialog;
+    import pl.mateuszmackowiak.nativeANE.dialogs.NativeListDialog;
+    import pl.mateuszmackowiak.nativeANE.dialogs.NativeProgressDialog;
+    import pl.mateuszmackowiak.nativeANE.dialogs.NativeTextInputDialog;
+    import pl.mateuszmackowiak.nativeANE.dialogs.support.NativeTextField;
+    import pl.mateuszmackowiak.nativeANE.dialogs.support.iNativeDialog;
+    import pl.mateuszmackowiak.nativeANE.events.NativeDialogEvent;
+    import pl.mateuszmackowiak.nativeANE.events.NativeDialogListEvent;
+    import pl.mateuszmackowiak.nativeANE.notifications.Toast;
+}
+
+
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.net.FileReference;
@@ -237,6 +251,8 @@ public class Scratch extends Sprite {
     }
 
 
+
+
    public function Scratch() {
       loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
       app = this;
@@ -246,7 +262,16 @@ public class Scratch extends Sprite {
          robotSensors[i] = new RobotSensor(ROBOT_SENSOR_TYPE_NONE);
       }
 
-      loadSettings(null);
+
+       TARGET::desktop {
+           loadSettings(null);
+       }
+
+
+
+       TARGET::android {
+           determineJSAccess();
+       }
    }
 
    public function loadSettings(event:Event):void {
@@ -1766,110 +1791,116 @@ public class Scratch extends Sprite {
 
 
    protected function exportProjectToFileAs(fromJS:Boolean = false):void {
-//      TARGET::android {
-//         var projectFileName:String;
-//         var zipData:ByteArray;
-//
-//         function squeakSoundsConverted():void {
-//            scriptsPane.saveScripts(false);
-//            zipData = projIO.encodeProjectAsZipFile(stagePane);
-//
-//            /*  Create Text input dialog, where user inputs name for project.
-//             */
-//
-//            var t:NativeTextInputDialog = new NativeTextInputDialog();
-//            t.setTitle(Translator.map("Choose project name"));
-//            t.setCancelable(true);
-//            /*  Any button will trigger CLOSED event, so we need only OK button.
-//             *  Dialog can be canceled with Android back button or tapping anywhere
-//             *  outide the dialog.
-//             */
-//            t.buttons = Vector.<String>(["OK"/*, "Cancel"*/]);
-//
-//            t.addEventListener(NativeDialogEvent.CANCELED, onCancelDialog);
-//            t.addEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
-//
-//            var v:Vector.<NativeTextField> = new Vector.<NativeTextField>();
-//
-//
-//            //creates a message text-field
-//            var message:NativeTextField = new NativeTextField(null);
-//            /*  Two extra spaces in the beginning and end to add some padding to message
-//             */
-//            message.text = Translator.map("  To cancel, tap outside the dialog or press back button  ");
-//            message.editable = false;
-//            v.push(message);
-//
-//
-//            // create text-input
-//            var projectNameTextInput:NativeTextField = new NativeTextField("Project name");
-//            projectNameTextInput.displayAsPassword = false;
-//            projectNameTextInput.prompText = Translator.map("Project name");
-//            projectNameTextInput.softKeyboardType = SoftKeyboardType.DEFAULT;
-//            projectNameTextInput.addEventListener(Event.CHANGE, function (event:Event):void {
-//               var tf:NativeTextField = NativeTextField(event.target);
-//               projectFileName = tf.text;
-//            });
-//            // on return click
-//            projectNameTextInput.addEventListener(TextEvent.TEXT_INPUT, function (event:Event):void {
-//               var tf:NativeTextField = NativeTextField(event.target);
-//               tf.nativeTextInputDialog.hide(0);
-//               trace(projectFileName);
-//            });
-//
-//            v.push(projectNameTextInput);
-//
-//            t.textInputs = v;
-//            t.show(true);
-//
-//         }
-//
-//         /*function fileSaved(e:Event):void {
-//          if (!fromJS) {
-//          setProjectName(e.target.name);
-//          }
-//          }*/
-//
-//         /* Handler for dialog's close event. Dialog is used for picking
-//          *  filename for project. Text is saved in onChange event, this is
-//          *  used only to remove handler and show dialog once again if
-//          *  user entered empty string for project name.
-//          */
-//         function onCloseOKDialog(event:NativeDialogEvent):void {
-//            var m:iNativeDialog = iNativeDialog(event.target);
-//            trace(event.target);
-//            m.removeEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
-//            trace(event);
-//            m.dispose();
-//
-//            projectFileName = fixFileName(projectFileName);
-//            if (projectFileName.length == 0 || projectFileName == ' ') {
-//               Toast.show("Project name must contain at least one symbol", Toast.LENGTH_SHORT);
-//               // create and show dialog again
-//               squeakSoundsConverted();
-//               return;
-//            }
-//            if (!StringUtils.endsWith(projectFileName, ".sb2")) {
-//               projectFileName = projectFileName + ".sb2";
-//            }
-//            setProjectName(projectFileName);
-//            writeBytesToFile(projectFileName, zipData);
-//         }
-//
-//         function onCancelDialog(event:NativeDialogEvent):void {
-//            var m:iNativeDialog = iNativeDialog(event.target);
-//            trace(event.target);
-//            m.removeEventListener(NativeDialogEvent.CANCELED, onCloseOKDialog);
-//            trace(event);
-//            m.dispose();
-//         }
-//
-//         if (loadInProgress) {
-//            return;
-//         }
-//         var projIO:ProjectIO = new ProjectIO(this);
-//         projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
-//      }
+//       TARGET::android{
+//           RobotANE.selectScratchFileName();
+//       }
+
+      TARGET::android {
+         var projectFileName:String;
+         var zipData:ByteArray;
+
+         function squeakSoundsConverted():void {
+            scriptsPane.saveScripts(false);
+            zipData = projIO.encodeProjectAsZipFile(stagePane);
+
+            /*  Create Text input dialog, where user inputs name for project.
+             */
+
+            var t:NativeTextInputDialog = new NativeTextInputDialog();
+            t.setTitle(Translator.map("Choose project name"));
+            t.setCancelable(true);
+            /*  Any button will trigger CLOSED event, so we need only OK button.
+             *  Dialog can be canceled with Android back button or tapping anywhere
+             *  outide the dialog.
+             */
+            t.buttons = Vector.<String>(["OK"/*, "Cancel"*/]);
+
+            t.addEventListener(NativeDialogEvent.CANCELED, onCancelDialog);
+            t.addEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
+
+            var v:Vector.<NativeTextField> = new Vector.<NativeTextField>();
+
+
+            //creates a message text-field
+            var message:NativeTextField = new NativeTextField(null);
+            /*  Two extra spaces in the beginning and end to add some padding to message
+             */
+            message.text = Translator.map("  To cancel, tap outside the dialog or press back button  ");
+            message.editable = false;
+            v.push(message);
+
+
+            // create text-input
+            var projectNameTextInput:NativeTextField = new NativeTextField("Project name");
+            projectNameTextInput.displayAsPassword = false;
+            projectNameTextInput.prompText = Translator.map("Project name");
+            projectNameTextInput.softKeyboardType = SoftKeyboardType.DEFAULT;
+            projectNameTextInput.addEventListener(Event.CHANGE, function (event:Event):void {
+               var tf:NativeTextField = NativeTextField(event.target);
+               projectFileName = tf.text;
+            });
+            // on return click
+            projectNameTextInput.addEventListener(TextEvent.TEXT_INPUT, function (event:Event):void {
+               var tf:NativeTextField = NativeTextField(event.target);
+               tf.nativeTextInputDialog.hide(0);
+               trace(projectFileName);
+            });
+
+            v.push(projectNameTextInput);
+
+            t.textInputs = v;
+            t.show(true);
+
+         }
+
+         /*function fileSaved(e:Event):void {
+          if (!fromJS) {
+          setProjectName(e.target.name);
+          }
+          }*/
+
+         /* Handler for dialog's close event. Dialog is used for picking
+          *  filename for project. Text is saved in onChange event, this is
+          *  used only to remove handler and show dialog once again if
+          *  user entered empty string for project name.
+          */
+         function onCloseOKDialog(event:NativeDialogEvent):void {
+            var m:iNativeDialog = iNativeDialog(event.target);
+            trace(event.target);
+            m.removeEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
+            trace(event);
+            m.dispose();
+
+            projectFileName = fixFileName(projectFileName);
+            if (projectFileName.length == 0 || projectFileName == ' ') {
+               Toast.show("Project name must contain at least one symbol", Toast.LENGTH_SHORT);
+               // create and show dialog again
+               squeakSoundsConverted();
+               return;
+            }
+            if (!StringUtils.endsWith(projectFileName, ".sb2")) {
+               projectFileName = projectFileName + ".sb2";
+            }
+            setProjectName(projectFileName);
+            writeBytesToFile(projectFileName, zipData);
+         }
+
+         function onCancelDialog(event:NativeDialogEvent):void {
+            var m:iNativeDialog = iNativeDialog(event.target);
+            trace(event.target);
+            m.removeEventListener(NativeDialogEvent.CANCELED, onCloseOKDialog);
+            trace(event);
+            m.dispose();
+         }
+
+         if (loadInProgress) {
+            return;
+         }
+         var projIO:ProjectIO = new ProjectIO(this);
+         projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
+      }
+
+
       TARGET::desktop {
          trace("save in progress=" + saveInProgress);
 
@@ -2297,114 +2328,116 @@ public class Scratch extends Sprite {
 
 
    static public function loadSingleFile(fileLoaded:Function, filters:Array = null):void {
-//      TARGET::android {
-//         var selectedIndex:int;
-//
-//         /* Create directory if it doesn't exist (does nothing if already exist) */
-//         scratchProjectsDirectory.createDirectory();
-//
-//         /* Create dialog, where user can select project file to load. */
-//         var m:NativeListDialog = new NativeListDialog();
-//         m.setCancelable(true);
-//         m.addEventListener(NativeDialogEvent.CANCELED, dialogCanceled);
-//         m.addEventListener(NativeDialogEvent.OPENED, trace);
-//         m.addEventListener(NativeDialogEvent.CLOSED, readSelected);
-//         m.addEventListener(NativeDialogListEvent.LIST_CHANGE, fileSelected);
-//
-//         m.buttons = Vector.<String>([Translator.map("OK"), Translator.map("Cancel")]);
-//         m.title = Translator.map("Select project");
-//         m.message = "Message";
-//
-//         if (currentProjectsDirectory == null) {
-//            currentProjectsDirectory = scratchProjectsDirectory;
-//         }
-//         var curDirFiles:Array = currentProjectsDirectory.getDirectoryListing();
-//         curDirFiles.sort(function (x:File, y:File):int {
-//
-//            function cmp(f:File):int {
-//               return f.isDirectory ? 0 : 1;
-//            }
-//
-//            var a:int = cmp(x);
-//            var b:int = cmp(y);
-//            if (a != b) {
-//               return a - b;
-//            } else {
-//               if (x.name < y.name) return -1;
-//               else if (x.name == y.name) return 0;
-//               else return 1;
-//            }
-//
-//         });
-//         var files:Vector.<File> = new Vector.<File>();
-//         var names:Array = new Array();
-//         if (currentProjectsDirectory.parent != null) {
-//            names.push("..");
-//            files.push(currentProjectsDirectory.parent);
-//         }
-//         for (var i:uint = 0; i < curDirFiles.length; i++) {
-//            var name:String = curDirFiles[i].name;
-//            if (curDirFiles[i].isDirectory) {
-//               files.push(curDirFiles[i]);
-//               names.push("[" + name + "]");
-//            } else if (StringUtils.endsWith(name, ".sb2")) {
-//               files.push(curDirFiles[i]);
-//               names.push(name.substring(0, name.length - ".sb2".length));
-//            } else if (StringUtils.endsWith(name, ".sb")) {
-//               files.push(curDirFiles[i]);
-//               names.push(name.substring(0, name.length - ".sb".length));
-//            }
-//         }
-//
-//         m.dataProvider = Vector.<Object>(names);
-//         m.displayMode = NativeListDialog.DISPLAY_MODE_SINGLE;
-//         m.selectedIndex = -1;
-//         m.show();
-//
-//         /* Seems to be easily replaced by @trace function.
-//          * Disposing is redundant because this event is always dispatched after CLOSED
-//          */
-//         function dialogCanceled(event:NativeDialogEvent):void {
-//            var d:NativeListDialog = NativeListDialog(event.target);
-//
-//            trace("Dialog canceled");
-//
-//            d.dispose();
-//         }
-//
-//         function fileSelected(event:NativeDialogListEvent):void {
-//            var d:NativeListDialog = NativeListDialog(event.target);
-//
-//            selectedIndex = d.selectedIndex;
-//            trace("Selected index:", selectedIndex);
-//
-//            d.dispose();
-//            if (selectedIndex == -1) {
-//               return;
-//            }
-//
-//            if (files[selectedIndex].isDirectory) {
-//               currentProjectsDirectory = files[selectedIndex];
-//               loadSingleFile(fileLoaded, filters);
-//            } else {
-//               var projectFile:FileReference = FileReference(files[selectedIndex]);
-//               projectFile.addEventListener(Event.COMPLETE, fileLoaded);
-//               projectFile.load();
-//            }
-//         }
-//
-//         function readSelected(event:NativeDialogEvent):void {
-//            var m:NativeListDialog = NativeListDialog(event.target);
-//
-//            trace(event);
-//
-//            var projectFile:FileReference = FileReference(files[selectedIndex]);
-//            projectFile.addEventListener(Event.COMPLETE, fileLoaded);
-//            projectFile.load();
-//
-//            m.dispose();
-//         }
-//      }
+      TARGET::android {
+         var selectedIndex:int;
+
+         /* Create directory if it doesn't exist (does nothing if already exist) */
+         scratchProjectsDirectory.createDirectory();
+
+         /* Create dialog, where user can select project file to load. */
+         var m:NativeListDialog = new NativeListDialog();
+         m.setCancelable(true);
+         m.addEventListener(NativeDialogEvent.CANCELED, dialogCanceled);
+         m.addEventListener(NativeDialogEvent.OPENED, trace);
+         m.addEventListener(NativeDialogEvent.CLOSED, readSelected);
+         m.addEventListener(NativeDialogListEvent.LIST_CHANGE, fileSelected);
+
+         m.buttons = Vector.<String>([Translator.map("OK"), Translator.map("Cancel")]);
+         m.title = Translator.map("Select project");
+         m.message = "Message";
+
+         if (currentProjectsDirectory == null) {
+            currentProjectsDirectory = scratchProjectsDirectory;
+         }
+         var curDirFiles:Array = currentProjectsDirectory.getDirectoryListing();
+         curDirFiles.sort(function (x:File, y:File):int {
+
+            function cmp(f:File):int {
+               return f.isDirectory ? 0 : 1;
+            }
+
+            var a:int = cmp(x);
+            var b:int = cmp(y);
+            if (a != b) {
+               return a - b;
+            } else {
+               if (x.name < y.name) return -1;
+               else if (x.name == y.name) return 0;
+               else return 1;
+            }
+
+         });
+         var files:Vector.<File> = new Vector.<File>();
+         var names:Array = new Array();
+         if (currentProjectsDirectory.parent != null) {
+            names.push("..");
+            files.push(currentProjectsDirectory.parent);
+         }
+         for (var i:uint = 0; i < curDirFiles.length; i++) {
+            var name:String = curDirFiles[i].name;
+            if (curDirFiles[i].isDirectory) {
+               files.push(curDirFiles[i]);
+               names.push("[" + name + "]");
+            } else if (StringUtils.endsWith(name, ".sb2")) {
+               files.push(curDirFiles[i]);
+               names.push(name.substring(0, name.length - ".sb2".length));
+            } else if (StringUtils.endsWith(name, ".sb")) {
+               files.push(curDirFiles[i]);
+               names.push(name.substring(0, name.length - ".sb".length));
+            }
+         }
+
+         m.dataProvider = Vector.<Object>(names);
+         m.displayMode = NativeListDialog.DISPLAY_MODE_SINGLE;
+         m.selectedIndex = -1;
+         m.show();
+
+         /* Seems to be easily replaced by @trace function.
+          * Disposing is redundant because this event is always dispatched after CLOSED
+          */
+         function dialogCanceled(event:NativeDialogEvent):void {
+            var d:NativeListDialog = NativeListDialog(event.target);
+
+            trace("Dialog canceled");
+
+            d.dispose();
+         }
+
+         function fileSelected(event:NativeDialogListEvent):void {
+            var d:NativeListDialog = NativeListDialog(event.target);
+
+            selectedIndex = d.selectedIndex;
+            trace("Selected index:", selectedIndex);
+
+            d.dispose();
+            if (selectedIndex == -1) {
+               return;
+            }
+
+            if (files[selectedIndex].isDirectory) {
+               currentProjectsDirectory = files[selectedIndex];
+               loadSingleFile(fileLoaded, filters);
+            } else {
+               var projectFile:FileReference = FileReference(files[selectedIndex]);
+               projectFile.addEventListener(Event.COMPLETE, fileLoaded);
+               projectFile.load();
+            }
+         }
+
+         function readSelected(event:NativeDialogEvent):void {
+            var m:NativeListDialog = NativeListDialog(event.target);
+
+            trace(event);
+
+            var projectFile:FileReference = FileReference(files[selectedIndex]);
+            projectFile.addEventListener(Event.COMPLETE, fileLoaded);
+            projectFile.load();
+
+            m.dispose();
+         }
+      }
+
+
       TARGET::desktop {
          function fileSelected1(event:Event):void {
             if (fileList.fileList.length > 0) {
