@@ -185,6 +185,56 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                   </constructor-arg>
                </bean>
             </entry>
+
+            <entry key="3">
+               <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+
+                  <!-- Latest avaialble firmware version -->
+                  <constructor-arg value="7"/>
+
+                  <constructor-arg>
+                     <map>
+                        <entry key="rob_check">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_check.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_power">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_power.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_encoder">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_encoders.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_pow_encoder">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_power_and_encoders.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_light.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_claw">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_claw.xml" />
+                           </bean>
+                        </entry>
+                        <entry key="rob_sensors">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_robot_sensors.xml" />
+                           </bean>
+                        </entry>
+                     </map>
+                  </constructor-arg>
+               </bean>
+            </entry>
+
+
          </map>
       </constructor-arg>
    </bean>

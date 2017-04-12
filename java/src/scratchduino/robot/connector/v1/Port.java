@@ -23,6 +23,7 @@ public class Port implements IPort{
 
    private final PortChecker portChecker;
    public SerialPort serialPort = null;
+   private ISerialPortMode serialPortMode;
    
 //   private volatile PortCommandReader reader;
 
@@ -123,142 +124,150 @@ public class Port implements IPort{
 
          try{
             Thread.currentThread().setName("Test Data Writer " + Port.this.portName);
+modes:
+            for(ISerialPortMode serialPortMode : config.getSerialPortModes()){
+               // Let's open
+               serialPort.openPort();
+               log.debug(LOG + Port.this.portName + " opened.");
 
-            // Let's open
-            serialPort.openPort();
-            log.debug(LOG + Port.this.portName + " opened.");
-
-            synchronized(Port.this){
-               Port.this.status = IPort.STATUS.OPENNED;
-            }
-
-
-            
-            log.debug(LOG + Port.this.portName + " setting params...");
-            
-
-            // Something standart
-            serialPort.setParams(config.getPortSpeed(),
-                                 SerialPort.DATABITS_8,
-                                 SerialPort.STOPBITS_1,
-                                 SerialPort.PARITY_NONE);
-
-            // Hardware Overflow
-            //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-            //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT);
-            
-            if(config.getPortFlowControl() == IConfiguration.PORT_FLOW_CONTROL.NONE){
-               serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-            }
-            else{
-               serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-            }
-            serialPort.purgePort(255);
-
-            log.debug(LOG + Port.this.portName + " ok, done.");
-
-
-            
-            log.debug(LOG + Port.this.portName + " init delay=" + config.getPortInitDelay());
-
-            if(config.getPortInitDelay() > 0) {
-               //The MacOS hack
-               try{
-                  Thread.sleep(config.getPortInitDelay());
+               synchronized(Port.this){
+                  Port.this.status = IPort.STATUS.OPENNED;
                }
-               catch (InterruptedException e){
-                  throw new Error(e);
-               }
-            }
-
-            
-            
-            // Send "ID" command
-            synchronized(Port.this){
-               Port.this.status = IPort.STATUS.TEST_DATA;
-            }
-
-            
-            DetectTimer timer = new DetectTimer();
-            timer.start();
-
-            log.debug(LOG + Port.this.portName + " detect timer started.");
-
-            //We send a set of "32" now
-            //to avoid false detection
-            for(int f = 0; f < internalTestID + 1; f++) {
-               serialPort.writeByte((byte) 32);
-               log.debug(LOG + Port.this.portName + " 0x32 sent");
-            }
-
-            log.debug(LOG + Port.this.portName + " Test data sent.");
-
-            long lMaxDetecTime = System.currentTimeMillis() + config.getDeviceDetectionTime(); 
-
-            
-            
-            StringBuilder sb = new StringBuilder();
-            do{
-               String data = Port.this.serialPort.readString();
                
-               if(data == null) {
-                  Thread.sleep(100);
+               log.debug(LOG + Port.this.portName + " setting params...");
+               
+   
+               // Something standart
+               serialPort.setParams(serialPortMode.getSpeed(),
+                                    8,
+                                    1,
+                                    SerialPort.PARITY_NONE);
+               
+               Port.this.serialPortMode = serialPortMode;               
+   
+               // Hardware Overflow
+               //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+               //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT);
+               
+               if(serialPortMode.getFlowControl() == ISerialPortMode.PORT_FLOW_CONTROL.RTS_CTS){
+                  serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
                }
-               else {
-                  sb.append(data);
-
-                  //Let's clean the rubbish
-                  while(sb.length() > 0 && sb.charAt(0) != 'R'){
-                     sb.delete(0, 1);
+               else{
+                  serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+               }
+               serialPort.purgePort(255);
+               
+               
+   
+               log.debug(LOG + Port.this.portName + " ok, done.");
+   
+   
+               
+               log.debug(LOG + Port.this.portName + " init delay=" + config.getPortInitDelay());
+   
+               if(config.getPortInitDelay() > 0) {
+                  //The MacOS hack
+                  try{
+                     Thread.sleep(config.getPortInitDelay());
                   }
+                  catch (InterruptedException e){
+                     throw new Error(e);
+                  }
+               }
+   
+               
+               
+               // Send "ID" command
+               synchronized(Port.this){
+                  Port.this.status = IPort.STATUS.TEST_DATA;
+               }
+   
+               
+               DetectTimer timer = new DetectTimer();
+               timer.start();
+   
+               log.debug(LOG + Port.this.portName + " detect timer started.");
+   
+               //We send a set of "32" now
+               //to avoid false detection
+               for(int f = 0; f < internalTestID + 1; f++) {
+                  serialPort.writeByte((byte) 32);
+                  log.debug(LOG + Port.this.portName + " 0x32 sent");
+               }
+   
+               log.debug(LOG + Port.this.portName + " Test data sent.");
+   
+               long lMaxDetecTime = System.currentTimeMillis() + config.getDeviceDetectionTime(); 
+   
+               
+               
+               StringBuilder sb = new StringBuilder();
+               do{
+                  String data = Port.this.serialPort.readString();
                   
-                  log.debug(LOG + Port.this.portName + "=" + data);
-                  
-                  if(sb.length() == (52 * (Port.this.internalTestID + 1))){
-                     //we need THE EXACT acount of bytes
-                     //due to false alarms
-
-                     log.info(LOG + "RAW ID=" + sb + " [" + sb.length() + "]");
-
-
-                     int iDeviceType   = Integer.parseInt(sb.substring(6,11));
-                     int iFirmware     = Integer.parseInt(sb.substring(12,17));
-                     String sSerialNumber = sb.substring(18, 52);
-
-
-                     log.info(LOG + "DEVICE=" + iDeviceType + " VERSION=" + iFirmware + " SERIAL=" + sSerialNumber);
-
-                     Port.this.device = new ConnectedDevice(iDeviceType, iFirmware, sSerialNumber);
-
-                     if(iFirmware >= locator.getDevices().getDevice(iDeviceType).getFirmware()){
-                        synchronized (Port.this){
-//                           reader = new PortCommandReader();                         
-//                           serialPort.removeEventListener();
-//                           serialPort.addEventListener(reader, SerialPort.MASK_RXCHAR);
-                           
-                           Port.this.status = IPort.STATUS.ROBOT_DETECTED;
-                           timer.interrupt();
-                           break;
+                  if(data == null) {
+                     Thread.sleep(100);
+                  }
+                  else {
+                     sb.append(data);
+   
+                     //Let's clean the rubbish
+                     while(sb.length() > 0 && sb.charAt(0) != 'R'){
+                        sb.delete(0, 1);
+                     }
+                     
+                     log.debug(LOG + Port.this.portName + "=" + data);
+                     
+                     if(sb.length() == (52 * (Port.this.internalTestID + 1))){
+                        //we need THE EXACT acount of bytes
+                        //due to false alarms
+   
+                        log.info(LOG + "RAW ID=" + sb + " [" + sb.length() + "]");
+   
+   
+                        int iDeviceType   = Integer.parseInt(sb.substring(6,11));
+                        int iFirmware     = Integer.parseInt(sb.substring(12,17));
+                        String sSerialNumber = sb.substring(18, 52);
+   
+   
+                        log.info(LOG + "DEVICE=" + iDeviceType + " VERSION=" + iFirmware + " SERIAL=" + sSerialNumber);
+   
+                        Port.this.device = new ConnectedDevice(iDeviceType, iFirmware, sSerialNumber);
+   
+                        if(iFirmware >= locator.getDevices().getDevice(iDeviceType).getFirmware()){
+                           synchronized (Port.this){
+   //                           reader = new PortCommandReader();                         
+   //                           serialPort.removeEventListener();
+   //                           serialPort.addEventListener(reader, SerialPort.MASK_RXCHAR);
+                              
+                              Port.this.status = IPort.STATUS.ROBOT_DETECTED;
+                              timer.interrupt();
+                              break modes;
+                           }
+                        }
+                        else{
+                           synchronized (Port.this){
+                              Port.this.status = IPort.STATUS.WRONG_VERSION;
+                              timer.interrupt();
+                              break modes;
+                           }
                         }
                      }
                      else{
                         synchronized (Port.this){
-                           Port.this.status = IPort.STATUS.WRONG_VERSION;
+                           Port.this.status = IPort.STATUS.RESPONSE;
                         }
                      }
+                     
                   }
-                  else{
-                     synchronized (Port.this){
-                        Port.this.status = IPort.STATUS.RESPONSE;
-                     }
-                  }
-                  
+   
                }
-
+               while(lMaxDetecTime > System.currentTimeMillis());
+               
+               log.info(LOG + Port.this.portName + " time is out.");
+               
+               serialPort.closePort();
             }
-            while(lMaxDetecTime > System.currentTimeMillis());
-            
-            log.info(LOG + Port.this.portName + " time is out.");
          }
          catch (Throwable e){
             log.error(LOG, e);
@@ -306,13 +315,13 @@ public class Port implements IPort{
 
 //            reader.read(CID, bbuf);
 
-            Timer timer = new Timer(CID);
-            timer.start();
+//            Timer timer = new Timer(CID);
+//            timer.start();
             serialPort.writeBytes(data);
             
             bbuf.put(serialPort.readBytes(iLength, COMMAND_TIMEOUT - 10));
             
-            timer.interrupt();
+//            timer.interrupt();
             
             if(bbuf.capacity() == iLength) {
                log.debug(LOG + "ok, read " + iLength + " done");
@@ -376,7 +385,7 @@ public class Port implements IPort{
             try{
                Port.this.wait(config.getDeviceDetectionTime() - 10);
                
-               Port.this.status = IPort.STATUS.TIME_OUT;
+//               Port.this.status = IPort.STATUS.TIME_OUT;
             }
             catch (InterruptedException e){
                log.info(LOG + "ok, detection has been finished.");
@@ -384,11 +393,18 @@ public class Port implements IPort{
          }
       }
    }
+
+
+   @Override
+   public int getSpeed(){
+      // TODO Auto-generated method stub
+      return serialPortMode.getSpeed();
+   }
    
    
    
 
-
+/*
    private class Timer extends Thread{
       
       private final long CID;
@@ -434,7 +450,7 @@ public class Port implements IPort{
          }
       }
    }
-
+*/
 
 
 /*

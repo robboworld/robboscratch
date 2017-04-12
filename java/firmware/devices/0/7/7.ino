@@ -333,7 +333,8 @@ class AnalogSensor: public ISensor{
 
 
 
-
+//Transistor schema
+/*
 class SonicSensor: public ISensor{
    boolean resetMode = true;
    boolean measuremnetWaiting;
@@ -355,7 +356,7 @@ class SonicSensor: public ISensor{
    }
 
    void iteration(){
-      /* reset mode with delay */
+      //reset mode with delay
       if(resetMode){
         if(micros() - time > 30000){
             pinMode(pin, OUTPUT);
@@ -371,8 +372,8 @@ class SonicSensor: public ISensor{
       }
 
 
-      /* no response */
-      /* we lost the impulse */
+      // no response
+      // we lost the impulse
       if(micros() - time > 100000){
          reset();
          return;
@@ -399,6 +400,84 @@ class SonicSensor: public ISensor{
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
    }
 };
+*/
+
+
+
+
+
+
+
+//Resistor schema
+class SonicSensor: public ISensor{
+   boolean resetMode = true;
+   boolean measuremnetWaiting;
+   unsigned long time;
+   int result = 0;
+   int pin;
+
+   public:
+   SonicSensor(int pin){
+      this -> pin = pin;
+   };
+
+
+
+   void reset(){
+      measuremnetWaiting = false;
+      resetMode = true;
+      time = micros();
+   }
+
+   void iteration(){
+      //reset mode with delay
+      if(resetMode){
+        if(micros() - time > 30000){
+            pinMode(pin, OUTPUT);
+            digitalWrite(pin, HIGH);
+            delayMicroseconds(9);
+            digitalWrite(pin, LOW);
+            pinMode(pin, INPUT);
+            time = micros();
+            resetMode = false;
+        }
+
+        return;
+      }
+
+
+      // no response
+      // we lost the impulse
+      if(micros() - time > 100000){
+         reset();
+         return;
+      }
+
+
+      if(measuremnetWaiting){
+         if(LOW == digitalRead(pin)){
+            result = ((micros() - time) *  34000) / 2000000 - 8;
+            if(result < 0){
+              result = 0;
+            }
+            reset();
+         }
+      }
+      else{
+         if(digitalRead(pin) == HIGH){
+            measuremnetWaiting = true;
+         }
+      }
+   }
+
+   byte* getResult(){
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
+   }
+};
+
+
+
+
 
 
 

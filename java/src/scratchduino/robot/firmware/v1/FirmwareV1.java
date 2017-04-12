@@ -112,7 +112,7 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
       serialPort.openPort();
 
       // Something standart
-      serialPort.setParams(config.getPortSpeed(),
+      serialPort.setParams(115200,
                            SerialPort.DATABITS_8,
                            SerialPort.STOPBITS_1,
                            SerialPort.PARITY_NONE);

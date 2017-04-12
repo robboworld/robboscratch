@@ -95,6 +95,7 @@ public class Command implements ICommand{
             //Seems ok            
          }
          else{
+            log.fatal("Synchronization lost");
             throw new Exception("Synchronization lost");
          }
          

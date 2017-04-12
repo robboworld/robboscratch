@@ -18,9 +18,10 @@ public interface IPort{
                              WRONG_VERSION,
                              UNKNOWN_DEVICE};
    
-   public String  getPortName();
-   public STATUS  getStatus();
-   public IConnectedDevice getDevice();
-   public void    close();
+   String getPortName();
+   STATUS getStatus();
+   IConnectedDevice getDevice();
+   void close();
    byte[] write(long CID, byte[] data, int iLength);
+   int getSpeed();
 }

@@ -17,6 +17,7 @@ public class Configuration implements IConfiguration{
 
 
 
+   private final List<ISerialPortMode> listSerialPortModes;
 
 
 
@@ -107,6 +108,21 @@ public class Configuration implements IConfiguration{
          throw new Error(e);
       }
 
+      
+      String sSerialPortModes = properties.getProperty("mode")
+                                          .replaceAll(" ", "")
+                                          .replaceAll("\\},\\{", ";")
+                                          .replaceAll("\\{", "")
+                                          .replaceAll("\\}", "");
+      
+      listSerialPortModes = new ArrayList<ISerialPortMode>();      
+      for(String sSerialPortMode : sSerialPortModes.split(";")){
+         String[] arrstrParams = sSerialPortMode.split(",");
+         SerialPortMode serialPortMode = new SerialPortMode(Integer.parseInt(arrstrParams[0]),
+                                                            ISerialPortMode.PORT_FLOW_CONTROL.valueOf(arrstrParams[1])
+                                                            );
+         listSerialPortModes.add(serialPortMode);
+      }
    }
 
 
@@ -125,45 +141,29 @@ public class Configuration implements IConfiguration{
    // return sMongoURL;
    // }
    // }
-
-   @Override
-   public int getPortSpeed(){
-      String sPortSpeed = properties.getProperty("speed");
-
-      if(sPortSpeed == null || "".equals(sPortSpeed)){
-         throw new Error("'Speed' is missed in the server.properties");
-      }
-      else{
-         try{
-            return Integer.parseInt(sPortSpeed);
-         }
-         catch (NumberFormatException e){
-            throw new Error("'Speed' must be int type");
-         }
-      }
+   
+   
+   public List<ISerialPortMode> getSerialPortModes(){
+      return listSerialPortModes;
    }
    
-   @Override
-   public PORT_FLOW_CONTROL getPortFlowControl(){
-      String sPortSpeed = properties.getProperty("flow");
 
-      if(sPortSpeed == null || "".equals(sPortSpeed)){
-         throw new Error("'flow' is missed in the server.properties");
-      }
-      else{
-         switch(sPortSpeed){
-            case "none":{
-               return PORT_FLOW_CONTROL.NONE; 
-            }
-            case "rts/cts":{
-               return PORT_FLOW_CONTROL.RTS_CTS; 
-            }
-            default:{
-               throw new Error("'flow' can be 'none' or 'rts/cts'");
-            }
-         }
-      }
-   }
+//   public int getPortSpeed(){
+//      String sPortSpeed = properties.getProperty("speed");
+//
+//      if(sPortSpeed == null || "".equals(sPortSpeed)){
+//         throw new Error("'Speed' is missed in the server.properties");
+//      }
+//      else{
+//         try{
+//            return Integer.parseInt(sPortSpeed);
+//         }
+//         catch (NumberFormatException e){
+//            throw new Error("'Speed' must be int type");
+//         }
+//      }
+//   }
+   
    @Override
    public Set<String> excludePorts(){
       String KEY = "exclude";

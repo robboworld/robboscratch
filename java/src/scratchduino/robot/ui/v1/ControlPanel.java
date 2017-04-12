@@ -659,13 +659,13 @@ public class ControlPanel extends JFrame implements IControlPanel{
             return lb;
          }
          case OPENNED:{
-            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_opened"));
+            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_opened") + " " + port.getSpeed());
             lb.setIcon(iconYellow);
             updateIcon(iconYellow);
             return lb;
          }
          case TEST_DATA:{
-            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_data_sent"));
+            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_data_sent") + " " + port.getSpeed());
             lb.setIcon(iconYellow);
             updateIcon(iconYellow);
             return lb;

@@ -93,10 +93,16 @@ public class DeviceLocator implements IDeviceLocator{
    
    @Override
    public DeviceLocator.STATUS getStatus(){
-      DeviceLocator.STATUS statusTemp = DeviceLocator.STATUS.READY; 
+      Map<String, Boolean> mapStatuses = new HashMap<String, Boolean>();
+      
+      //Now let's check all ports
+      //Only if all of them are done
+      //we can go on
       
       synchronized(this){
          for(IPort port : listPorts){
+            mapStatuses.put(port.getPortName(), true);
+            
             switch(port.getStatus()){
                case TIME_OUT:{
                   break;
@@ -104,38 +110,33 @@ public class DeviceLocator implements IDeviceLocator{
                case ERROR:{
                   break;
                }
-               case INIT:{
-                  return DeviceLocator.STATUS.IN_PROGRESS;
-               }
-               case OPENNED:{
-                  return DeviceLocator.STATUS.IN_PROGRESS;
-               }
-               case TEST_DATA:{
-                  return DeviceLocator.STATUS.IN_PROGRESS;
-               }
-               case RESPONSE:{
-                  return DeviceLocator.STATUS.IN_PROGRESS;
-               }
                case NO_RESPONSE:{
-                  break;
-               }
-               case ROBOT_DETECTED:{
                   break;
                }
                case UNKNOWN_DEVICE:{
                   break;
                }
-               case TERMINATING:{
-                  return DeviceLocator.STATUS.IN_PROGRESS;
+               case ROBOT_DETECTED:{
+                  break;
                }
-               case TERMINATED:{
-                  return DeviceLocator.STATUS.IN_PROGRESS;
+               case TERMINATING:
+               case TERMINATED:
+               case INIT:
+               case OPENNED:
+               case TEST_DATA:
+               case RESPONSE:{
+                  mapStatuses.put(port.getPortName(), false);                  
                }
             }
          }
       }
-      
-      return statusTemp;
+
+      for(boolean status : mapStatuses.values()){
+         if(!status){
+            return STATUS.IN_PROGRESS; 
+         }
+      }
+      return STATUS.READY;
    }
 
    

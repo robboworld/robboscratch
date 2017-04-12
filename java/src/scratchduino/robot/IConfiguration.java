@@ -8,9 +8,8 @@ public interface IConfiguration{
    
    IOS getIOS();
    
-   int getPortSpeed();
-   enum PORT_FLOW_CONTROL{NONE, RTS_CTS};   
-   PORT_FLOW_CONTROL getPortFlowControl();   
+//   int getPortSpeed();
+   List<ISerialPortMode> getSerialPortModes();   
    Set<String> excludePorts();
    int getPortInitDelay();
    int getPortCloseDelay();
