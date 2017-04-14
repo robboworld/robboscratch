@@ -58,7 +58,7 @@ public class DeviceLocator implements IDeviceLocator{
          for(String sPortName : arrPorts){
             if(config.excludePorts().contains(sPortName.toLowerCase())) continue;
             
-            Port port = new Port(this, sPortName, config, iCounter); 
+            Port port = new Port(this, deviceList, sPortName, config, iCounter); 
             
             ltf.addCell(iCounter);
             ltf.addCell(sPortName);

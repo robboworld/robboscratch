@@ -2,15 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xmlns:context="http://www.springframework.org/schema/context"
-xsi:schemaLocation="http://www.springframework.org/schema/beans
+xmlns:util="http://www.springframework.org/schema/util"
 
-http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 
-http://www.springframework.org/schema/context
-
-
-http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
    <context:annotation-config/>
 
@@ -24,13 +22,15 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
    <bean id="devices" class="scratchduino.robot.commands.v1.DeviceList" scope="singleton" lazy-init="true">
       <constructor-arg>
-         <map>
+         <util:map map-class="java.util.LinkedHashMap">
             <!-- Internal device ID -->
             <entry key="0">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
 
                   <!-- Latest avaialble firmware version -->
+                  <constructor-arg value="115200,NONE"/>
                   <constructor-arg value="7"/>
+                  <constructor-arg value="%avrdude% -C &quot;%root%/firmware/avrdude.conf&quot; -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:&quot;%root%/firmware/%firmware%&quot;:i"/>
 
                   <constructor-arg>
                      <map>
@@ -79,7 +79,9 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
 
                   <!-- Latest avaialble firmware version -->
+                  <constructor-arg value="115200,NONE"/>
                   <constructor-arg value="4"/>
+                  <constructor-arg value="%avrdude% -C &quot;%root%/firmware/avrdude.conf&quot; -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:&quot;%root%/firmware/%firmware%&quot;:i"/>
 
                   <constructor-arg>
                      <map>
@@ -134,7 +136,9 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
 
                   <!-- Latest avaialble firmware version -->
+                  <constructor-arg value="115200,NONE"/>
                   <constructor-arg value="1"/>
+                  <constructor-arg value="%avrdude% -C &quot;%root%/firmware/avrdude.conf&quot; -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:&quot;%root%/firmware/%firmware%&quot;:i"/>
 
                   <constructor-arg>
                      <map>
@@ -189,8 +193,10 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
             <entry key="3">
                <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
 
+                  <constructor-arg value="38400,RTS_CTS"/>
                   <!-- Latest avaialble firmware version -->
-                  <constructor-arg value="7"/>
+                  <constructor-arg value="1"/>
+                  <constructor-arg value="%avrdude% -C firmware/avrdude.conf -v -patmega328p -carduino -P %port% -D -Uflash:w:firmware/%firmware%:i"/>
 
                   <constructor-arg>
                      <map>
@@ -233,9 +239,64 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                   </constructor-arg>
                </bean>
             </entry>
+            <entry key="4">
+               <bean class="scratchduino.robot.commands.v1.Device" scope="singleton" lazy-init="true">
+
+                  <constructor-arg value="38400,RTS_CTS"/>
+                  <!-- Latest avaialble firmware version -->
+                  <constructor-arg value="1"/>
+                  <constructor-arg value="%avrdude% -C firmware/avrdude.conf -v -patmega328p -carduino -P %port% -D -Uflash:w:firmware/%firmware%:i"/>
+
+                  <constructor-arg>
+                     <map>
+                        <entry key="lab_check">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_check.xml" />
+                           </bean>
+                        </entry>
 
 
-         </map>
+                        <entry key="lab_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_lamps.xml" />
+                           </bean>
+                        </entry>
+
+
+                        <entry key="lab_color_lamps">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_color_lamps.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_sound">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_sound.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_on">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_on.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_off">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_off.xml" />
+                           </bean>
+                        </entry>
+
+                        <entry key="lab_dig_pwm">
+                           <bean class="scratchduino.robot.configuration.v1.Command" lazy-init="true">
+                              <constructor-arg value="command_lab_digital_pwm.xml" />
+                           </bean>
+                        </entry>
+                     </map>
+                  </constructor-arg>
+               </bean>
+            </entry>
+         </util:map>
       </constructor-arg>
    </bean>
 

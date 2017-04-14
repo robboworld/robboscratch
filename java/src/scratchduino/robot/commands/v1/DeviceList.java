@@ -5,16 +5,26 @@ import scratchduino.robot.*;
 
 public class DeviceList implements IDeviceList{
    
-   private final Map<Integer, Device> mapDevices;
-
-
-   public DeviceList(Map<Integer, Device> mapDevices){
-      this.mapDevices = mapDevices;
+   private final Map<Integer, IDevice> mapDevices;
+   public DeviceList(Map<Integer, IDevice> mapDevices){
+      this.mapDevices = Collections.unmodifiableMap(new HashMap<Integer, IDevice>(mapDevices));
    }
 
 
    @Override
-   public Device getDevice(int iDeviceID){
+   public IDevice getDevice(int iDeviceID){
       return mapDevices.get(iDeviceID);
+   }
+
+
+   @Override
+   public Collection<IDevice> getDevices(){
+      return mapDevices.values();
+   }
+
+
+   @Override
+   public Collection<Integer> getDeviceIDes(){
+      return mapDevices.keySet();
    }
 }

@@ -17,9 +17,6 @@ public class Configuration implements IConfiguration{
 
 
 
-   private final List<ISerialPortMode> listSerialPortModes;
-
-
 
    private Properties i18n() throws Exception{
       Properties i18n;
@@ -107,62 +104,11 @@ public class Configuration implements IConfiguration{
       catch (Throwable e){
          throw new Error(e);
       }
-
-      
-      String sSerialPortModes = properties.getProperty("mode")
-                                          .replaceAll(" ", "")
-                                          .replaceAll("\\},\\{", ";")
-                                          .replaceAll("\\{", "")
-                                          .replaceAll("\\}", "");
-      
-      listSerialPortModes = new ArrayList<ISerialPortMode>();      
-      for(String sSerialPortMode : sSerialPortModes.split(";")){
-         String[] arrstrParams = sSerialPortMode.split(",");
-         SerialPortMode serialPortMode = new SerialPortMode(Integer.parseInt(arrstrParams[0]),
-                                                            ISerialPortMode.PORT_FLOW_CONTROL.valueOf(arrstrParams[1])
-                                                            );
-         listSerialPortModes.add(serialPortMode);
-      }
    }
 
 
-
-
-
-   // public static String getMongoURL(){
-   // String sMongoURL = properties.getProperty("database_ip");
-   //
-   // if(sMongoURL == null){
-   // throw new ServiceConfigurationException(
-   // "'database_ip' is missed in the server.properties"
-   // );
-   // }
-   // else{
-   // return sMongoURL;
-   // }
-   // }
    
    
-   public List<ISerialPortMode> getSerialPortModes(){
-      return listSerialPortModes;
-   }
-   
-
-//   public int getPortSpeed(){
-//      String sPortSpeed = properties.getProperty("speed");
-//
-//      if(sPortSpeed == null || "".equals(sPortSpeed)){
-//         throw new Error("'Speed' is missed in the server.properties");
-//      }
-//      else{
-//         try{
-//            return Integer.parseInt(sPortSpeed);
-//         }
-//         catch (NumberFormatException e){
-//            throw new Error("'Speed' must be int type");
-//         }
-//      }
-//   }
    
    @Override
    public Set<String> excludePorts(){
@@ -202,28 +148,15 @@ public class Configuration implements IConfiguration{
 
    @Override
    public int getPortInitDelay(){
-      // TODO Auto-generated method stub
-      return 4000;
+      return getIntValue("initDelay");      
    }
-
-
-
-
-
    @Override
    public int getPortCloseDelay(){
-      // TODO Auto-generated method stub
-      return 500;
+      return getIntValue("closeDelay");      
    }
-
-
-
-
-
    @Override
    public int getDeviceDetectionTime(){
-      // TODO Auto-generated method stub
-      return 8000;
+      return getIntValue("detectionTime");      
    }
 
 
@@ -259,14 +192,7 @@ public class Configuration implements IConfiguration{
 
    @Override
    public String getVersion(){
-      String sVersion = properties.getProperty("version");
-
-      if(sVersion == null || "".equals(sVersion)){
-         throw new Error("'version' is missed in the server.properties");
-      }
-      else{
-         return sVersion;
-      }
+      return getStringValue("version");
    }
 
 
@@ -274,32 +200,14 @@ public class Configuration implements IConfiguration{
 
    @Override
    public String getUpdateURL(){
-      String sUpdateURL = properties.getProperty("update_url");
-
-      if(sUpdateURL == null || "".equals(sUpdateURL)){
-         throw new Error("update_url' is missed in the server.properties");
-      }
-      else{
-         return sUpdateURL;
-      }
+      return getStringValue("update_url");
    }
 
 
 
-
-
-   @Override
-   public String getFirmwareCommandLine(){
-      String sFirmwareCommandLine = properties.getProperty("avrdude_command_line");
-
-      if(sFirmwareCommandLine == null || "".equals(sFirmwareCommandLine)){
-         throw new Error("avrdude_command_line' is missed in the server.properties");
-      }
-      else{
-         return sFirmwareCommandLine;
-      }
-   }
-
+   
+   
+   
 
    @Override
    public String getDefaultMotorSpeed(){
@@ -318,15 +226,7 @@ public class Configuration implements IConfiguration{
 
    @Override
    public boolean isAutoSave(){
-      final String KEY = "autosave";
-      String sValue = properties.getProperty(KEY);
-
-      if(sValue == null || "".equals(KEY)){
-         throw new Error("'" + KEY + "' is missed in the server.properties");
-      }
-      else{
-         return Boolean.parseBoolean(sValue);
-      }
+      return getBooleanValue("autosave");      
    }
 
 
@@ -336,5 +236,39 @@ public class Configuration implements IConfiguration{
    @Override
    public String getRootFolder(){
       return this.ROOT_PATH;
+   }
+   
+   
+   
+   
+   
+   
+   private String getStringValue(String sKey){
+      String sValue = properties.getProperty(sKey);
+
+      if(sValue == null || "".equals(sValue)){
+         throw new Error("'" + sKey + "' is missed in the server.properties");
+      }
+      else{
+         return sValue;
+      }
+   }
+   
+   private int getIntValue(String sKey){
+      String sValue = getStringValue(sKey);
+      
+      try{
+         return Integer.parseInt(sValue);
+      }
+      catch (NumberFormatException e){
+         throw new Error("'" + sKey + "' has to be integer");
+      }
+   }
+   
+   
+   private boolean getBooleanValue(String sKey){
+      String sValue = getStringValue(sKey);
+      
+      return Boolean.parseBoolean(sValue);
    }
 }

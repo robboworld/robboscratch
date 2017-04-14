@@ -1,0 +1,126 @@
+{
+	"objName": "LB Hip-Hop",
+	"sounds": [{
+			"soundName": "dance celebrate",
+			"soundID": -1,
+			"md5": "0edb8fb88af19e6e17d0f8cf64c1d136.wav",
+			"sampleCount": 176401,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "lb stance",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5f66e8a521e11bb8d382649303a7c54e.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 54,
+			"rotationCenterY": 244
+		},
+		{
+			"costumeName": "lb top-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ae82b8e7c53349936d64279c59e0b3e2.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 70,
+			"rotationCenterY": 248
+		},
+		{
+			"costumeName": "lb top-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "cbfe5f620fccd664b5eee9a0256a3d75.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 244,
+			"rotationCenterY": 250
+		},
+		{
+			"costumeName": "lb top-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "072ea3ec0a35440ec7af8cab777d57d2.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 234,
+			"rotationCenterY": 286
+		},
+		{
+			"costumeName": "lb top-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "46081ccbad7d6876b95f875ebd4f9ee0.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 148,
+			"rotationCenterY": 258
+		},
+		{
+			"costumeName": "lb top-e",
+			"baseLayerID": -1,
+			"baseLayerMD5": "70793d0ed4bfe4b55698f5f363c7578d.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 174,
+			"rotationCenterY": 256
+		},
+		{
+			"costumeName": "lb chain-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "300aa03a0a47c837b42bbb4aeb1f2485.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 66,
+			"rotationCenterY": 272
+		},
+		{
+			"costumeName": "lb chain-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6d949b75f98667e98b3940434316ccde.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 56,
+			"rotationCenterY": 90
+		},
+		{
+			"costumeName": "lb chain-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d71d300df11c0ba2d431a454be10ae5d.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 198,
+			"rotationCenterY": 266
+		},
+		{
+			"costumeName": "lb chain-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d603f716484ff3e887b1efcaee173382.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 76,
+			"rotationCenterY": 264
+		},
+		{
+			"costumeName": "lb pop-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6efbf373dd2a8aa510423ea9dd46fd72.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 100,
+			"rotationCenterY": 262
+		},
+		{
+			"costumeName": "lb pop-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2cd6fcc1545cd82d992064b7230aeed3.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 66,
+			"rotationCenterY": 268
+		},
+		{
+			"costumeName": "lb pop-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "57ec1bf96812a2a88acaddc0189294ca.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 78,
+			"rotationCenterY": 258
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

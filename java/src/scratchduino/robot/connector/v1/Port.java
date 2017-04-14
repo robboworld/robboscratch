@@ -1,6 +1,7 @@
 package scratchduino.robot.connector.v1;
 
 import java.nio.*;
+import java.util.*;
 import jssc.*;
 import org.apache.commons.logging.*;
 import scratchduino.robot.*;
@@ -14,6 +15,7 @@ public class Port implements IPort{
 
 
    private final IDeviceLocator locator;
+   private final IDeviceList deviceList;
    private final String portName;
    private final IConfiguration config;
    private final int internalTestID;
@@ -28,8 +30,9 @@ public class Port implements IPort{
 //   private volatile PortCommandReader reader;
 
 
-   public Port(IDeviceLocator locator, String sPortName, IConfiguration config, int internalTestID){
+   public Port(IDeviceLocator locator, IDeviceList deviceList, String sPortName, IConfiguration config, int internalTestID){
       this.locator = locator;
+      this.deviceList = deviceList; 
       this.portName = sPortName;
       this.config = config;
       this.internalTestID = internalTestID;
@@ -124,8 +127,13 @@ public class Port implements IPort{
 
          try{
             Thread.currentThread().setName("Test Data Writer " + Port.this.portName);
+            
+            Set<ISerialPortMode> set = new HashSet<ISerialPortMode>();
+            for(IDevice device : deviceList.getDevices()){
+               set.add(device.getPortMode());
+            }
 modes:
-            for(ISerialPortMode serialPortMode : config.getSerialPortModes()){
+            for(ISerialPortMode serialPortMode : set){
                // Let's open
                serialPort.openPort();
                log.debug(LOG + Port.this.portName + " opened.");
@@ -165,16 +173,12 @@ modes:
                
                log.debug(LOG + Port.this.portName + " init delay=" + config.getPortInitDelay());
    
-               if(config.getPortInitDelay() > 0) {
-                  //The MacOS hack
-                  try{
-                     Thread.sleep(config.getPortInitDelay());
-                  }
-                  catch (InterruptedException e){
-                     throw new Error(e);
-                  }
+               try{
+                  Thread.sleep(config.getPortInitDelay());
                }
-   
+               catch (InterruptedException e){
+                  throw new Error(e);
+               }   
                
                
                // Send "ID" command
@@ -203,20 +207,22 @@ modes:
                
                StringBuilder sb = new StringBuilder();
                do{
-                  String data = Port.this.serialPort.readString();
+                  String sData = Port.this.serialPort.readString();
                   
-                  if(data == null) {
+                  log.debug(LOG + "read=" + sData);
+                  
+                  if(sData == null) {
                      Thread.sleep(100);
                   }
                   else {
-                     sb.append(data);
+                     sb.append(sData);
    
                      //Let's clean the rubbish
                      while(sb.length() > 0 && sb.charAt(0) != 'R'){
                         sb.delete(0, 1);
                      }
                      
-                     log.debug(LOG + Port.this.portName + "=" + data);
+                     log.debug(LOG + Port.this.portName + "=" + sData);
                      
                      if(sb.length() == (52 * (Port.this.internalTestID + 1))){
                         //we need THE EXACT acount of bytes

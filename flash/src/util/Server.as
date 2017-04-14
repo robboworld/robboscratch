@@ -118,7 +118,8 @@ public class Server implements IServer {
            }
        }
        TARGET::android{
-           return fetchAsset('http://servers4.me/robbo/media/' + md5, whenDone);
+//           return fetchAsset('http://servers4.me/robbo/media/' + md5, whenDone);
+          return fetchAsset('media/' + md5, whenDone);
        }
    }
 

@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.*;
+import java.util.*;
 import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -17,13 +18,14 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
    private static final long serialVersionUID = -4884511825645086816L;
 
    private static Log log = LogFactory.getLog(FirmwareV1.class);
-   private static final String LOG = "[COM] ";
+   private static final String LOG = "[FIRMWARE] ";
 
    private final IConfiguration config;
    private final IDeviceList listDevices;
 
    private final JLabel lblAvrDudePath;
    private final JLabel lblAvrDudeVersionValue;
+   private final JLabel lblMisk;
    private final JTextArea taFirmwareProgress;
 
    static{
@@ -38,7 +40,7 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
 
       this.setVisible(false);
 
-      this.setSize(800, 300);
+      this.setSize(800, 320);
       this.setLocationRelativeTo(null);
 
       this.setResizable(false);
@@ -72,6 +74,15 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
 
       pnlAvrDudeVersion.setBounds(10, 35, 700, 20);
       this.add(pnlAvrDudeVersion);
+      
+      
+
+      JPanel pnlMisk = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      pnlMisk.setBounds(10, 60, 700, 20);
+      lblMisk = new JLabel();
+      pnlMisk.add(lblMisk);
+      this.add(pnlMisk);
+      
 
       taFirmwareProgress = new JTextArea();
       taFirmwareProgress.setLineWrap(true);
@@ -81,7 +92,7 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
 
       JScrollPane scroll = new JScrollPane(taFirmwareProgress);
 //      scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-       scroll.setBounds(20, 70, 750, 180);
+       scroll.setBounds(20, 90, 750, 180);
       this.add(scroll);
       addWindowListener(this);
    }
@@ -104,69 +115,118 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
       });
 
 
-      final int iErrorCode = upload(sPortName, "diagnostics.hex");
-
-
-
-      SerialPort serialPort = new SerialPort(sPortName);
-      serialPort.openPort();
-
-      // Something standart
-      serialPort.setParams(115200,
-                           SerialPort.DATABITS_8,
-                           SerialPort.STOPBITS_1,
-                           SerialPort.PARITY_NONE);
-
-      // Hardware Overflow
-      //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-      //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT);
-      serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-      serialPort.purgePort(255);
-
-      StringBuilder sbDeviceID = new StringBuilder(serialPort.readString(100, 10000));
-      serialPort.closePort();
-
-
-      //Let's clean the rubbish
-      while(sbDeviceID.length() > 0 && sbDeviceID.charAt(0) != 'R'){
-         sbDeviceID.delete(0, 1);
-      }
-
-
-      int iDeviceID   = Integer.parseInt(sbDeviceID.substring(6,11));
-
-
-
-      @SuppressWarnings("unused")
-      final int iErrorCode2 = upload(sPortName, "devices/" + iDeviceID + "/" + listDevices.getDevice(iDeviceID).getFirmware() + ".hex");
-
-
-      SwingUtilities.invokeAndWait(new Runnable(){
-         public void run(){
-            if(iErrorCode == 0){
-               JOptionPane.showMessageDialog(FirmwareV1.this, config.i18n("dialog_firmware_ok"));
-               FirmwareV1.this.setVisible(false);
-            }
-            else{
-               FirmwareV1.this.addWindowListener(new WindowAdapter(){
-                  @Override
-                  public void windowClosing(WindowEvent e) {
-                     FirmwareV1.this.setVisible(false);
-                     FirmwareV1.this.removeWindowListener(this);
-                  }
-              });
-
-              JOptionPane.showMessageDialog(FirmwareV1.this, config.i18n("dialog_firmware_error"), "", JOptionPane.ERROR_MESSAGE);
-            }
+      
+      Set<ISerialPortMode> setProbbedModes = new HashSet<ISerialPortMode>();
+      for(Integer iTestDeviceID : listDevices.getDeviceIDes()){
+         IDevice device = listDevices.getDevice(iTestDeviceID);
+         
+         lblMisk.setText("ID=" + iTestDeviceID + " diagnostics ");
+         
+         if(setProbbedModes.contains(device.getPortMode())){
+            //Ok, seems we've already tried that with no success
+            //Let's skip
+            log.info(LOG + device.getPortMode() + " already tied, no luck");
+            continue;
          }
-      });
+         
+         setProbbedModes.add(device.getPortMode());
+         
+         final int iErrorCode = upload(sPortName, "devices/" + iTestDeviceID + "/diagnostics.hex", iTestDeviceID);
+         
+         if(iErrorCode == 0){
+            log.info(LOG + device.getPortMode() + " ok, diagnostic is ready.");            
+         }
+         else{
+            //Sessm wrong device
+            //Let's try another one
+            
+            log.info(LOG + device.getPortMode() + " could not flash dignostic.");            
+            continue;
+         }
+         
+         
+         Thread.sleep(config.getPortInitDelay());
+         
 
+         SerialPort serialPort = new SerialPort(sPortName);
+         serialPort.openPort();
+
+         // Something standart
+         serialPort.setParams(device.getPortMode().getSpeed(),
+                              SerialPort.DATABITS_8,
+                              SerialPort.STOPBITS_1,
+                              SerialPort.PARITY_NONE);
+         
+
+         
+         if(device.getPortMode().getFlowControl() == ISerialPortMode.PORT_FLOW_CONTROL.RTS_CTS){
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+         }
+         else{
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+         }
+         
+         
+         serialPort.purgePort(255);
+         
+         Thread.sleep(config.getPortInitDelay());
+
+         StringBuilder sbDeviceID;
+         try{
+            sbDeviceID = new StringBuilder(serialPort.readString(100, 3000));
+         }
+         catch (Exception e1){
+            //Ok, still something is wrong
+            //Let's try another device
+            
+            log.info(LOG + device.getPortMode() + " could not read version info.");            
+            continue;
+         }
+         log.info(LOG + "Diagnostic info=" + sbDeviceID);
+         serialPort.closePort();
+
+
+         //Let's clean the rubbish
+         while(sbDeviceID.length() > 0 && sbDeviceID.charAt(0) != 'R'){
+            sbDeviceID.delete(0, 1);
+         }
+
+
+         int iDeviceID   = Integer.parseInt(sbDeviceID.substring(6,11));
+         
+         final int iErrorCode2 = upload(sPortName, "devices/" + iDeviceID + "/" + listDevices.getDevice(iDeviceID).getFirmware() + ".hex", iDeviceID);
+
+
+         SwingUtilities.invokeAndWait(new Runnable(){
+            public void run(){
+               if(iErrorCode2 == 0){
+                  JOptionPane.showMessageDialog(FirmwareV1.this, config.i18n("dialog_firmware_ok"));
+                  FirmwareV1.this.setVisible(false);
+               }
+               else{
+                  FirmwareV1.this.addWindowListener(new WindowAdapter(){
+                     @Override
+                     public void windowClosing(WindowEvent e) {
+                        FirmwareV1.this.setVisible(false);
+                        FirmwareV1.this.removeWindowListener(this);
+                     }
+                 });
+
+                 JOptionPane.showMessageDialog(FirmwareV1.this, config.i18n("dialog_firmware_error"), "", JOptionPane.ERROR_MESSAGE);
+               }
+            }
+         });
+         
+         if(iErrorCode2 == 0){
+            break;
+         }
+      }
    }
 
 
 
 
-   public int upload(final String sPortName, final String sFirmware) throws Exception{
+   public int upload(final String sPortName, final String sFirmware, final int iDeviceID) throws Exception{
 
 
       final String sAVRDudePath;
@@ -279,11 +339,11 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
 
       switch(config.getIOS().getType()){
          case WINDOWS:{
-            String sFullFirmwareCommand = config.getFirmwareCommandLine()
-                                                .replaceAll("%root%", config.getRootFolder())
-                                                .replaceAll("%avrdude%", sAVRDudePath)
-                                                .replaceAll("%port%", sPortName)
-                                                .replaceAll("%firmware%", sFirmware);
+            String sFullFirmwareCommand = listDevices.getDevice(iDeviceID).getAVRDudeCommand()
+                                                                          .replaceAll("%root%", config.getRootFolder())
+                                                                          .replaceAll("%avrdude%", sAVRDudePath)
+                                                                          .replaceAll("%port%", sPortName)
+                                                                          .replaceAll("%firmware%", sFirmware);
             log.info(LOG + sFullFirmwareCommand);
             p = Runtime.getRuntime().exec(sFullFirmwareCommand);
 
@@ -299,11 +359,11 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
 
 
          case LINUX:{
-            String sFullFirmwareCommand = config.getFirmwareCommandLine()
-                                                .replaceAll("%root%", config.getRootFolder())
-                                                .replaceAll("%avrdude%", "avrdude")
-                                                .replaceAll("%port%", sPortName)
-                                                .replaceAll("%firmware%", sFirmware);
+            String sFullFirmwareCommand = listDevices.getDevice(iDeviceID).getAVRDudeCommand()
+                                                                          .replaceAll("%root%", config.getRootFolder())
+                                                                          .replaceAll("%avrdude%", "avrdude")
+                                                                          .replaceAll("%port%", sPortName)
+                                                                          .replaceAll("%firmware%", sFirmware);
             log.info(LOG + sFullFirmwareCommand);
             p = Runtime.getRuntime().exec(sFullFirmwareCommand);
 
@@ -319,7 +379,7 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
 
 
          case MAC:{
-            String sFullFirmwareCommand = config.getFirmwareCommandLine()
+            String sFullFirmwareCommand = listDevices.getDevice(iDeviceID).getAVRDudeCommand()
                                                 .replaceAll("%root%", config.getRootFolder())
                                                 .replaceAll("%avrdude%", config.getRootFolder() + "/firmware/mac/avrdude")
                                                 .replaceAll("%port%", sPortName)
@@ -379,36 +439,43 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
             }
 
             try{
-               if(lStartTime + 10000 > System.currentTimeMillis()){
-                  String s;
-                  while ((s = reader.readLine()) != null){
-                     sb.append(s + "\n");
+               Thread th = new Thread(){
+                  public void run(){
+                     String s;
+                     try{
+                        while ((s = reader.readLine()) != null){
+                           sb.append(s + "\n");
 
-                     SwingUtilities.invokeAndWait(new Runnable(){
-                        public void run(){
-                           taFirmwareProgress.setText(sb.toString());
+                           SwingUtilities.invokeAndWait(new Runnable(){
+                              public void run(){
+                                 taFirmwareProgress.setText(sb.toString());
+                              }
+                           });
                         }
-                     });
+                     }
+                     catch (Exception e){
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                     }
                   }
-               }
-               else{
+               };
+               th.start();
+               
+               
+               if(System.currentTimeMillis() > lStartTime + 20000){
                   // err...
                   // Timeout?
                   p.destroy();
                   break;
                }
+               
+               lblMisk.setText(lblMisk.getText() + "■");               
 
-               Thread.sleep(100);
+               Thread.sleep(1000);
 
             }
             catch (InterruptedException e){
                // ok, flashed
-               break;
-            }
-            catch (IOException e){
-               break;
-            }
-            catch (InvocationTargetException e){
                break;
             }
          }

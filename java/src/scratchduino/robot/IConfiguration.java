@@ -8,8 +8,7 @@ public interface IConfiguration{
    
    IOS getIOS();
    
-//   int getPortSpeed();
-   List<ISerialPortMode> getSerialPortModes();   
+//   List<ISerialPortMode> getSerialPortModes();   
    Set<String> excludePorts();
    int getPortInitDelay();
    int getPortCloseDelay();
@@ -25,7 +24,7 @@ public interface IConfiguration{
 
    String getUpdateURL();
    
-   String getFirmwareCommandLine();
+//   String getFirmwareCommandLine();
 
    String getDefaultMotorSpeed();
    
