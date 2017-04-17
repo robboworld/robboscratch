@@ -239,6 +239,7 @@ public class Scratch extends Sprite {
 
 
     public var labVersion:int = 1;
+    public var robVersion:int = 0;
 
 
 

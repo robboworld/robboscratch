@@ -27,6 +27,9 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
    private final JLabel lblAvrDudeVersionValue;
    private final JLabel lblMisk;
    private final JTextArea taFirmwareProgress;
+   
+   
+   private static final char PROGRESS = '■';
 
    static{
       InterfaceHelper.setLookAndFeel();
@@ -145,8 +148,6 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
          }
          
          
-         Thread.sleep(config.getPortInitDelay());
-         
 
          SerialPort serialPort = new SerialPort(sPortName);
          serialPort.openPort();
@@ -169,7 +170,16 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
          
          serialPort.purgePort(255);
          
-         Thread.sleep(config.getPortInitDelay());
+         for(int f = 0; f < 7; f++) {
+            Thread.sleep(1000);
+            
+            SwingUtilities.invokeAndWait(new Runnable(){
+               public void run(){
+                  taFirmwareProgress.setText(taFirmwareProgress.getText() + PROGRESS);
+               }
+            });
+         }
+         
 
          StringBuilder sbDeviceID;
          try{
@@ -469,7 +479,7 @@ public class FirmwareV1 extends JDialog implements WindowListener, IFirmware{
                   break;
                }
                
-               lblMisk.setText(lblMisk.getText() + "■");               
+               lblMisk.setText(lblMisk.getText() + PROGRESS);               
 
                Thread.sleep(1000);
 
