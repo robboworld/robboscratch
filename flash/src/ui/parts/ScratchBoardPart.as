@@ -138,9 +138,16 @@ package ui.parts{
 
          var sprite:Sprite = new Sprite();
 
-         sprite.graphics.beginFill(color);
+         //Border
+         sprite.graphics.beginFill(0x666666, 1);
          sprite.graphics.drawRect(TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 2, 11, 11);
          sprite.graphics.endFill();
+
+
+         sprite.graphics.beginFill(color);
+         sprite.graphics.drawRect(TEXT_DATA_X + 1, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 3, 9, 9);
+         sprite.graphics.endFill();
+
          dataSprites[index].addChild(sprite);
       }
       public function setLeftPath(path:int):void {

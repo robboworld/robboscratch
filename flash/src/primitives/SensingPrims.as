@@ -142,9 +142,9 @@ public class SensingPrims {
 
 
 
-   private function primBrightRobot(b:Block):int {
+   private function primBrightRobot(b:Block):Boolean {
       var sensor:String  = interp.arg(b, 0);
-      var channel:String = interp.arg(b, 1);
+      var color:String = interp.arg(b, 1);
 
       //trace("SUKA=" + b.args[1].argValue);
       //b.args[1].argValue = 0;
@@ -170,15 +170,47 @@ public class SensingPrims {
       }
 
 
-
+/*
       b.base.setColor(  app.robotSensors[sensorNumber].analog[0] * 65536
                       + app.robotSensors[sensorNumber].analog[1] * 256
                       + app.robotSensors[sensorNumber].analog[2]);
       b.base.redraw();
+*/
 
 
+      switch(color){
+         case "Black":{
+            if(app.robotSensors[sensorNumber].analog[3] == 0 || app.robotSensors[sensorNumber].analog[3] == 1) return true;
+            break;
+         }
+         case "White":{
+            if(app.robotSensors[sensorNumber].analog[3] == 2) return true;
+            break;
+         }
+         case "Red":{
+            if(app.robotSensors[sensorNumber].analog[3] == 3) return true;
+            break;
+         }
+         case "Green":{
+            if(app.robotSensors[sensorNumber].analog[3] == 4) return true;
+            break;
+         }
+         case "Blue":{
+            if(app.robotSensors[sensorNumber].analog[3] == 5) return true;
+            break;
+         }
+         case "Yellow":{
+            if(app.robotSensors[sensorNumber].analog[3] == 6) return true;
+            break;
+         }
+         default:{
+            return false;
+            break;
+         }
+      }
 
-      if(channel == 'R'){
+/*
+      if(color == 'R'){
          return app.robotSensors[sensorNumber].analog[0];
       }
       if(channel == 'G'){
@@ -190,8 +222,9 @@ public class SensingPrims {
       if(channel == 'Bright'){
          return app.robotSensors[sensorNumber].analog[3];
       }
+*/
 
-      return 0;
+      return false;
    }
 
 
