@@ -203,6 +203,14 @@ public class SensingPrims {
             if(app.robotSensors[sensorNumber].analog[3] == 6) return true;
             break;
          }
+         case "Magenta":{
+            if(app.robotSensors[sensorNumber].analog[3] == 7) return true;
+            break;
+         }
+         case "Cyan":{
+            if(app.robotSensors[sensorNumber].analog[3] == 8) return true;
+            break;
+         }
          default:{
             return false;
             break;

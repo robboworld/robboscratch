@@ -71,8 +71,13 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
     private var app:Scratch;
 
+    private var sensorTypes:Array = null;
+
 
     private var sBaseURLRobot:String = "http://127.0.0.1:9876/bin/def/";
+
+
+    private var lastCommandRobotSuccess:Boolean = false;
 
 
 
@@ -560,6 +565,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
    public function setSensorTypes(sensorTypes:Array):void{
       trace("Sensor Types [" + sensorTypes + "]");
+      this.sensorTypes = sensorTypes;
+
          interfaceBusyRobot = true;
 
          try{
@@ -688,6 +695,24 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
       }
 
       interfaceBusyRobot = true;
+
+
+      if(lastCommandRobotSuccess){
+        //ok, they are synchronized
+      }
+      else{
+         if(sensorTypes == null){
+            //no types know yet
+         }
+         else{
+            setSensorTypes(this.sensorTypes)
+         }
+
+         return;
+      }
+
+
+      lastCommandRobotSuccess = false;
 
       var url:String;
       var requestRobot:URLRequest;
@@ -901,6 +926,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                trace("ROB VERSION=" + app.robVersion);
             }
             else{
+               lastCommandRobotSuccess = true;
+
                for (var i:int = 0; i < loader2.data.length; i++){
                   analogsRobot[i] = loader2.data[i];
                }

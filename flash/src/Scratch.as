@@ -525,6 +525,14 @@ public class Scratch extends Sprite {
                        color = 0xFFFF00;
                        break;
                     }
+                    case 7:{
+                       color = 0xFF00FF;
+                       break;
+                    }
+                    case 8:{
+                       color = 0x00FFFF;
+                       break;
+                    }
                  }
                  scratchBoardPart.setColor(i, color);
 

@@ -643,6 +643,7 @@ public class BlockMenus implements DragClient {
       m.addItem('Green');
       m.addItem('Blue');
       m.addItem('Yellow');
+      m.addItem('Magenta');
       showMenu(m);
    }
 
