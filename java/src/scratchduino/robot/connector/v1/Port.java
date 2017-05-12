@@ -128,12 +128,14 @@ public class Port implements IPort{
          try{
             Thread.currentThread().setName("Test Data Writer " + Port.this.portName);
             
-            Set<ISerialPortMode> set = new HashSet<ISerialPortMode>();
+            LinkedHashSet<ISerialPortMode> set = new LinkedHashSet<ISerialPortMode>();
             for(IDevice device : deviceList.getDevices()){
                set.add(device.getPortMode());
             }
 modes:
-            for(ISerialPortMode serialPortMode : set){
+            for(Iterator<ISerialPortMode> it = set.iterator(); it.hasNext(); ){
+               ISerialPortMode serialPortMode = it.next(); 
+               
                // Let's open
                serialPort.openPort();
                log.debug(LOG + Port.this.portName + " opened.");
@@ -187,7 +189,7 @@ modes:
                }
    
                
-               DetectTimer timer = new DetectTimer();
+               DetectTimer timer = new DetectTimer(it.hasNext() ? IPort.STATUS.TERMINATING : IPort.STATUS.TIME_OUT);
                timer.start();
    
                log.debug(LOG + Port.this.portName + " detect timer started.");
@@ -385,13 +387,20 @@ modes:
 
    
    private class DetectTimer extends Thread{
-      public void run(){
+      final IPort.STATUS status;
+      
+      public DetectTimer(STATUS status){
+         this.status = status;
+      }
+
+
+      public void run(){      
          
          synchronized(Port.this){
             try{
                Port.this.wait(config.getDeviceDetectionTime() - 10);
                
-//               Port.this.status = IPort.STATUS.TIME_OUT;
+               Port.this.status = status;
             }
             catch (InterruptedException e){
                log.info(LOG + "ok, detection has been finished.");
