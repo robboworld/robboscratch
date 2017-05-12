@@ -976,6 +976,9 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                   app.labVersion = 2;
                }
                else if(app.labVersion == 2){
+                  app.labVersion = 4;
+               }
+               else if(app.labVersion == 4){
                   app.labVersion = 1;
                }
 
