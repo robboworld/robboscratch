@@ -585,11 +585,11 @@ void setup(){
       
       
       
-      sensors[0]  = new SensorLab(A4);
-      sensors[1]  = new SensorLab(A4);
-      sensors[2]  = new SensorLab(A4);
+      sensors[0]  = new SensorLab(A2);
+      sensors[1]  = new SensorLab(A2);
+      sensors[2]  = new SensorLab(A2);
       sensors[3]  = new SensorLab(A4);
-      sensors[4]  = new SensorLab(A4);
+      sensors[4]  = new SensorLab(A2);
       
 
 

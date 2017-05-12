@@ -742,9 +742,13 @@ public class Scratch extends Sprite {
 
 
 
-
-       labLight  = int(((data[19]*256 + data[20]) / 1023) * 100);
-       labLight  = 1.34 * labLight;
+       if(labVersion == 4){
+          labLight  = int(data[20]);
+       }
+       else{
+          labLight  = int(((data[19]*256 + data[20]) / 1023) * 100);
+          labLight  = 1.34 * labLight;
+       }
        if(labLight > 100){
           labLight = 100;
        }
@@ -760,6 +764,9 @@ public class Scratch extends Sprite {
        }
        else if(labVersion == 2){
           labSlider = Math.abs(100 - int(((data[3]*256 + data[4]) / 1023) * 100));
+       }
+       else if(labVersion == 4){
+          labSlider = Math.abs(100 - data[4]);
        }
        if(labSlider > 100){
           labSlider = 100;
