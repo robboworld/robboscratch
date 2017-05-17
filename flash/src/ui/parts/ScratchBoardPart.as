@@ -60,7 +60,6 @@ package ui.parts{
       public function ScratchBoardPart(app:Scratch) {
          this.app = app;
 
-
          addChild(shape = new Shape());
 
          titleLabels = new Array();
@@ -79,15 +78,6 @@ package ui.parts{
             addChild(sprite);
          }
 
-         for (var f:int = 0; f < Scratch.ROBOT_SENSOR_COUNT; f++) {
-            var deviceSelector:DeviceSelector = new DeviceSelector(app, f + 1, 0);
-            arraySensors[f] = deviceSelector;
-            deviceSelector.x = 102;
-            deviceSelector.y = 65 + f * 17;
-            addChild(deviceSelector);
-         }
-
-
          labelLeftMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 0  * TEXT_VERTICAL_STEP);
          addChild(labelLeftMotor);
          labelRightMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 1 * TEXT_VERTICAL_STEP);
@@ -98,7 +88,13 @@ package ui.parts{
 
          spritesTitle = makeLabel(Translator.map('Robot'), CSS.titleFormat, 10, 5);
          addChild(spritesTitle);
+
+
+
+         this.setExtendedMode(false);
       }
+
+
 
       public function setWidthHeight(w:int, h:int):void {
          this.w = w;
@@ -114,7 +110,10 @@ package ui.parts{
          if (app.viewedObj()) refresh(); // refresh, but not during initialization
       }
 
-      public function setText(index:int, text:String):void {
+
+
+
+      public function setTextValue(index:int, text:String):void {
          trace("index=" + index + " text=" + text);
          if (index < 0 || index >= TITLES.length) return;
 
@@ -124,14 +123,14 @@ package ui.parts{
          label.text = text;
          dataSprites[index].addChild(label);
       }
-      public function disable(index:int):void {
+      public function disableValue(index:int):void {
          while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
 
          var label:TextField = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP);
          label.text = "--";
          dataSprites[index].addChild(label);
       }
-      public function setColor(index:int, color:int):void {
+      public function setColorValue(index:int, color:int):void {
          trace("color=" + color);
 
          while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
@@ -150,6 +149,10 @@ package ui.parts{
 
          dataSprites[index].addChild(sprite);
       }
+
+
+
+
       public function setLeftPath(path:int):void {
          labelLeftMotor.text = path.toString();
       }
@@ -164,6 +167,9 @@ package ui.parts{
       }
 
 
+
+
+
       public function setStartButton(state:Boolean):void{
          if(state){
             labelStartButton.text = Translator.map("true");
@@ -172,6 +178,27 @@ package ui.parts{
             labelStartButton.text = Translator.map("false");
          }
       }
+
+
+      public function setExtendedMode(isEnabled:Boolean):void{
+         if(isEnabled){
+            for (var f:int = 0; f < Scratch.ROBOT_SENSOR_COUNT; f++) {
+               var deviceSelector:DeviceSelector = new DeviceSelector(app, f + 1, 0);
+               arraySensors[f] = deviceSelector;
+               deviceSelector.x = 102;
+               deviceSelector.y = 65 + f * 17;
+               addChild(deviceSelector);
+            }
+         }
+         else{
+            for (var h:int = 0; h < Scratch.ROBOT_SENSOR_COUNT; h++) {
+              if(arraySensors[h] != null && contains(arraySensors[h])){
+                 removeChild(arraySensors[h]);
+              }
+            }
+         }
+      }
+
 
 
       private function fixLayout():void {

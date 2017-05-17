@@ -396,7 +396,7 @@ public class Scratch extends Sprite {
 
            if(robotMotorLeft.pathCorrection != 0 || robotMotorLeft.pathCorrection != 0){
               for(var f:int = 2; f < ROBOT_SENSOR_COUNT; f++){
-                 scratchBoardPart.disable(f);
+                 scratchBoardPart.disableValue(f);
               }
            }
            else{
@@ -404,7 +404,7 @@ public class Scratch extends Sprite {
               scratchBoardPart.setRightPathDisabled();
 
               for(var h:int = 0; h < ROBOT_SENSOR_COUNT; h++){
-                 scratchBoardPart.disable(h);
+                 scratchBoardPart.disableValue(h);
               }
 
               scratchBoardPart.setStartButton(false);
@@ -477,18 +477,18 @@ public class Scratch extends Sprite {
            switch(robotSensors[i].type){
               case ROBOT_SENSOR_TYPE_NONE:
               case ROBOT_SENSOR_TYPE_LED: {
-                 scratchBoardPart.disable(i);
+                 scratchBoardPart.disableValue(i);
                  break;
               }
               case ROBOT_SENSOR_TYPE_LINE:
               case ROBOT_SENSOR_TYPE_LIGHT:
               case ROBOT_SENSOR_TYPE_TOUCH:
               case ROBOT_SENSOR_TYPE_PROXIMITY: {
-                 scratchBoardPart.setText(i, robotSensors[i].analog[3]);
+                 scratchBoardPart.setTextValue(i, robotSensors[i].analog[3]);
                  break;
               }
               case ROBOT_SENSOR_TYPE_ULTRASONIC: {
-                 scratchBoardPart.setText(i, robotSensors[i].analog[2]*256 + robotSensors[i].analog[3]);
+                 scratchBoardPart.setTextValue(i, robotSensors[i].analog[2]*256 + robotSensors[i].analog[3]);
                  break;
               }
               case ROBOT_SENSOR_TYPE_COLOR: {
@@ -498,7 +498,7 @@ public class Scratch extends Sprite {
                  color += (robotSensors[i].analog[1] * 2.5) << 16;
                  color += (robotSensors[i].analog[2] * 2.5) << 8;
                  color += (robotSensors[i].analog[3] * 2.5);
-                 scratchBoardPart.setColor(i, color);
+                 scratchBoardPart.setColorValue(i, color);
 */
 
                  switch(robotSensors[i].analog[3]){
@@ -535,7 +535,7 @@ public class Scratch extends Sprite {
                        break;
                     }
                  }
-                 scratchBoardPart.setColor(i, color);
+                 scratchBoardPart.setColorValue(i, color);
 
                  break;
               }
@@ -2537,6 +2537,7 @@ public class Scratch extends Sprite {
 
    public function switchExtensionPack():void {
       this.isExtensionPackEnabled = !this.isExtensionPackEnabled;
+      scratchBoardPart.setExtendedMode(this.isExtensionPackEnabled);
    }
 
 }}
