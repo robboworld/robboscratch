@@ -132,7 +132,7 @@ import flash.events.*;
 public class Scratch extends Sprite {
     // Version
     public static const versionString:String = 'v426';
-    private static const REPORT_BUG_URL:String = 'https://github.com/scratchduino/forandroid/blob/master/README.md';
+    private static const REPORT_BUG_URL:String = 'http://feedback.robbo.world';
     private static const DONATE_URL:String = 'https://play.google.com/store/apps/details?id=air.ru.scratchduino.android.appdonate';
     public static var app:Scratch; // static reference to the app, used for debugging
 
@@ -240,6 +240,7 @@ public class Scratch extends Sprite {
 
     public var labVersion:int = 1;
     public var robVersion:int = 0;
+    public var isExtensionPackEnabled:Boolean = false;
 
 
 
@@ -1544,6 +1545,16 @@ public class Scratch extends Sprite {
       navigateToURL(urlReq);
    }
 
+
+   public function showOptionsMenu(b:*):void {
+      var m:Menu = new Menu(null, 'Options', CSS.topBarColor, 28);
+      m.addItem('Extension Pack', switchExtensionPack, true, isExtensionPackEnabled);
+      m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+   }
+
+
+
+
     TARGET::android {
         public function showDevicesMenu(b:*):void {//for Android only
             var m:Menu = new Menu(null, 'Devices', CSS.topBarColor, 28);
@@ -2522,6 +2533,12 @@ public class Scratch extends Sprite {
    public function addExternalCallback(functionName:String, closure:Function):void {
       throw new IllegalOperationError('Must override this function.');
    }
+
+
+   public function switchExtensionPack():void {
+      this.isExtensionPackEnabled = !this.isExtensionPackEnabled;
+   }
+
 }}
 
 
