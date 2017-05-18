@@ -50,7 +50,8 @@ package ui.parts{
       private var titleLabels:Array;
       private var dataSprites:Array;
 
-      public var arraySensors:Array = new Array();
+      public var arrSensorSelectors:Array = new Array();
+      public var arrSensorCheckboxes:Array = new Array();
 
       private var labelLeftMotor:TextField;
       private var labelRightMotor:TextField;
@@ -183,8 +184,12 @@ package ui.parts{
       public function setExtendedMode(isEnabled:Boolean):void{
          if(isEnabled){
             for (var f:int = 0; f < Scratch.ROBOT_SENSOR_COUNT; f++) {
+               if(arrSensorCheckboxes[f] != null && contains(arrSensorCheckboxes[f])){
+                  removeChild(arrSensorCheckboxes[f]);
+               }
+
                var deviceSelector:DeviceSelector = new DeviceSelector(app, f + 1, 0);
-               arraySensors[f] = deviceSelector;
+               arrSensorSelectors[f] = deviceSelector;
                deviceSelector.x = 102;
                deviceSelector.y = 65 + f * 17;
                addChild(deviceSelector);
@@ -192,11 +197,21 @@ package ui.parts{
          }
          else{
             for (var h:int = 0; h < Scratch.ROBOT_SENSOR_COUNT; h++) {
-              if(arraySensors[h] != null && contains(arraySensors[h])){
-                 removeChild(arraySensors[h]);
-              }
+               if(arrSensorSelectors[h] != null && contains(arrSensorSelectors[h])){
+                  removeChild(arrSensorSelectors[h]);
+               }
+
+               var cb:CheckBox = new CheckBox();
+               cb.x = 104;
+               cb.y = 67 + h * 17;
+               arrSensorCheckboxes[h] = cb;
+               addChild(cb);
             }
          }
+      }
+
+
+      public function setEncodersAvailable(isEnabled:Boolean):void{
       }
 
 

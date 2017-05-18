@@ -131,7 +131,8 @@ import flash.events.*;
 
 public class Scratch extends Sprite {
     // Version
-    public static const versionString:String = 'v426';
+    //public static const versionString:String = 'v426';
+    public static const versionString:String = '2.1.55';
     private static const REPORT_BUG_URL:String = 'http://feedback.robbo.world';
     private static const DONATE_URL:String = 'https://play.google.com/store/apps/details?id=air.ru.scratchduino.android.appdonate';
     public static var app:Scratch; // static reference to the app, used for debugging
@@ -470,187 +471,90 @@ public class Scratch extends Sprite {
 //        robotMotorRight.path = pathCorrectedRight;
 
         for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
-           robotSensors[i].analog = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
-           robotSensors[i].analog[0] = int(robotSensors[i].analog[0] * 0.9);
-           trace("sensor" + (i + 1) + "=" + robotSensors[i].analog);
+           robotSensors[i].raw = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
 
-           switch(robotSensors[i].type){
-              case ROBOT_SENSOR_TYPE_NONE:
-              case ROBOT_SENSOR_TYPE_LED: {
-                 scratchBoardPart.disableValue(i);
-                 break;
-              }
-              case ROBOT_SENSOR_TYPE_LINE:
-              case ROBOT_SENSOR_TYPE_LIGHT:
-              case ROBOT_SENSOR_TYPE_TOUCH:
-              case ROBOT_SENSOR_TYPE_PROXIMITY: {
-                 scratchBoardPart.setTextValue(i, robotSensors[i].analog[3]);
-                 break;
-              }
-              case ROBOT_SENSOR_TYPE_ULTRASONIC: {
-                 scratchBoardPart.setTextValue(i, robotSensors[i].analog[2]*256 + robotSensors[i].analog[3]);
-                 break;
-              }
-              case ROBOT_SENSOR_TYPE_COLOR: {
-                 var color:uint = 0;
+//What's for?
+//           robotSensors[i].raw[0] = int(robotSensors[i].raw[0] * 0.9);
+
+           trace("sensor" + (i + 1) + "=" + robotSensors[i].raw);
+
+
+           if(isExtensionPackEnabled){
+              switch(robotSensors[i].type){
+                 case ROBOT_SENSOR_TYPE_NONE:
+                 case ROBOT_SENSOR_TYPE_LED: {
+                    scratchBoardPart.disableValue(i);
+                    break;
+                 }
+                 case ROBOT_SENSOR_TYPE_LINE:
+                 case ROBOT_SENSOR_TYPE_LIGHT:
+                 case ROBOT_SENSOR_TYPE_TOUCH:
+                 case ROBOT_SENSOR_TYPE_PROXIMITY: {
+                    scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
+                    break;
+                 }
+                 case ROBOT_SENSOR_TYPE_ULTRASONIC: {
+                    scratchBoardPart.setTextValue(i, robotSensors[i].raw[2]*256 + robotSensors[i].raw[3]);
+                    break;
+                 }
+                 case ROBOT_SENSOR_TYPE_COLOR: {
+                    var color:uint = 0;
 
 /*
-                 color += (robotSensors[i].analog[1] * 2.5) << 16;
-                 color += (robotSensors[i].analog[2] * 2.5) << 8;
-                 color += (robotSensors[i].analog[3] * 2.5);
-                 scratchBoardPart.setColorValue(i, color);
+                    color += (robotSensors[i].raw[1] * 2.5) << 16;
+                    color += (robotSensors[i].raw[2] * 2.5) << 8;
+                    color += (robotSensors[i].raw[3] * 2.5);
+                    scratchBoardPart.setColorValue(i, color);
 */
 
-                 switch(robotSensors[i].analog[3]){
-                    case 1:{
-                       color = 0;
-                       break;
+                    switch(robotSensors[i].raw[3]){
+                       case 1:{
+                          color = 0;
+                          break;
+                       }
+                       case 2:{
+                          color = 0xFFFFFF;
+                          break;
+                       }
+                       case 3:{
+                          color = 0xFF0000;
+                          break;
+                       }
+                       case 4:{
+                          color = 0x00FF00;
+                          break;
+                       }
+                       case 5:{
+                          color = 0x0000FF;
+                          break;
+                       }
+                       case 6:{
+                          color = 0xFFFF00;
+                          break;
+                       }
+                       case 7:{
+                          color = 0xFF00FF;
+                          break;
+                       }
+                       case 8:{
+                          color = 0x00FFFF;
+                          break;
+                       }
                     }
-                    case 2:{
-                       color = 0xFFFFFF;
-                       break;
-                    }
-                    case 3:{
-                       color = 0xFF0000;
-                       break;
-                    }
-                    case 4:{
-                       color = 0x00FF00;
-                       break;
-                    }
-                    case 5:{
-                       color = 0x0000FF;
-                       break;
-                    }
-                    case 6:{
-                       color = 0xFFFF00;
-                       break;
-                    }
-                    case 7:{
-                       color = 0xFF00FF;
-                       break;
-                    }
-                    case 8:{
-                       color = 0x00FFFF;
-                       break;
-                    }
-                 }
-                 scratchBoardPart.setColorValue(i, color);
+                    scratchBoardPart.setColorValue(i, color);
 
-                 break;
+                    break;
+                 }
               }
+           }
+           else{
+              //No extension pack
+              scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
            }
         }
 
         robotStartButton = data[28] == 0;
         scratchBoardPart.setStartButton(robotStartButton);
-
-
-/*
-        var sensor1:int = data[10] * 256 + data[11];
-        var sensorExtended1:Array = [data[8], data[9], data[10], data[11]];
-
-        var sensor2:int = data[14] * 256 + data[15];
-        var sensorExtended2:Array = [data[12], data[13], data[14], data[15]];
-
-        var sensor3:int = data[18] * 256 + data[19];
-        var sensorExtended3:Array = [data[16], data[17], data[18], data[19]];
-
-        var sensor4:int = data[22] * 256 + data[23];
-        var sensorExtended4:Array = [data[20], data[21], data[22], data[23]];
-
-        var sensor5:int = data[26] * 256 + data[27];
-        var sensorExtended5:Array = [data[24], data[25], data[26], data[27]];
-
-
-        if(scratchBoardPart.cbSensor1.sensor == 0){
-           runtime.analogsRobot[2] = 0;
-           runtime.analogsRobotExtended[0] = [0,0,0,0];
-           setAnalogTextRobot(2, "0");
-        }
-        else{
-           runtime.analogsRobot[2] = sensor1;
-           runtime.analogsRobotExtended[0] = sensorExtended1;
-           setAnalogTextRobot(2, "" + sensor1);
-        }
-
-
-
-
-
-        if(scratchBoardPart.cbSensor2.sensor == 0){
-           runtime.analogsRobot[3] = 0;
-           runtime.analogsRobotExtended[1] = [0,0,0,0];
-           setAnalogTextRobot(3, "0");
-        }
-        else{
-           runtime.analogsRobot[3] = sensor2;
-           runtime.analogsRobotExtended[1] = sensorExtended2;
-           setAnalogTextRobot(3, "" + sensor2);
-        }
-
-
-        if(scratchBoardPart.cbSensor3.sensor == 0){
-           runtime.analogsRobot[4] = 0;
-           runtime.analogsRobotExtended[2] = [0,0,0,0];
-           setAnalogTextRobot(4, "0");
-        }
-        else{
-           runtime.analogsRobot[4] = sensor3;
-           runtime.analogsRobotExtended[2] = sensorExtended3;
-           setAnalogTextRobot(4, "" + sensor3);
-        }
-
-
-        if(scratchBoardPart.cbSensor4.sensor == 0){
-           runtime.analogsRobot[5] = 0;
-           runtime.analogsRobotExtended[3] = [0,0,0,0];
-           setAnalogTextRobot(5, "0");
-        }
-        else{
-           runtime.analogsRobot[5] = sensor4;
-           runtime.analogsRobotExtended[3] = sensorExtended4;
-           setAnalogTextRobot(5, "" + sensor4);
-        }
-
-
-
-        if(scratchBoardPart.cbSensor5.sensor == 0){
-           runtime.analogsRobot[6] = 0;
-           runtime.analogsRobotExtended[4] = [0,0,0,0];
-           setAnalogTextRobot(6, "0");
-        }
-        else{
-           runtime.analogsRobot[6] = sensor5;
-           runtime.analogsRobotExtended[4] = sensorExtended5;
-           setAnalogTextRobot(6, "" + sensor5);
-        }
-
-
-        var startButton:int = data[28];
-
-
-
-        if(startButton == 0){
-           robotStartButton = true;
-           scratchBoardPart.setAnalogText(7, Translator.map("true"));
-        }
-        else{
-           robotStartButton = false;
-           scratchBoardPart.setAnalogText(7, Translator.map("false"));
-        }
-*/
-
-
-
-/*
-        if(robotMoveFinished()){
-           setAnalogTextRobot(8, "true");
-        }
-        else{
-           setAnalogTextRobot(8, "false");
-        }
-*/
     }
 
 
@@ -789,7 +693,7 @@ public class Scratch extends Sprite {
 
 /*
         for (var i:int = 0; i < data.length; ++i) {
-            runtime.analogsLab[i] = data[i];
+            runtime.rawsLab[i] = data[i];
             setAnalogTextLab(i, data[i]);
         }
 */
@@ -2545,7 +2449,8 @@ public class Scratch extends Sprite {
 
 class RobotSensor{
    public var type:int;
-   public var analog:Array = [0, 0, 0, 0];
+
+   public var raw:Array = [0, 0, 0, 0];
 
    public function RobotSensor(type:int){
       this.type = type;

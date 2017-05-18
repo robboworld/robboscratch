@@ -689,27 +689,33 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
    public function manageRobot():void {
+      trace("Manage robot.");
 
       if (interfaceBusyRobot) {
          return;
       }
 
-      interfaceBusyRobot = true;
-
 
       if(lastCommandRobotSuccess){
         //ok, they are synchronized
+         trace("Last robot command successed.");
       }
       else{
+         trace("Last robot command failed.");
+
          if(sensorTypes == null){
             //no types know yet
+
          }
          else{
             setSensorTypes(this.sensorTypes)
+            return;
          }
-
-         return;
       }
+
+
+      interfaceBusyRobot = true;
+
 
 
       lastCommandRobotSuccess = false;
@@ -937,7 +943,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             //trace(tempArray);
          }
          catch (myError:Error){
-            onDataReceiveRobot([]);
+            trace(myError);
          }
 
          interfaceBusyRobot = false;
