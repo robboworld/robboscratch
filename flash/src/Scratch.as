@@ -549,7 +549,12 @@ public class Scratch extends Sprite {
            }
            else{
               //No extension pack
-              scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
+              if(scratchBoardPart.arrSensorCheckboxes[i].state){
+                 scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
+              }
+              else{
+                 scratchBoardPart.disableValue(i);
+              }
            }
         }
 
