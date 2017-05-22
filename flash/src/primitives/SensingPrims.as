@@ -116,19 +116,19 @@ public class SensingPrims {
          return app.robotMotorRight.pathCorrected;
       }
       if(a == 'sensor 1'){
-         return app.robotSensors[0].analog[3];
+         return app.robotSensors[0].raw[3];
       }
       if(a == 'sensor 2'){
-         return app.robotSensors[1].analog[3];
+         return app.robotSensors[1].raw[3];
       }
       if(a == 'sensor 3'){
-         return app.robotSensors[2].analog[3];
+         return app.robotSensors[2].raw[3];
       }
       if(a == 'sensor 4'){
-         return app.robotSensors[3].analog[3];
+         return app.robotSensors[3].raw[3];
       }
       if(a == 'sensor 5'){
-         return app.robotSensors[4].analog[3];
+         return app.robotSensors[4].raw[3];
       }
 
       return 0;
@@ -171,44 +171,44 @@ public class SensingPrims {
 
 
 /*
-      b.base.setColor(  app.robotSensors[sensorNumber].analog[0] * 65536
-                      + app.robotSensors[sensorNumber].analog[1] * 256
-                      + app.robotSensors[sensorNumber].analog[2]);
+      b.base.setColor(  app.robotSensors[sensorNumber].raw[0] * 65536
+                      + app.robotSensors[sensorNumber].raw[1] * 256
+                      + app.robotSensors[sensorNumber].raw[2]);
       b.base.redraw();
 */
 
 
       switch(color){
          case "Black":{
-            if(app.robotSensors[sensorNumber].analog[3] == 0 || app.robotSensors[sensorNumber].analog[3] == 1) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 0 || app.robotSensors[sensorNumber].raw[3] == 1) return true;
             break;
          }
          case "White":{
-            if(app.robotSensors[sensorNumber].analog[3] == 2) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 2) return true;
             break;
          }
          case "Red":{
-            if(app.robotSensors[sensorNumber].analog[3] == 3) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 3) return true;
             break;
          }
          case "Green":{
-            if(app.robotSensors[sensorNumber].analog[3] == 4) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 4) return true;
             break;
          }
          case "Blue":{
-            if(app.robotSensors[sensorNumber].analog[3] == 5) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 5) return true;
             break;
          }
          case "Yellow":{
-            if(app.robotSensors[sensorNumber].analog[3] == 6) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 6) return true;
             break;
          }
          case "Magenta":{
-            if(app.robotSensors[sensorNumber].analog[3] == 7) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 7) return true;
             break;
          }
          case "Cyan":{
-            if(app.robotSensors[sensorNumber].analog[3] == 8) return true;
+            if(app.robotSensors[sensorNumber].raw[3] == 8) return true;
             break;
          }
          default:{
@@ -219,16 +219,16 @@ public class SensingPrims {
 
 /*
       if(color == 'R'){
-         return app.robotSensors[sensorNumber].analog[0];
+         return app.robotSensors[sensorNumber].raw[0];
       }
       if(channel == 'G'){
-         return app.robotSensors[sensorNumber].analog[1];
+         return app.robotSensors[sensorNumber].raw[1];
       }
       if(channel == 'B'){
-         return app.robotSensors[sensorNumber].analog[2];
+         return app.robotSensors[sensorNumber].raw[2];
       }
       if(channel == 'Bright'){
-         return app.robotSensors[sensorNumber].analog[3];
+         return app.robotSensors[sensorNumber].raw[3];
       }
 */
 

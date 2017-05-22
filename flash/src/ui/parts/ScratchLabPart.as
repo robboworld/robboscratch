@@ -46,6 +46,10 @@ package ui.parts {
       private var titleLabels:Array;
       private var dataLabels:Array;
 
+      private var inited:Boolean = false;
+      private var connected:Boolean = false;
+
+
       public function ScratchLabPart(app:Scratch) {
          this.app = app;
          addChild(shape = new Shape());
@@ -81,8 +85,37 @@ package ui.parts {
          g.drawRect(0, CSS.titleBarH, w, h - CSS.titleBarH);
          g.endFill()
          fixLayout();
+
+         inited = false;
+
          if (app.viewedObj()) refresh(); // refresh, but not during initialization
       }
+
+
+
+      public function setConnected(status:Boolean):void{
+         var g:Graphics = shape.graphics;
+
+         if(!inited || connected != status){
+            if(status){
+               g.beginFill(0x00FF00);
+               g.lineStyle(0, 0, 0);
+               g.drawCircle(100, 16, 6);
+               g.endFill();
+            }
+            else{
+               g.beginFill(0xFF0000);
+               g.lineStyle(0, 0, 0);
+               g.drawCircle(100, 16, 6);
+               g.endFill();
+            }
+         }
+
+         inited = true;
+         connected = status;
+      }
+
+
 
       public function setAnalogText(index:int, text:String):void {
          if (index < 0 || index >= TITLES.length) return;

@@ -57,6 +57,9 @@ package ui.parts{
       private var labelRightMotor:TextField;
       private var labelStartButton:TextField;
 
+      private var inited:Boolean = false;
+      private var connected:Boolean = false;
+
 
       public function ScratchBoardPart(app:Scratch) {
          this.app = app;
@@ -91,7 +94,6 @@ package ui.parts{
          addChild(spritesTitle);
 
 
-
          this.setExtendedMode(false);
       }
 
@@ -108,7 +110,33 @@ package ui.parts{
          g.drawRect(0, CSS.titleBarH, w, h - CSS.titleBarH);
          g.endFill()
          fixLayout();
+
+         inited = false;
+
          if (app.viewedObj()) refresh(); // refresh, but not during initialization
+      }
+
+
+      public function setConnected(status:Boolean):void{
+         var g:Graphics = shape.graphics;
+
+         if(!inited || connected != status){
+            if(status){
+               g.beginFill(0x00FF00);
+               g.lineStyle(0, 0, 0);
+               g.drawCircle(111, 16, 6);
+               g.endFill();
+            }
+            else{
+               g.beginFill(0xFF0000);
+               g.lineStyle(0, 0, 0);
+               g.drawCircle(111, 16, 6);
+               g.endFill();
+            }
+         }
+
+         inited = true;
+         connected = status;
       }
 
 

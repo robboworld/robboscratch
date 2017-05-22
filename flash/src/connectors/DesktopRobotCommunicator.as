@@ -920,6 +920,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
 
 
             if(loader2.data.length == 0){
+               app.scratchBoardPart.setConnected(false);
                onDataReceiveRobot([]);
 
                if(app.robVersion == 0){
@@ -932,6 +933,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                trace("ROB VERSION=" + app.robVersion);
             }
             else{
+               app.scratchBoardPart.setConnected(true);
                lastCommandRobotSuccess = true;
 
                for (var i:int = 0; i < loader2.data.length; i++){
@@ -943,7 +945,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             //trace(tempArray);
          }
          catch (myError:Error){
-            trace(myError);
+            onDataReceiveRobot([]);
          }
 
          interfaceBusyRobot = false;
@@ -958,24 +960,8 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
             iCounterResponseLab++;
             trace(getTime() + " [" + iCounterResponseLab + "] INCOMING LAB:\n" + fromHexArray(loader2.data, true));
 
-/*
-            if(tempArray.length == 8){
-               for (var i:int = 0; i < 8; i++){
-                  //var keyValueArray:Array=tempArray[i].split("=");
-                  //trace(keyValueArray);
-                  //analogsLab[i] = keyValueArray[1];
-                  analogsLab[i]=tempArray[i];
-               }
-
-               onDataReceiveLab(analogsLab);
-            }
-            else{
-               onDataReceiveLab([]);
-            }
-*/
-
-
             if(loader2.data.length == 0){
+               app.scratchLabPart.setConnected(false);
                onDataReceiveLab([]);
 
                if(app.labVersion == 1){
@@ -991,6 +977,7 @@ public class DesktopRobotCommunicator implements IRobotCommunicator {
                trace("LAB VERSION=" + app.labVersion);
             }
             else{
+               app.scratchLabPart.setConnected(true);
                for (var i:int = 0; i < loader2.data.length; i++){
                   analogsLab[i] = loader2.data[i];
                }
