@@ -46,7 +46,6 @@ package ui.parts {
       private var titleLabels:Array;
       private var dataLabels:Array;
 
-      private var inited:Boolean = false;
       private var connected:Boolean = false;
 
 
@@ -84,36 +83,39 @@ package ui.parts {
          g.lineStyle(1, CSS.borderColor, 1, true);
          g.drawRect(0, CSS.titleBarH, w, h - CSS.titleBarH);
          g.endFill()
+
          fixLayout();
 
-         inited = false;
+         showConenctionIcon();
+
 
          if (app.viewedObj()) refresh(); // refresh, but not during initialization
       }
 
 
-
-      public function setConnected(status:Boolean):void{
+      public function showConenctionIcon():void{
          var g:Graphics = shape.graphics;
 
-         if(!inited || connected != status){
-            if(status){
-               g.beginFill(0x00FF00);
-               g.lineStyle(0, 0, 0);
-               g.drawCircle(100, 16, 6);
-               g.endFill();
-            }
-            else{
-               g.beginFill(0xFF0000);
-               g.lineStyle(0, 0, 0);
-               g.drawCircle(100, 16, 6);
-               g.endFill();
-            }
+         if(connected){
+            g.beginFill(0x00FF00);
+            g.lineStyle(0, 0, 0);
+            g.drawCircle(100, 16, 6);
+            g.endFill();
          }
-
-         inited = true;
-         connected = status;
+         else{
+            g.beginFill(0xFF0000);
+            g.lineStyle(0, 0, 0);
+            g.drawCircle(100, 16, 6);
+            g.endFill();
+         }
       }
+      public function setConnected(status:Boolean):void{
+         if(connected != status){
+            connected = status;
+            showConenctionIcon();
+         }
+      }
+
 
 
 

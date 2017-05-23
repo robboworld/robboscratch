@@ -57,7 +57,6 @@ package ui.parts{
       private var labelRightMotor:TextField;
       private var labelStartButton:TextField;
 
-      private var inited:Boolean = false;
       private var connected:Boolean = false;
 
 
@@ -102,6 +101,7 @@ package ui.parts{
       public function setWidthHeight(w:int, h:int):void {
          this.w = w;
          this.h = h;
+
          var g:Graphics = shape.graphics;
          g.clear();
          drawTopBar(g, CSS.titleBarColors, getTopBarPath(w, CSS.titleBarH), w, CSS.titleBarH);
@@ -109,34 +109,39 @@ package ui.parts{
          g.lineStyle(1, CSS.borderColor, 1, true);
          g.drawRect(0, CSS.titleBarH, w, h - CSS.titleBarH);
          g.endFill()
-         fixLayout();
 
-         inited = false;
+
+         fixLayout();
+         showConenctionIcon();
 
          if (app.viewedObj()) refresh(); // refresh, but not during initialization
       }
 
 
-      public function setConnected(status:Boolean):void{
+      public function showConenctionIcon():void{
          var g:Graphics = shape.graphics;
 
-         if(!inited || connected != status){
-            if(status){
-               g.beginFill(0x00FF00);
-               g.lineStyle(0, 0, 0);
-               g.drawCircle(111, 16, 6);
-               g.endFill();
-            }
-            else{
-               g.beginFill(0xFF0000);
-               g.lineStyle(0, 0, 0);
-               g.drawCircle(111, 16, 6);
-               g.endFill();
-            }
+         if(connected){
+            g.beginFill(0x00FF00);
+            g.lineStyle(0, 0, 0);
+            g.drawCircle(111, 16, 6);
+            g.endFill();
          }
+         else{
+            g.beginFill(0xFF0000);
+            g.lineStyle(0, 0, 0);
+            g.drawCircle(111, 16, 6);
+            g.endFill();
+         }
+      }
 
-         inited = true;
-         connected = status;
+
+
+      public function setConnected(status:Boolean):void{
+         if(connected != status){
+            connected = status;
+            showConenctionIcon();
+         }
       }
 
 
