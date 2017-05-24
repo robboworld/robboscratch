@@ -69,7 +69,7 @@ package ui.parts {
             addChild(label);
          }
 
-         spritesTitle = makeLabel(Translator.map('Lab'), CSS.titleFormat, 10, 5);
+         spritesTitle = makeLabel(Translator.map('Lab'), CSS.titleFormat, 6, 5);
          addChild(spritesTitle);
       }
 
@@ -99,13 +99,13 @@ package ui.parts {
          if(connected){
             g.beginFill(0x00FF00);
             g.lineStyle(0, 0, 0);
-            g.drawCircle(100, 16, 6);
+            g.drawCircle(103, 16, 5);
             g.endFill();
          }
          else{
             g.beginFill(0xFF0000);
             g.lineStyle(0, 0, 0);
-            g.drawCircle(100, 16, 6);
+            g.drawCircle(103, 16, 5);
             g.endFill();
          }
       }

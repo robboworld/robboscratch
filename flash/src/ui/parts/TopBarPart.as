@@ -78,7 +78,7 @@ public class TopBarPart extends UIPart {
                 addTextButtons();
                 addToolButtons();
         }
-
+/*
         public static function strings():Array {
                 if(Scratch.app) {
                    Scratch.app.showFileMenu(Menu.dummyButton());
@@ -91,21 +91,22 @@ public class TopBarPart extends UIPart {
                    Scratch.app.showHelpMenu(Menu.dummyButton());
                    Scratch.app.donate(Menu.dummyButton());
                 }
-                return ['File', 'Edit', 'Devices', 'Help', 'Donate', 'Tips', 'Duplicate', 'Delete', 'Grow', 'Shrink', 'Block help', 'Offline Editor'];
+                return ['File', 'Edit', 'Devices', 'Options', 'Help', 'Donate', 'Tips', 'Duplicate', 'Delete', 'Grow', 'Shrink', 'Block help', 'Offline Editor'];
         }
-
+*/
         protected function removeTextButtons():void {
-                if (fileMenu.parent) {
-                        removeChild(fileMenu);
-                        removeChild(editMenu);
-                        TARGET::android {
-                removeChild(devicesMenu);
-            }
-                        removeChild(helpMenu);
-                        ANDROID::enableDonationButton  {
-                                removeChild(donateMenu);
-                        }
-                }
+           if(fileMenu.parent){
+              removeChild(fileMenu);
+              removeChild(editMenu);
+              TARGET::android{
+                 removeChild(devicesMenu);
+              }
+              removeChild(optionsMenu);
+              removeChild(helpMenu);
+              ANDROID::enableDonationButton{
+                 removeChild(donateMenu);
+              }
+           }
         }
 
         public function updateTranslation():void {

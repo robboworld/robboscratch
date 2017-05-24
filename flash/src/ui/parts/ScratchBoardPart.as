@@ -89,7 +89,7 @@ package ui.parts{
          addChild(labelStartButton);
 
 
-         spritesTitle = makeLabel(Translator.map('Robot'), CSS.titleFormat, 10, 5);
+         spritesTitle = makeLabel(Translator.map('Robot'), CSS.titleFormat, 6, 5);
          addChild(spritesTitle);
 
 
@@ -124,13 +124,13 @@ package ui.parts{
          if(connected){
             g.beginFill(0x00FF00);
             g.lineStyle(0, 0, 0);
-            g.drawCircle(111, 16, 6);
+            g.drawCircle(112, 16, 5);
             g.endFill();
          }
          else{
             g.beginFill(0xFF0000);
             g.lineStyle(0, 0, 0);
-            g.drawCircle(111, 16, 6);
+            g.drawCircle(112, 16, 5);
             g.endFill();
          }
       }
