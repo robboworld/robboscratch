@@ -98,16 +98,19 @@ package ui.parts {
 
          if(connected){
             g.beginFill(0x00FF00);
-            g.lineStyle(0, 0, 0);
-            g.drawCircle(103, 16, 5);
-            g.endFill();
          }
          else{
             g.beginFill(0xFF0000);
-            g.lineStyle(0, 0, 0);
-            g.drawCircle(103, 16, 5);
-            g.endFill();
          }
+         g.lineStyle(0, 0, 0);
+
+         TARGET::desktop{
+            g.drawCircle(103, 16, 5);
+         }
+         TARGET::android{
+            g.drawRect(100,12,8,8);
+         }
+         g.endFill();
       }
       public function setConnected(status:Boolean):void{
          if(connected != status){

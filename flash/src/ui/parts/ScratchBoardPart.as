@@ -123,16 +123,20 @@ package ui.parts{
 
          if(connected){
             g.beginFill(0x00FF00);
-            g.lineStyle(0, 0, 0);
-            g.drawCircle(112, 16, 5);
-            g.endFill();
          }
          else{
             g.beginFill(0xFF0000);
-            g.lineStyle(0, 0, 0);
-            g.drawCircle(112, 16, 5);
-            g.endFill();
          }
+         g.lineStyle(0, 0, 0);
+
+         TARGET::desktop{
+            g.drawCircle(112, 16, 5);
+         }
+         TARGET::android{
+            g.drawRect(108,12,8,8);
+         }
+         g.endFill();
+
       }
 
 

@@ -132,7 +132,7 @@ import flash.events.*;
 public class Scratch extends Sprite {
     // Version
     //public static const versionString:String = 'v426';
-    public static const versionString:String = '2.1.55';
+    public static const versionString:String = '2.1.56';
     private static const REPORT_BUG_URL:String = 'http://feedback.robbo.world';
     private static const DONATE_URL:String = 'https://play.google.com/store/apps/details?id=air.ru.scratchduino.android.appdonate';
     public static var app:Scratch; // static reference to the app, used for debugging
