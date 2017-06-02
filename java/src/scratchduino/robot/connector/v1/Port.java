@@ -139,11 +139,6 @@ modes:
                // Let's open
                serialPort.openPort();
                log.debug(LOG + Port.this.portName + " opened.");
-
-               synchronized(Port.this){
-                  Port.this.status = IPort.STATUS.OPENNED;
-               }
-               
                log.debug(LOG + Port.this.portName + " setting params...");
                
    
@@ -153,7 +148,13 @@ modes:
                                     1,
                                     SerialPort.PARITY_NONE);
                
-               Port.this.serialPortMode = serialPortMode;               
+               Port.this.serialPortMode = serialPortMode;
+
+               
+               synchronized(Port.this){
+                  Port.this.status = IPort.STATUS.OPENNED;
+               }
+               
    
                // Hardware Overflow
                //serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);

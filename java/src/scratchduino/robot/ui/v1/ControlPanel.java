@@ -107,12 +107,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
    private final IConfiguration config;
    private final IFirmware firmware;
    
-   private final JTable tblComPortList;
-   private final JScrollPane scrollableList;   
-   private final JButton btnFind;
-   private final JCheckBox cbAutoFind;
-   private final JButton btnDiagnostic;
-   private final JButton btnExit;
+   private JTable tblComPortList;
+   private JScrollPane scrollableList;   
+   private JButton btnFind;
+   private JCheckBox cbAutoFind;
+   private JButton btnDiagnostic;
+   private JButton btnExit;
    
    private String bestDeviceIcon = null;
    
@@ -131,12 +131,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
    private volatile byte[] loadFileData = null;
    
 
-   public ControlPanel(IConfiguration config, IDeviceLocator locator, IFirmware firmware){
+   public ControlPanel(IConfiguration config, IDeviceLocator locator, IFirmware firmware) throws InvocationTargetException, InterruptedException{
       this.locator  = locator;
       this.config   = config;
       this.firmware = firmware;
       
-      
+
       if(this.config.getIOS().getType() == IOS.TYPE.MAC){
          try{
             com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
@@ -147,196 +147,206 @@ public class ControlPanel extends JFrame implements IControlPanel{
             throw new Error(e);
          }
       }      
+
+      SwingUtilities.invokeAndWait(new Runnable(){
+         public void run(){
+            ControlPanel.this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+            ControlPanel.this.setResizable(false);
+            ControlPanel.this.setLocationRelativeTo(null);
+            ControlPanel.this.setAlwaysOnTop(true);
+            
+            ControlPanel.this.setLayout(null);
+         
+            if(ControlPanel.this.config.getIOS().getType() == IOS.TYPE.MAC){
+               setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+               ControlPanel.this.addWindowListener(new WindowAdapter(){
+                  public void windowClosing(WindowEvent e){
+                     ControlPanel.this.setState(Frame.ICONIFIED);
+                  }
+               });
+            }      
+            
+            
+            
+            JPanel panel = new JPanel();
+            panel.setLayout(null);
+            panel.setBackground(new Color(220, 220, 220));
+            panel.setSize(640, 55);
+            panel.setBounds(0,0, 640, 55);
       
-      this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-      this.setResizable(false);
-      this.setLocationRelativeTo(null);
-      this.setAlwaysOnTop(true);
+            JLabel lbTitleIcon = new JLabel();
+            lbTitleIcon.setIcon(iconLogo);
+            lbTitleIcon.setBounds(15, 3, 640, 45);
+            panel.add(lbTitleIcon);
+            ControlPanel.this.add(panel);
+            
+            
+            JLabel labelTitleText = new JLabel(ControlPanel.this.config.i18n("title").replaceAll("%v", ControlPanel.this.config.getVersion()));
+            labelTitleText.setFont(new Font("Arial", Font.CENTER_BASELINE, 12));
+            labelTitleText.setBounds(420, 18, 640, 45);
+            panel.add(labelTitleText);
+            
+            
+            
+            JLabel lbDeviceList = new JLabel(ControlPanel.this.config.i18n("label_device_list"));
+            lbDeviceList.setBounds(20, 60, 595, 20);
+            ControlPanel.this.add(lbDeviceList);
+            
       
-      this.setLayout(null);
+            String[] columnNames = {" ", "  ", "   "};
+            DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames){
+               private static final long serialVersionUID = -8731419365530875480L;
       
-      if(config.getIOS().getType() == IOS.TYPE.MAC){
-         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-         this.addWindowListener(new WindowAdapter(){
-            public void windowClosing(WindowEvent e){
-               ControlPanel.this.setState(Frame.ICONIFIED);
+               @Override
+               public boolean isCellEditable(int row, int column) {
+                  if(column == 2){
+                     return true;
+                  }
+                  return false;
+               }
+           };      
+            
+            
+            tblComPortList = new JTable(model){
+               private static final long serialVersionUID = 9050870870092600975L;
+      
+               public Class<?> getColumnClass(int column){
+                  return getValueAt(0, column).getClass();
+               }
+            };
+            tblComPortList.getColumnModel().getColumn(0).setPreferredWidth(0);
+            tblComPortList.getColumnModel().getColumn(1).setPreferredWidth(350);
+            tblComPortList.getColumn(" ").setCellRenderer(new LabelRenderer());
+            tblComPortList.getColumn("  ").setCellRenderer(new LabelRenderer());
+            tblComPortList.getColumn("   ").setCellRenderer(new ButtonRenderer());
+            
+            tblComPortList.getColumnModel().getColumn(2).setCellEditor(new ClientsTableRenderer(new JCheckBox()));
+            
+            
+            tblComPortList.setCellSelectionEnabled(false);
+            tblComPortList.setFocusable(false);
+            tblComPortList.setBackground(new Color(232, 233, 237));
+            tblComPortList.setGridColor(new Color(232, 233, 237));
+            
+            
+            scrollableList = new JScrollPane(tblComPortList);
+            scrollableList.setBorder(new LineBorder(new Color(150, 150, 150)));
+            scrollableList.setBounds(20, 80, 595, 185);
+            
+            ControlPanel.this.add(scrollableList);
+            
+            
+            btnFind = new JButton(ControlPanel.this.config.i18n("button_search"));
+            btnFind.setFont(new Font("Arial", Font.BOLD, 13));
+            btnFind.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
+            btnFind.setBounds(30, 280, 520, 35);
+            btnFind.addActionListener(new ActionListener(){
+               @Override
+               public void actionPerformed(ActionEvent paramActionEvent){
+                  reconnect();
+               }
+            });
+            ControlPanel.this.add(btnFind);
+            
+            
+            cbAutoFind = new JCheckBox("auto");
+            cbAutoFind.setBounds(560, 280, 100, 35);
+            //cbAutoFind.setSelected(true);
+            ControlPanel.this.add(cbAutoFind);
+            
+            
+            btnDiagnostic = new JButton(ControlPanel.this.config.i18n("button_diagnostic"));
+            btnDiagnostic.setFont(new Font("Arial", Font.BOLD, 12));
+            btnDiagnostic.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
+            btnDiagnostic.setBounds(30, 322, 280, 28);
+            btnDiagnostic.setEnabled(false);
+            ControlPanel.this.add(btnDiagnostic);
+      
+            btnExit = new JButton(ControlPanel.this.config.i18n("button_exit"));
+            btnExit.setFont(new Font("Arial", Font.BOLD, 12));
+            btnExit.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
+            btnExit.setBounds(325, 322, 280, 28);
+            btnExit.addActionListener(new ActionListener(){
+               @Override
+               public void actionPerformed(ActionEvent paramActionEvent){
+                  //System.exit(0);
+                  ControlPanel.this.setState(Frame.ICONIFIED);
+               }
+            });
+            ControlPanel.this.add(btnExit);
+            
+            
+            
+      
+            //Tray
+            if(SystemTray.isSupported()){
+      
+               SystemTray tray = SystemTray.getSystemTray();
+      
+               MouseListener mouseListener = new MouseListener(){
+      
+                  public void mouseClicked(MouseEvent event){
+                     // System.out.println("Tray Icon - Mouse clicked!");
+                  }
+      
+                  public void mouseEntered(MouseEvent event){
+                     // System.out.println("Tray Icon - Mouse entered!");
+                  }
+      
+                  public void mouseExited(MouseEvent event){
+                     // System.out.println("Tray Icon - Mouse exited!");
+                  }
+      
+                  public void mousePressed(MouseEvent event){
+                     // System.out.println("Tray Icon - Mouse pressed!");
+                     ControlPanel.this.popUp();
+                  }
+      
+                  public void mouseReleased(MouseEvent e){
+                     // System.out.println("Tray Icon - Mouse released!");
+                  }
+               };
+      
+               ActionListener exitListener = new ActionListener(){
+                  public void actionPerformed(ActionEvent e){
+                     System.out.println("Exiting...");
+                     System.exit(0);
+                  }
+               };
+      
+      
+               ActionListener actionListener = new ActionListener(){
+                  public void actionPerformed(ActionEvent e){
+                     //trayIcon.displayMessage("Action Event", "An Action Event Has Been Performed!", TrayIcon.MessageType.INFO);
+                  }
+               };
+               
+               MenuItem defaultItem = new MenuItem(ControlPanel.this.config.i18n("tray_menu_exit"));
+               defaultItem.addActionListener(exitListener);
+               popup.add(defaultItem);
+               
+      
+               trayIcon.setImageAutoSize(true);
+               trayIcon.addActionListener(actionListener);
+               trayIcon.addMouseListener(mouseListener);
+      
+               try{
+                  tray.add(trayIcon);
+               }
+               catch (AWTException e){
+                  System.err.println("TrayIcon could not be added.");
+               }
+      
             }
-         });
-      }      
-      
-      JPanel panel = new JPanel();
-      panel.setLayout(null);
-      panel.setBackground(new Color(220, 220, 220));
-      panel.setSize(640, 55);
-      panel.setBounds(0,0, 640, 55);
-
-      JLabel lbTitleIcon = new JLabel();
-      lbTitleIcon.setIcon(iconLogo);
-      lbTitleIcon.setBounds(15, 3, 640, 45);
-      panel.add(lbTitleIcon);
-      this.add(panel);
-      
-      
-      JLabel labelTitleText = new JLabel(config.i18n("title").replaceAll("%v", config.getVersion()));
-      labelTitleText.setFont(new Font("Arial", Font.CENTER_BASELINE, 12));
-      labelTitleText.setBounds(420, 18, 640, 45);
-      panel.add(labelTitleText);
-      
-      
-      
-      JLabel lbDeviceList = new JLabel(config.i18n("label_device_list"));
-      lbDeviceList.setBounds(20, 60, 595, 20);
-      this.add(lbDeviceList);
-      
-
-      String[] columnNames = {" ", "  ", "   "};
-      DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames){
-         private static final long serialVersionUID = -8731419365530875480L;
-
-         @Override
-         public boolean isCellEditable(int row, int column) {
-            if(column == 2){
-               return true;
+            else{
+               // System Tray is not supported
             }
-            return false;
-         }
-     };      
-      
-      
-      tblComPortList = new JTable(model){
-         private static final long serialVersionUID = 9050870870092600975L;
-
-         public Class<?> getColumnClass(int column){
-            return getValueAt(0, column).getClass();
-         }
-      };
-      tblComPortList.getColumnModel().getColumn(0).setPreferredWidth(0);
-      tblComPortList.getColumnModel().getColumn(1).setPreferredWidth(350);
-      tblComPortList.getColumn(" ").setCellRenderer(new LabelRenderer());
-      tblComPortList.getColumn("  ").setCellRenderer(new LabelRenderer());
-      tblComPortList.getColumn("   ").setCellRenderer(new ButtonRenderer());
-      
-      tblComPortList.getColumnModel().getColumn(2).setCellEditor(new ClientsTableRenderer(new JCheckBox()));
-      
-      
-      tblComPortList.setCellSelectionEnabled(false);
-      tblComPortList.setFocusable(false);
-      tblComPortList.setBackground(new Color(232, 233, 237));
-      tblComPortList.setGridColor(new Color(232, 233, 237));
-      
-      
-      scrollableList = new JScrollPane(tblComPortList);
-      scrollableList.setBorder(new LineBorder(new Color(150, 150, 150)));
-      scrollableList.setBounds(20, 80, 595, 185);
-      
-      this.add(scrollableList);
-      
-      
-      btnFind = new JButton(config.i18n("button_search"));
-      btnFind.setFont(new Font("Arial", Font.BOLD, 13));
-      btnFind.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
-      btnFind.setBounds(30, 280, 520, 35);
-      btnFind.addActionListener(new ActionListener(){
-         @Override
-         public void actionPerformed(ActionEvent paramActionEvent){
-            reconnect();
+            
+            ControlPanel.this.revalidate();
+            ControlPanel.this.setVisible(true);
          }
       });
-      this.add(btnFind);
       
-      
-      cbAutoFind = new JCheckBox("auto");
-      cbAutoFind.setBounds(560, 280, 100, 35);
-      //cbAutoFind.setSelected(true);
-      this.add(cbAutoFind);
-      
-      
-      btnDiagnostic = new JButton(config.i18n("button_diagnostic"));
-      btnDiagnostic.setFont(new Font("Arial", Font.BOLD, 12));
-      btnDiagnostic.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
-      btnDiagnostic.setBounds(30, 322, 280, 28);
-      btnDiagnostic.setEnabled(false);
-      this.add(btnDiagnostic);
-
-      btnExit = new JButton(config.i18n("button_exit"));
-      btnExit.setFont(new Font("Arial", Font.BOLD, 12));
-      btnExit.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
-      btnExit.setBounds(325, 322, 280, 28);
-      btnExit.addActionListener(new ActionListener(){
-         @Override
-         public void actionPerformed(ActionEvent paramActionEvent){
-            //System.exit(0);
-            ControlPanel.this.setState(Frame.ICONIFIED);
-         }
-      });
-      this.add(btnExit);
-      
-      
-      
-
-      //Tray
-      if(SystemTray.isSupported()){
-
-         SystemTray tray = SystemTray.getSystemTray();
-
-         MouseListener mouseListener = new MouseListener(){
-
-            public void mouseClicked(MouseEvent event){
-               // System.out.println("Tray Icon - Mouse clicked!");
-            }
-
-            public void mouseEntered(MouseEvent event){
-               // System.out.println("Tray Icon - Mouse entered!");
-            }
-
-            public void mouseExited(MouseEvent event){
-               // System.out.println("Tray Icon - Mouse exited!");
-            }
-
-            public void mousePressed(MouseEvent event){
-               // System.out.println("Tray Icon - Mouse pressed!");
-               ControlPanel.this.popUp();
-            }
-
-            public void mouseReleased(MouseEvent e){
-               // System.out.println("Tray Icon - Mouse released!");
-            }
-         };
-
-         ActionListener exitListener = new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-               System.out.println("Exiting...");
-               System.exit(0);
-            }
-         };
-
-
-         ActionListener actionListener = new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-               //trayIcon.displayMessage("Action Event", "An Action Event Has Been Performed!", TrayIcon.MessageType.INFO);
-            }
-         };
-         
-         MenuItem defaultItem = new MenuItem(ControlPanel.this.config.i18n("tray_menu_exit"));
-         defaultItem.addActionListener(exitListener);
-         popup.add(defaultItem);
-         
-
-         trayIcon.setImageAutoSize(true);
-         trayIcon.addActionListener(actionListener);
-         trayIcon.addMouseListener(mouseListener);
-
-         try{
-            tray.add(trayIcon);
-         }
-         catch (AWTException e){
-            System.err.println("TrayIcon could not be added.");
-         }
-
-      }
-      else{
-         // System Tray is not supported
-      }        
 
       AutoFinder af = new AutoFinder();
       af.start();
@@ -440,16 +450,28 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
          mapStatuses.clear();
          mapFirmwareButtons.clear();
+         
          DefaultTableModel model = (DefaultTableModel) tblComPortList.getModel();         
          model.setRowCount(0);
+
+         try{
+            SwingUtilities.invokeAndWait(new Runnable(){
+               public void run(){
+                  tblComPortList.revalidate();
+                  tblComPortList.repaint();
+               }
+            });
+         }
+         catch (InvocationTargetException e){
+            log.error(LOG, e);
+            return;
+         }
+         catch (InterruptedException e){
+            log.error(LOG, e);
+            return;
+         }
          
          
-         SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
-               tblComPortList.removeAll();
-               tblComPortList.repaint();
-            }
-         });      
          
          
          // Let's build status map
@@ -571,6 +593,8 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      mapStatuses.get(port.getPortName()).setIcon(printStatus(port).getIcon());
                      
                      tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
+                     tblComPortList.revalidate();
+                     tblComPortList.repaint();                     
                   }
                });
                
@@ -613,6 +637,9 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   mapStatuses.get(port.getPortName()).setText(printStatus(port).getText());
                   mapStatuses.get(port.getPortName()).setIcon(printStatus(port).getIcon());
                   tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
+                  
+                  tblComPortList.revalidate();
+                  tblComPortList.repaint();                    
                }
             });
             
