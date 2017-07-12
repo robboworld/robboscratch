@@ -26,6 +26,16 @@ package ui.parts {
             "Sound",
             "Slider"
       );
+      private static const TITLE_SENSORS:Array = new Array(
+            "Sensor 1",
+            "Sensor 2",
+            "Sensor 3",
+            "Button 4",
+            "Button 5",
+            "Light",
+            "Sound",
+            "Slider"
+      );
 
 
       private const DEFAULT_VALUE:String = '';
@@ -49,6 +59,11 @@ package ui.parts {
       private var connected:Boolean = false;
 
 
+
+      public var arrSensorSelectors:Array = new Array();
+
+
+
       public function ScratchLabPart(app:Scratch) {
          this.app = app;
          addChild(shape = new Shape());
@@ -64,7 +79,12 @@ package ui.parts {
             titleLabels.push(label);
             addChild(label);
 
-            label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
+            if(i < 5){
+               label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X - 20, TEXT_Y + i * TEXT_VERTICAL_STEP);
+            }
+            else{
+               label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
+            }
             dataLabels.push(label);
             addChild(label);
          }
@@ -118,6 +138,29 @@ package ui.parts {
             showConenctionIcon();
          }
       }
+
+
+
+
+      public function setExternalSensors(isEnabled:Boolean):void{
+         if(isEnabled){
+            for (var f:int = 0; f < Scratch.LAB_SENSOR_FLEXIBLE_COUNT; f++) {
+               var sensorSelector:SensorSelector = new SensorSelector(app, f + 1, 0);
+               arrSensorSelectors[f] = sensorSelector;
+               sensorSelector.x = 97;
+               sensorSelector.y = 35 + f * 17;
+               addChild(sensorSelector);
+            }
+         }
+         else{
+            for (var h:int = 0; h < Scratch.LAB_SENSOR_FLEXIBLE_COUNT; h++) {
+               if(arrSensorSelectors[h] != null && contains(arrSensorSelectors[h])){
+                  removeChild(arrSensorSelectors[h]);
+               }
+            }
+         }
+      }
+
 
 
 

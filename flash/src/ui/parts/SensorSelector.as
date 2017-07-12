@@ -8,25 +8,15 @@ package ui.parts{
         import uiwidgets.BlockColorEditor;
 
 
-        public class DeviceSelector extends Sprite {
+        public class SensorSelector extends Sprite {
            private var icon:Bitmap;
            private var icons:Array = [Resources.createBmp('sensor16_None'),
                                       Resources.createBmp('sensor16_Line'),
-                                      Resources.createBmp('sensor16_Led'),
-                                      Resources.createBmp('sensor16_Light'),
-                                      Resources.createBmp('sensor16_Touch'),
-                                      Resources.createBmp('sensor16_Proximity'),
-                                      Resources.createBmp('sensor16_Ultrasonic'),
-                                      Resources.createBmp('sensor16_Color')
+                                      Resources.createBmp('sensor16_Led')
                                      ];
            private var iconsHover:Array = [Resources.createBmp('sensor16_None_Hover'),
                                            Resources.createBmp('sensor16_Line_Hover'),
-                                           Resources.createBmp('sensor16_Led_Hover'),
-                                           Resources.createBmp('sensor16_Light_Hover'),
-                                           Resources.createBmp('sensor16_Touch_Hover'),
-                                           Resources.createBmp('sensor16_Proximity_Hover'),
-                                           Resources.createBmp('sensor16_Ultrasonic_Hover'),
-                                           Resources.createBmp('sensor16_Color_Hover')
+                                           Resources.createBmp('sensor16_Led_Hover')
                                           ];
            public var sensor:int;
 
@@ -38,7 +28,7 @@ package ui.parts{
            private var app:Scratch;
            private var number:int;
 
-           public function DeviceSelector(app:Scratch, number:int, sensor:int) {
+           public function SensorSelector(app:Scratch, number:int, sensor:int) {
               this.app = app;
               this.number = number;
               this.sensor = sensor;
@@ -84,14 +74,14 @@ package ui.parts{
               this.addEventListener(MouseEvent.MOUSE_OUT, this.functionOut);
 
 
-              this.app.robotSensors[number - 1].type = sensor;
+              this.app.labSensors[number - 1].type = sensor;
 
 
-              var tmpSensors:Array = new Array();
-              for (var i:int = 0; i < Scratch.ROBOT_SENSOR_COUNT; i++) {
-                 tmpSensors.push(this.app.robotSensors[i].type);
-              }
-              this.app.robotCommunicator.setSensorTypes(tmpSensors);
+              //var tmpSensors:Array = new Array();
+              //for (var i:int = 0; i < Scratch.ROBOT_SENSOR_COUNT; i++) {
+              //   tmpSensors.push(this.app.robotSensors[i].type);
+              //}
+              //this.app.robotCommunicator.setSensorTypes(tmpSensors);
            }
 
 
@@ -100,7 +90,7 @@ package ui.parts{
               if(dialogBox == null){
                  dialogBox = new DialogBox();
                  dialogBox.addTitle('Sensor type');
-                 dialogBox.addWidget(new DeviceSelectorPanel(this));
+                 dialogBox.addWidget(new SensorSelectorPanel(this));
                  //dialogBox.addButton('Close', dialogBox.cancel);
                  dialogBox.showOnStage(stage, true);
               }
