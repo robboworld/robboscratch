@@ -16,7 +16,7 @@ package ui.parts {
       private const titleTextFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor, true);
       private const dataTextFormat:TextFormat  = new TextFormat(CSS.font, 10, CSS.textColor);
 
-      private static const TITLES:Array = new Array(
+      public static const TITLES:Array = new Array(
             "Button 1",
             "Button 2",
             "Button 3",
@@ -24,23 +24,16 @@ package ui.parts {
             "Button 5",
             "Light",
             "Sound",
-            "Slider"
-      );
-      private static const TITLE_SENSORS:Array = new Array(
-            "Sensor 1",
-            "Sensor 2",
-            "Sensor 3",
-            "Button 4",
-            "Button 5",
-            "Light",
-            "Sound",
-            "Slider"
+            "Slider",
+            "Analog 0",
+            "Analog 1",
+            "Digital"
       );
 
 
       private const DEFAULT_VALUE:String = '';
 
-      private const TEXT_TITLE_WIDTH:int = 75;
+      private const TEXT_TITLE_WIDTH:int = 72;
       private const TEXT_TITLE_X:int = 5;        // x-coordinate of labels for @TITLES strings
       private const TEXT_DATA_X:int = TEXT_TITLE_X + TEXT_TITLE_WIDTH;        // x-coordinate of labels for sensors' data
                                                  // maybe you need to change it if add new titles in @TITLES
@@ -79,15 +72,19 @@ package ui.parts {
             titleLabels.push(label);
             addChild(label);
 
-            if(i < 5){
-               label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X - 20, TEXT_Y + i * TEXT_VERTICAL_STEP);
-            }
-            else{
-               label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
-            }
+            label = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + i * TEXT_VERTICAL_STEP);
             dataLabels.push(label);
             addChild(label);
          }
+
+         for (var f:int = 0; f < Scratch.LAB_SENSOR_FLEXIBLE_COUNT; f++) {
+            var sensorSelector:SensorSelector = new SensorSelector(app, f + 1, 0);
+            arrSensorSelectors[f] = sensorSelector;
+            sensorSelector.x = 98;
+            sensorSelector.y = 170 + f * 17;
+            addChild(sensorSelector);
+         }
+
 
          spritesTitle = makeLabel(Translator.map('Lab'), CSS.titleFormat, 6, 5);
          addChild(spritesTitle);
@@ -143,6 +140,7 @@ package ui.parts {
 
 
       public function setExternalSensors(isEnabled:Boolean):void{
+/*
          if(isEnabled){
             for (var f:int = 0; f < Scratch.LAB_SENSOR_FLEXIBLE_COUNT; f++) {
                var sensorSelector:SensorSelector = new SensorSelector(app, f + 1, 0);
@@ -159,6 +157,7 @@ package ui.parts {
                }
             }
          }
+*/
       }
 
 

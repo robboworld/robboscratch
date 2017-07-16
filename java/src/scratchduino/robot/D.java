@@ -22,7 +22,7 @@ public class D{
       locator.start();
       while(true) {
          for(IPort port : locator.getPortList()){
-            System.out.print(port.getPortName() + " : " + port.getStatus());
+            System.out.print(port.getPortName() + " : " + port.getProgress());
             if(port.getDevice() == null){
             }
             else{
@@ -51,10 +51,10 @@ public class D{
       String sPortRobot = null;
       String sPortLab = null;
       for(IPort port : locator.getPortList()){
-         if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED && port.getDevice().getType() == 0){
+         if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED && port.getDevice().getType() == 0){
             sPortRobot = port.getPortName();
          }
-         if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED && port.getDevice().getType() == 1){
+         if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED && port.getDevice().getType() == 1){
             sPortLab = port.getPortName();
          }
       }

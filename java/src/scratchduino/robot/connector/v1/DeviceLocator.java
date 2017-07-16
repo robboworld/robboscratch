@@ -103,29 +103,18 @@ public class DeviceLocator implements IDeviceLocator{
          for(IPort port : listPorts){
             mapStatuses.put(port.getPortName(), true);
             
-            switch(port.getStatus()){
-               case TIME_OUT:{
-                  break;
-               }
-               case ERROR:{
-                  break;
-               }
-               case NO_RESPONSE:{
-                  break;
-               }
-               case UNKNOWN_DEVICE:{
-                  break;
-               }
-               case ROBOT_DETECTED:{
-                  break;
-               }
-               case TERMINATING:
-               case TERMINATED:
-               case INIT:
-               case OPENNED:
-               case TEST_DATA:
-               case RESPONSE:{
+            switch(port.getState()){
+               case DETECTION:{
                   mapStatuses.put(port.getPortName(), false);                  
+                  break;
+               }
+               case TIME_OUT:
+               case ERROR:
+               case ROBOT_DETECTED:
+               case WRONG_VERSION:
+               case UNKNOWN_DEVICE:{
+                  mapStatuses.put(port.getPortName(), true);
+                  break;
                }
             }
          }

@@ -69,7 +69,7 @@ public class FEConnector{
       
       if(locator.getStatus() == IDeviceLocator.STATUS.READY){
          for(IPort port : locator.getPortList()){
-            if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED){
+            if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED){
                if(sb.length() > 0) sb.append("\n");
                sb.append(port.getDevice().getType());
             }
@@ -96,7 +96,7 @@ public class FEConnector{
                                 @PathParam("DEVICE") int iDeviceID,
                                 @PathParam("paths")  List<PathSegment> uglyPath,
                                 @Context HttpServletResponse response) throws Exception{
-      resetCache(response);      
+      resetCacheAndAllowAccess(response);      
       
       IDeviceLocator locator = ((IDeviceLocator) context.getAttribute("locator"));
       
@@ -104,7 +104,7 @@ public class FEConnector{
       
       if(locator.getStatus() == IDeviceLocator.STATUS.READY){
          for(IPort port : locator.getPortList()){
-            if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED && port.getDevice().getType() == iDeviceID){
+            if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED && port.getDevice().getType() == iDeviceID){
                return servicePortTxt(port.getPortName(), iDeviceID, uglyPath, response);
             }
          }
@@ -121,7 +121,7 @@ public class FEConnector{
                                     @Context HttpServletResponse response) throws Exception{
       log.trace(LOG + "POST");
       
-      resetCache(response);      
+      resetCacheAndAllowAccess(response);      
       
       return defaultPortTxt(sPortName, iDeviceID, uglyPath, response);
    }
@@ -140,7 +140,7 @@ public class FEConnector{
                                 @PathParam("paths") List<PathSegment> uglyPath,
                                 @Context HttpServletResponse response) throws Exception{
       
-      resetCache(response);      
+      resetCacheAndAllowAccess(response);      
 
       List<String> listParameters = new ArrayList<String>();
 
@@ -242,7 +242,7 @@ public class FEConnector{
                                 @PathParam("DEVICE") int iDeviceID,
                                 @PathParam("paths")  List<PathSegment> uglyPath,
                                 @Context HttpServletResponse response) throws Exception{
-      resetCache(response);      
+      resetCacheAndAllowAccess(response);      
       
       IDeviceLocator locator = ((IDeviceLocator) context.getAttribute("locator"));
       
@@ -250,7 +250,7 @@ public class FEConnector{
       
       if(locator.getStatus() == IDeviceLocator.STATUS.READY){
          for(IPort port : locator.getPortList()){
-            if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED && port.getDevice().getType() == iDeviceID){
+            if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED && port.getDevice().getType() == iDeviceID){
                return servicePortBin(port.getPortName(), iDeviceID, uglyPath, response);
             }
          }
@@ -267,7 +267,7 @@ public class FEConnector{
                                     @Context HttpServletResponse response) throws Exception{
       log.trace(LOG + "POST");
       
-      resetCache(response);      
+      resetCacheAndAllowAccess(response);      
       
       return defaultPortBin(sPortName, iDeviceID, uglyPath, response);
    }
@@ -286,7 +286,7 @@ public class FEConnector{
                                 @PathParam("paths") List<PathSegment> uglyPath,
                                 @Context HttpServletResponse response) throws Exception{
       
-      resetCache(response);      
+      resetCacheAndAllowAccess(response);      
 
       List<String> listParameters = new ArrayList<String>();
 
@@ -370,10 +370,11 @@ public class FEConnector{
    
    
    
-   private void resetCache(HttpServletResponse response){
+   private void resetCacheAndAllowAccess(HttpServletResponse response){
       response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       response.setHeader("Pragma", "no-cache");
       response.setHeader("Expires", "0");
+      response.setHeader("Access-Control-Allow-Origin", "*");      
    }
    
    

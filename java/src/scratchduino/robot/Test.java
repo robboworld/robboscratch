@@ -20,7 +20,7 @@ public class Test{
          locator.start();
          while(true) {
             for(IPort port : locator.getPortList()){
-               System.out.print(port.getPortName() + " : " + port.getStatus());
+               System.out.print(port.getPortName() + " : " + port.getProgress());
                if(port.getDevice() == null){
                }
                else{
@@ -48,7 +48,7 @@ public class Test{
          
          
          for(IPort port : locator.getPortList()){
-            System.out.print(port.getPortName() + " : " + port.getStatus());
+            System.out.print(port.getPortName() + " : " + port.getProgress());
             if(port.getDevice() == null){
             }
             else{

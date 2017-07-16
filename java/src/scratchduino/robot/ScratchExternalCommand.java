@@ -3,18 +3,20 @@ package scratchduino.robot;
 import java.io.*;
 import org.apache.commons.logging.*;
 
-public class Flash implements IFlash{
-   private static final String LOG = "[FLASH] ";
-   private static Log log = LogFactory.getLog(Flash.class);
+public class ScratchExternalCommand implements IScratch{
+   private static final String LOG = "[SCRATCH] ";
+   private static Log log = LogFactory.getLog(ScratchExternalCommand.class);
 
    private final IConfiguration config;
    private final IOS os;
+   private final String sCommand;
 
 
-   public Flash(IConfiguration config, IOS os){
-      log.trace(LOG + "Flash bean has been instanced.");
+   public ScratchExternalCommand(IConfiguration config, IOS os, String sCommand){
+      log.trace(LOG + "Scratch bean has been instanced. External command=" + sCommand);
       this.config = config;
       this.os = os;
+      this.sCommand = sCommand;
    }
 
 
@@ -23,13 +25,12 @@ public class Flash implements IFlash{
    @Override
    public void run(){
 
-      String sBinaryName = "flash" + config.getVersion();
-      log.info(LOG + sBinaryName);
+      log.info(LOG + sCommand);
 
       try{
          switch(os.getType()) {
             case WINDOWS:{
-               String sNameOS = sBinaryName + ".exe";
+               String sNameOS = sCommand + ".exe";
 
                try{
                   String line;
@@ -70,7 +71,7 @@ public class Flash implements IFlash{
                String line;
                String pidInfo = "";
 
-               String sNameOS = sBinaryName;
+               String sNameOS = sCommand;
 
                Process p = Runtime.getRuntime().exec("ps ax");
                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -99,7 +100,7 @@ public class Flash implements IFlash{
             }
 
             case MAC:{
-               String sNameOS = sBinaryName + ".app";
+               String sNameOS = sCommand + ".app";
                String sCommand = "open " + config.getRootFolder() + "/" + sNameOS;
                log.debug(LOG + "We are going to run: " + sCommand);
 

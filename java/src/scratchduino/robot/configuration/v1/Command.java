@@ -51,7 +51,7 @@ public class Command implements ICommand{
 
 
 
-      if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED){
+      if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED){
          //ok, let's find out how much space we need
          
          

@@ -1,6 +1,6 @@
 package scratchduino.robot;
 
-public interface IFlash{
+public interface IScratch{
 
    public void run();
 }

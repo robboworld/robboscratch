@@ -331,16 +331,27 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
       <constructor-arg ref="devices"/>
    </bean>
 
-   <bean id="flash" class="scratchduino.robot.Flash" scope="singleton" lazy-init="true">
-      <constructor-arg ref="config"/>
-      <constructor-arg ref="os"/>
-   </bean>
-
 <!--
-   <bean id="flash" class="scratchduino.robot.FlashNoGUI" scope="singleton" lazy-init="true">
+   <bean id="scratch" class="scratchduino.robot.ScratchExternalCommand" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
+      <constructor-arg value="flash2.1.57"/>
    </bean>
 -->
+
+
+<!--
+   <bean id="scratch" class="scratchduino.robot.ScratchExternalCommand" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
+      <constructor-arg ref="os"/>
+      <constructor-arg value="flash2.1.57"/>
+   </bean>
+-->
+
+
+   <bean id="scratch" class="scratchduino.robot.ScratchDisabled" scope="singleton" lazy-init="true">
+      <constructor-arg ref="config"/>
+      <constructor-arg ref="os"/>
+   </bean>
 
 </beans>

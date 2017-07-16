@@ -359,7 +359,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
       
       
       loadFileData = dialogOpenTmp();
-      Context.ctx.getBean("flash", IFlash.class).run();      
+      Context.ctx.getBean("scratch", IScratch.class).run();      
    }
 
 
@@ -576,15 +576,15 @@ public class ControlPanel extends JFrame implements IControlPanel{
                
                SwingUtilities.invokeLater(new Runnable(){
                   public void run(){
-                     if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
+                     if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
                         //ControlPanel.this.setVisible(false);
                         bFirstRun.getAndSet(false);
                      }
                      
                      
-                     if(port.getStatus() == IPort.STATUS.WRONG_VERSION ||
-                        port.getStatus() == IPort.STATUS.UNKNOWN_DEVICE ||
-                        port.getStatus() == IPort.STATUS.TIME_OUT){
+                     if(port.getProgress() == IPort.PROGRESS.WRONG_VERSION ||
+                        port.getProgress() == IPort.PROGRESS.UNKNOWN_DEVICE ||
+                        port.getProgress() == IPort.PROGRESS.TIME_OUT){
                         
                         mapFirmwareButtons.get(port.getPortName()).setEnabled(true);
                      }
@@ -620,22 +620,22 @@ public class ControlPanel extends JFrame implements IControlPanel{
             
             SwingUtilities.invokeLater(new Runnable(){
                public void run(){
-                  if(port.getStatus() == IPort.STATUS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
+                  if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
                      //ControlPanel.this.setVisible(false);
                      bFirstRun.getAndSet(false);
 
 //                     Context.ctx.getBean("flash", IFlash.class).run(port.getDevice().getType());
                   }
                   
-                  if(port.getStatus() == IPort.STATUS.WRONG_VERSION ||
-                     port.getStatus() == IPort.STATUS.UNKNOWN_DEVICE ||
-                     port.getStatus() == IPort.STATUS.TIME_OUT ||
-                     port.getStatus() == IPort.STATUS.ROBOT_DETECTED){
+                  if(port.getProgress() == IPort.PROGRESS.WRONG_VERSION ||
+                     port.getProgress() == IPort.PROGRESS.UNKNOWN_DEVICE ||
+                     port.getProgress() == IPort.PROGRESS.TIME_OUT ||
+                     port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED){
                      mapFirmwareButtons.get(port.getPortName()).setEnabled(true);
                   }
                   
-                  mapStatuses.get(port.getPortName()).setText(printStatus(port).getText());
-                  mapStatuses.get(port.getPortName()).setIcon(printStatus(port).getIcon());
+                  mapStatuses.get(port.getPortName()).setText(printStatusFinal(port).getText());
+                  mapStatuses.get(port.getPortName()).setIcon(printStatusFinal(port).getIcon());
                   tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
                   
                   tblComPortList.revalidate();
@@ -666,7 +666,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
    
    
    protected JLabel printStatus(IPort port){      
-      switch (port.getStatus()){
+      switch (port.getProgress()){
          case INIT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_init"));
             lb.setIcon(iconYellow);
@@ -728,14 +728,14 @@ public class ControlPanel extends JFrame implements IControlPanel{
             updateIcon(iconRed);
             return lb;
          }
-         case TERMINATING:{
+         case CLOSING:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_closing"));
             lb.setIcon(iconRed);
             updateIcon(iconRed);
             return lb;
          }
-         case TERMINATED:{
-            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_closing"));
+         case CLOSED:{
+            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_closed"));
             lb.setIcon(iconRed);
             updateIcon(iconRed);
             return lb;
@@ -749,6 +749,53 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
       return lb;
    }
+   
+   
+   protected JLabel printStatusFinal(IPort port){      
+      switch (port.getState()){
+         case TIME_OUT:{
+            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_timeout"));
+            lb.setIcon(iconRed);
+            updateIcon(iconRed);
+            return lb;
+         }
+         case ERROR:{
+            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_error"));
+            lb.setIcon(iconRed);
+            updateIcon(iconRed);
+            return lb;
+         }
+         case ROBOT_DETECTED:{
+            JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_robot_ok"), port.getDevice()));
+            lb.setIcon(iconGreen);
+            updateIcon(iconGreen);
+            
+            state = STATE.READY;
+            return lb;
+         }
+         case WRONG_VERSION:{
+            JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_wrong_version"), port.getDevice()));
+            lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
+            
+            state = STATE.WRONG_VERSION;
+            return lb;
+         }
+         case UNKNOWN_DEVICE:{
+            JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_unknown_device"));
+            lb.setIcon(iconRed);
+            updateIcon(iconRed);
+            return lb;
+         }
+      }
+      
+      JLabel lb = new JLabel("---");
+      lb.setIcon(iconYellow);
+      trayIcon.setImage(iconYellow.getImage());
+
+      return lb;
+   }
+   
    
    
    
