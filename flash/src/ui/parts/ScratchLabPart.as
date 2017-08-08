@@ -169,14 +169,12 @@ package ui.parts {
 
          var label:TextField = dataLabels[index];
          label.text = text;
-
-//         if (index == 5 && text == '100')
-//            label.text = 'true';
-//         else if (index == 5 && text == '0')
-//            label.text = 'false';
-//         else
-//            label.text = text;
       }
+      public function disableValue(index:int):void {
+         var label:TextField = dataLabels[index];
+         label.text = "-";
+      }
+
 
       private function fixLayout():void {
 /*

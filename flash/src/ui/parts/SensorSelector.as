@@ -11,12 +11,12 @@ package ui.parts{
         public class SensorSelector extends Sprite {
            private var icon:Bitmap;
            private var icons:Array = [Resources.createBmp('sensor16_None'),
-                                      Resources.createBmp('sensor16_Line'),
-                                      Resources.createBmp('sensor16_Led')
+                                      Resources.createBmp('lab_sensor16_Temperature'),
+                                      Resources.createBmp('lab_sensor16_Clamps')
                                      ];
            private var iconsHover:Array = [Resources.createBmp('sensor16_None_Hover'),
-                                           Resources.createBmp('sensor16_Line_Hover'),
-                                           Resources.createBmp('sensor16_Led_Hover')
+                                           Resources.createBmp('lab_sensor16_Temperature_Hover'),
+                                           Resources.createBmp('lab_sensor16_Clamps_Hover')
                                           ];
            public var sensor:int;
 

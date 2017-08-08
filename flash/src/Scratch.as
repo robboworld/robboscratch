@@ -151,7 +151,7 @@ public class Scratch extends Sprite {
     public static const ROBOT_SENSOR_TYPE_COLOR:int      = 7;
 
 
-    public static const LAB_SENSOR_TYPE_BUTTON:int       = 0;
+    public static const LAB_SENSOR_TYPE_NONE:int         = 0;
     public static const LAB_SENSOR_TYPE_TEMPERATURE:int  = 1;
     public static const LAB_SENSOR_TYPE_CROCODILE:int    = 2;
 
@@ -582,7 +582,7 @@ public class Scratch extends Sprite {
 
         if(data.length == 0){
            for(var f:int = 0; f < ScratchLabPart.TITLES.length; f++){
-              setAnalogTextLab(f, "-");
+              scratchLabPart.disableValue(f);
            }
 
            return;
@@ -704,9 +704,40 @@ public class Scratch extends Sprite {
 
 
 
-       //External Sensor 0
-       var iAnalog0:int = ((data[3]*256 + data[4]) / 1023) * 100;
-       setAnalogTextLab(8, "" + iAnalog0);
+       switch(labSensors[0].type){
+          case LAB_SENSOR_TYPE_NONE:{
+             scratchLabPart.disableValue(8);
+             break;
+          }
+          case LAB_SENSOR_TYPE_TEMPERATURE:{
+             //External Sensor 0
+             setAnalogTextLab(8, "" + Math.round((data[3] * 256 + data[4]) * 0.244379276637341153));
+             break;
+          }
+          case LAB_SENSOR_TYPE_CROCODILE:{
+             //External Sensor 0
+             setAnalogTextLab(8, "" + int(((data[3]*256 + data[4]) / 1023) * 100));
+             break;
+          }
+       }
+       switch(labSensors[1].type){
+          case LAB_SENSOR_TYPE_NONE:{
+             scratchLabPart.disableValue(9);
+             break;
+          }
+          case LAB_SENSOR_TYPE_TEMPERATURE:{
+             //External Sensor 0
+             setAnalogTextLab(9, "" + Math.round((data[7] * 256 + data[8]) * 0.244379276637341153));
+             break;
+          }
+          case LAB_SENSOR_TYPE_CROCODILE:{
+             //External Sensor 0
+             setAnalogTextLab(9, "" + int(((data[7]*256 + data[8]) / 1023) * 100));
+             break;
+          }
+       }
+
+
 
 
 
@@ -1318,6 +1349,20 @@ public class Scratch extends Sprite {
       scratchLabPart.x = stagePart.x + 127;
       scratchLabPart.y = stagePart.bottom() + 18; // + 18
       scratchLabPart.setWidthHeight(115, 166);
+
+
+
+      if(this.areExternalSensorsEnabled){
+         scratchBoardPart.setWidthHeight(123, 220);
+         scratchLabPart.setWidthHeight(115, 220);
+      }
+      else{
+         scratchBoardPart.setWidthHeight(123, 166);
+         scratchLabPart.setWidthHeight(115, 166);
+      }
+      libraryPart.y = scratchLabPart.bottom() + 5;
+
+
 
 
       libraryPart.x = scratchBoardPart.x;

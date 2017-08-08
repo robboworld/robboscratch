@@ -145,6 +145,9 @@ void setup(){
 
 
 
+    pinMode(13, INPUT);
+
+
     //Lab greetings!
     //Flashing lamps & bip-bip-bip
     digitalWrite(A5, HIGH);
@@ -187,7 +190,7 @@ void printSensors(){
 
 
 
-   unsigned int iValue = int(analogRead(7));
+   unsigned int iValue = int(analogRead(0));
    Serial.write(0x00);
    Serial.write(0x00);
    Serial.write((byte)(iValue >> 8));

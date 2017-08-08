@@ -371,6 +371,10 @@ public class Resources {
         [Embed(source='UI/devices/16/sensor_touch_hover.png')]      private static const sensor16_Touch_Hover:Class;
         [Embed(source='UI/devices/16/sensor_ultrasonic_hover.png')] private static const sensor16_Ultrasonic_Hover:Class;
 
+        [Embed(source='UI/devices/16/lab_sensor_clamps.png')]            private static const lab_sensor16_Clamps:Class;
+        [Embed(source='UI/devices/16/lab_sensor_clamps_hover.png')]      private static const lab_sensor16_Clamps_Hover:Class;
+        [Embed(source='UI/devices/16/lab_sensor_temperature.png')]       private static const lab_sensor16_Temperature:Class;
+        [Embed(source='UI/devices/16/lab_sensor_temperature_hover.png')] private static const lab_sensor16_Temperature_Hover:Class;
 
 
 
@@ -393,5 +397,8 @@ public class Resources {
         [Embed(source='UI/devices/32/sensor_ultrasonic_hover.png')] private static const sensor32_Ultrasonic_Hover:Class;
 
 
-
+        [Embed(source='UI/devices/32/lab_sensor_clamps.png')]            private static const lab_sensor32_Clamps:Class;
+        [Embed(source='UI/devices/32/lab_sensor_clamps_hover.png')]      private static const lab_sensor32_Clamps_Hover:Class;
+        [Embed(source='UI/devices/32/lab_sensor_temperature.png')]       private static const lab_sensor32_Temperature:Class;
+        [Embed(source='UI/devices/32/lab_sensor_temperature_hover.png')] private static const lab_sensor32_Temperature_Hover:Class;
 }}

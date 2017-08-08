@@ -173,6 +173,7 @@ class ISensor{
    public:
       virtual void iteration();
       virtual byte* getResult();
+      virtual byte* getResultRaw();
 };
 
 
@@ -217,6 +218,10 @@ class AnalogSensor: public ISensor{
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin) / 1023.0 * 100)};
    }
+   byte* getResultRaw(){
+      int raw = analogRead(pin);
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, raw >> 8, raw && 0x00FF};
+   }
 };
 
 
@@ -238,6 +243,10 @@ class SensorLab: public ISensor{
 
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin) / 1023.0 * 100)};
+   }
+   byte* getResultRaw(){
+      int raw = analogRead(pin);
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, raw >> 8, raw & 0xFF};
    }
 };
 
@@ -387,6 +396,9 @@ class SonicSensor: public ISensor{
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
    }
+   byte* getResultRaw(){
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
+   }
 };
 
 
@@ -516,6 +528,9 @@ class ColorSensor: public ISensor{
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{result[0], result[1], result[2], result[3]};
    }
+   byte* getResultRaw(){
+      return new byte[SENSOR_RESPONSE_LENGTH]{result[0], result[1], result[2], result[3]};
+   }
 
 
 
@@ -585,8 +600,8 @@ void setup(){
       
       
       
-      sensors[0]  = new SensorLab(A2);
-      sensors[1]  = new SensorLab(A2);
+      sensors[0]  = new SensorLab(A1);
+      sensors[1]  = new SensorLab(A0);
       sensors[2]  = new SensorLab(A2);
       sensors[3]  = new SensorLab(A4);
       sensors[4]  = new SensorLab(A2);
@@ -665,17 +680,17 @@ void printSensors(){
       if(digitalRead(12) == HIGH){
          bValue |= 16;
       }
-      if(digitalRead(13) == HIGH){
+      if(digitalRead(0) == HIGH){
          bValue |= 32;
       }
       Serial.write(bValue);
 
 
 
-      byte* result = sensors[0] -> getResult();
+      byte* result = sensors[0] -> getResultRaw();
       Serial.write(result, SENSOR_RESPONSE_LENGTH);
       delete[] result;
-      result = sensors[1] -> getResult();
+      result = sensors[1] -> getResultRaw();
       Serial.write(result, SENSOR_RESPONSE_LENGTH);
       delete[] result;
       result = sensors[2] -> getResult();

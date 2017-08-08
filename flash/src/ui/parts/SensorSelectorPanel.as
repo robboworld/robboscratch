@@ -24,12 +24,12 @@ public class SensorSelectorPanel extends Sprite {
 
 
            private var icons:Array = [Resources.createBmp('sensor32_None'),
-                                      Resources.createBmp('sensor32_Line'),
-                                      Resources.createBmp('sensor32_Led'),
+                                      Resources.createBmp('lab_sensor32_Temperature'),
+                                      Resources.createBmp('lab_sensor32_Clamps'),
                                      ];
            private var iconsHover:Array = [Resources.createBmp('sensor32_None_Hover'),
-                                           Resources.createBmp('sensor32_Line_Hover'),
-                                           Resources.createBmp('sensor32_Led_Hover'),
+                                           Resources.createBmp('lab_sensor32_Temperature_Hover'),
+                                           Resources.createBmp('lab_sensor32_Clamps_Hover'),
                                          ];
 
 
