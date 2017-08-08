@@ -278,15 +278,15 @@ public class Scratch extends Sprite {
       }
 
 
-       TARGET::desktop {
-           loadSettings(null);
-       }
+      TARGET::desktop {
+         loadSettings(null);
+      }
 
 
 
-       TARGET::android {
-           determineJSAccess();
-       }
+      TARGET::android {
+         determineJSAccess();
+      }
    }
 
    public function loadSettings(event:Event):void {

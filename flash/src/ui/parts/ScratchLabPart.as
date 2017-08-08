@@ -78,12 +78,19 @@ package ui.parts {
          }
 
          for (var f:int = 0; f < Scratch.LAB_SENSOR_FLEXIBLE_COUNT; f++) {
-            var sensorSelector:SensorSelector = new SensorSelector(app, f + 1, 0);
+            var sensorSelector:SensorSelector = new SensorSelector(app, f + 1, Scratch.LAB_SENSOR_TYPE_NONE);
             arrSensorSelectors[f] = sensorSelector;
             sensorSelector.x = 98;
             sensorSelector.y = 170 + f * 17;
             addChild(sensorSelector);
          }
+
+
+         var labDigitalSensor:LabDigitalSensorSelector = new LabDigitalSensorSelector(app, Scratch.LAB_SENSOR_TYPE_NONE);
+         labDigitalSensor.x = 98;
+         labDigitalSensor.y = 203;
+         addChild(labDigitalSensor);
+
 
 
          spritesTitle = makeLabel(Translator.map('Lab'), CSS.titleFormat, 6, 5);
