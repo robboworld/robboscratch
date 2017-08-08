@@ -122,7 +122,16 @@ public class PaletteBuilder {
             //trace("blocks x y ", block.x, block.y, block.width, block.height);
             var showCheckbox:Boolean = isCheckboxReporter(spec[3]);
             if (showCheckbox) addReporterCheckbox(block);
-            addItem(block, showCheckbox);
+
+            if(label == "Claw closed %n %" || label == "Claw %m.robotClawMenu" || label == "Robot Color Sensor %m.digitalRobot %m.brightRobot"){
+               if(app.isExtensionPackEnabled){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else{
+               addItem(block, showCheckbox);
+            }
+
             cmdCount++;
          } else {
             if ((spec.length == 1) && (cmdCount > 0)) nextY += 10 * spec[0].length; // add some space

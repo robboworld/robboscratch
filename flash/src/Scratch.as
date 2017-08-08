@@ -2515,6 +2515,12 @@ public class Scratch extends Sprite {
    public function switchExtensionPack():void {
       this.isExtensionPackEnabled = !this.isExtensionPackEnabled;
       scratchBoardPart.setExtendedMode(this.isExtensionPackEnabled);
+
+      //Robbo is active
+      trace("Current category=" + scriptsPart.selector.selectedCategory);
+      if(scriptsPart.selector.selectedCategory == 13){
+         getPaletteBuilder().showBlocksForCategory(13, true, false);
+      }
    }
    public function switchExternalSensors():void {
       this.areExternalSensorsEnabled = !this.areExternalSensorsEnabled;

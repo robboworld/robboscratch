@@ -33,7 +33,7 @@ package ui.parts {
 public class ScriptsPart extends UIPart {
 
    private var shape:Shape;
-   private var selector:PaletteSelector;
+   public  var selector:PaletteSelector;
    private var spriteWatermark:Bitmap;
    private var paletteFrame:ScrollFrame;
    private var scriptsFrame:ScrollFrame;
