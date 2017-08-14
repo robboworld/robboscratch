@@ -141,6 +141,11 @@ package ui.parts {
             connected = status;
             showConenctionIcon();
 
+
+            if(app.labVersion == 1){
+               app.labSensors[0].type = Scratch.LAB_SENSOR_TYPE_NONE;
+            }
+
             //Redraw lab blocks in case version is changed
             if(app.scriptsPart.selector.selectedCategory == 14){
                app.getPaletteBuilder().showBlocksForCategory(14, true, false);

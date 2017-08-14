@@ -707,6 +707,7 @@ public class Scratch extends Sprite {
 
        switch(labSensors[0].type){
           case LAB_SENSOR_TYPE_NONE:{
+             labAnalogTypedBased[0] = 0;
              scratchLabPart.disableValue(8);
              break;
           }
@@ -725,6 +726,7 @@ public class Scratch extends Sprite {
        }
        switch(labSensors[1].type){
           case LAB_SENSOR_TYPE_NONE:{
+             labAnalogTypedBased[1] = 0;
              scratchLabPart.disableValue(9);
              break;
           }
