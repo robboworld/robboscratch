@@ -657,14 +657,15 @@ public class Scratch extends Sprite {
        }
 
 
-       //0 0                buttons
-       //1 1-2-3-4          A0
-       //2 5-6-7-8          A1
-       //3 9-10-11-12       A2
-       //4 13-14-15-16      A3
-       //5 17-18-19-20      A4
-       //6 21-22-23-24      A5
-       //7 25-26-27-28
+       //0 0                PINs
+       //1 1-2              A0
+       //2 3-4              A1
+       //3 5-6              A2
+       //4 7-8              A3
+       //5 9-10             A4
+       //6 11-12            A5
+       //7 13-14            A6
+       //8 15-16            A7
 
 
 
@@ -672,27 +673,31 @@ public class Scratch extends Sprite {
           labLight  = int(data[20]);
        }
        else{
-          labLight  = int(((data[19]*256 + data[20]) / 1023) * 100);
-          labLight  = 1.34 * labLight;
+          //Both v1 & v3
+//          labLight  = int(((data[9]*256 + data[10]) / 1023) * 100);
+//          labLight  = 1.34 * labLight;
+//What's for?
+          labLight  = 1.34 * data[10];
        }
        if(labLight > 100){
           labLight = 100;
        }
 
 
-       labSound  = int(((data[15]*256 + data[16]) / 1023) * 100);
+       //Both v1 & v3
+       labSound  = int(((data[7]*256 + data[8]) / 1023) * 100);
 
 
        trace("LAB VERSION=" + app.labVersion);
 
        if(labVersion == 1){
-          labSlider = 1.34 * Math.abs(75 - int(((data[11]*256 + data[12]) / 1023) * 100));
+          labSlider = 1.34 * Math.abs(75 - int(((data[5]*256 + data[6]) / 1023) * 100));
        }
        else if(labVersion == 2){
-          labSlider = Math.abs(100 - int(((data[3]*256 + data[4]) / 1023) * 100));
+          labSlider = Math.abs(100 - int(((data[15]*256 + data[16]) / 1023) * 100));
        }
        else if(labVersion == 4){
-          labSlider = Math.abs(100 - data[4]);
+          labSlider = Math.abs(100 - int(((data[5]*256 + data[6]) / 1023) * 100));
        }
        if(labSlider > 100){
           labSlider = 100;
@@ -713,13 +718,13 @@ public class Scratch extends Sprite {
           }
           case LAB_SENSOR_TYPE_TEMPERATURE:{
              //External Sensor 0
-             labAnalogTypedBased[0] = Math.round((data[3] * 256 + data[4]) * 0.244379276637341153);
+             labAnalogTypedBased[0] = Math.round((data[1] * 256 + data[2]) * 0.244379276637341153);
              setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
              break;
           }
           case LAB_SENSOR_TYPE_CROCODILE:{
              //External Sensor 0
-             labAnalogTypedBased[0] = int(((data[3]*256 + data[4]) / 1023) * 100);
+             labAnalogTypedBased[0] = int(((data[1]*256 + data[2]) / 1023) * 100);
              setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
              break;
           }
@@ -732,13 +737,13 @@ public class Scratch extends Sprite {
           }
           case LAB_SENSOR_TYPE_TEMPERATURE:{
              //External Sensor 0
-             labAnalogTypedBased[1] = Math.round((data[7] * 256 + data[8]) * 0.244379276637341153);
+             labAnalogTypedBased[1] = Math.round((data[3] * 256 + data[4]) * 0.244379276637341153);
              setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
              break;
           }
           case LAB_SENSOR_TYPE_CROCODILE:{
              //External Sensor 0
-             labAnalogTypedBased[1] = int(((data[7]*256 + data[8]) / 1023) * 100);
+             labAnalogTypedBased[1] = int(((data[3]*256 + data[4]) / 1023) * 100);
              setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
              break;
           }
@@ -752,13 +757,15 @@ public class Scratch extends Sprite {
           labAnalogRaw[0] = 0;
        }
        else{
-          labAnalogRaw[0] = data[3]*256 + data[4];
+          labAnalogRaw[0] = data[1]*256 + data[2];
        }
-       labAnalogRaw[1] = data[7]*256 + data[8];
-       labAnalogRaw[2] = data[11]*256 + data[12];
-       labAnalogRaw[3] = data[15]*256 + data[16];
-       labAnalogRaw[4] = data[19]*256 + data[20];
-       labAnalogRaw[5] = data[23]*256 + data[24];
+       labAnalogRaw[1] = data[3]*256 + data[4];
+       labAnalogRaw[2] = data[5]*256 + data[6];
+       labAnalogRaw[3] = data[7]*256 + data[8];
+       labAnalogRaw[4] = data[9]*256 + data[10];
+       labAnalogRaw[5] = data[11]*256 + data[12];
+       labAnalogRaw[6] = data[13]*256 + data[14];
+       labAnalogRaw[7] = data[15]*256 + data[16];
 
 
        if(labVersion == 1){
