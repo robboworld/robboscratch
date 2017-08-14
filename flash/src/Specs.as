@@ -362,7 +362,8 @@ public class Specs {
 
 //      ["move finished?",                     "b", 13, "robotMoveFinished"],
 
-      ["Lab button %m.labButtons pressed?",  "b", 14, "labButtons", 1],
+      ["Lab button %m.labButtons pressed?",  "b", 14, "labButtons",   1],
+      ["Lab ext %m.menuLabExt",              "b", 14, "sensorExtLab", "A0"],
 
       ["--"],
 

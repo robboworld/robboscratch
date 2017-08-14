@@ -2516,8 +2516,9 @@ public class Scratch extends Sprite {
       this.isExtensionPackEnabled = !this.isExtensionPackEnabled;
       scratchBoardPart.setExtendedMode(this.isExtensionPackEnabled);
 
-      //Robbo is active
+      //Is Robbo tab active?
       trace("Current category=" + scriptsPart.selector.selectedCategory);
+      //Let's show or hide proper blocks
       if(scriptsPart.selector.selectedCategory == 13){
          getPaletteBuilder().showBlocksForCategory(13, true, false);
       }
@@ -2535,6 +2536,13 @@ public class Scratch extends Sprite {
          scratchLabPart.setWidthHeight(115, 166);
       }
       libraryPart.y = scratchLabPart.bottom() + 5;
+
+      //Is Lab tab active?
+      trace("Current category=" + scriptsPart.selector.selectedCategory);
+      //Let's show or hide proper blocks
+      if(scriptsPart.selector.selectedCategory == 14){
+         getPaletteBuilder().showBlocksForCategory(14, true, false);
+      }
    }
 
 }}

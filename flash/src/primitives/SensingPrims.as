@@ -84,6 +84,7 @@ public class SensingPrims {
       primTable['sensorRobot']         = primAnalogRobot;
       primTable['brightRobot']         = primBrightRobot;
       primTable['sensorLab']           = primAnalogLab;
+      primTable['sensorExtLab']        = sensorExtLab;
       primTable['sensorLabRaw']        = sensorLabRaw;
       primTable['sensorLabDigitalRaw'] = sensorLabDigitalRaw;
       primTable['setLabDigitalRaw']    = setLabDigitalRaw;
@@ -338,7 +339,6 @@ public class SensingPrims {
       var value:int = check0_255(interp.arg(b, 1));
 
 
-
       if(pin == "D3"){
          app.robotCommunicator.setLabDigitalPwm(3, value);
       }
@@ -349,6 +349,26 @@ public class SensingPrims {
          app.robotCommunicator.setLabDigitalPwm(6, value);
       }
    }
+
+
+
+
+
+   private function sensorExtLab(b:Block):int {
+      var a:String = interp.arg(b, 0);
+
+      if(a == "A0"){
+         return app.labAnalogRaw[0];
+      }
+      else if(a == "A1"){
+         return app.labAnalogRaw[1];
+      }
+
+      return app.labAnalogRaw[0];
+   }
+
+
+
 
 
    private function check0_255(value:int):int{

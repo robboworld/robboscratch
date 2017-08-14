@@ -127,8 +127,7 @@ public class BlockMenus implements DragClient {
       if (menuName == 'labButtons') menuHandler.labButtons(evt);
       if (menuName == 'on_off')     menuHandler.on_off(evt);
       if (menuName == 'menu0_255')  menuHandler.menu0_255(evt);
-
-
+      if (menuName == 'menuLabExt') menuHandler.menuLabExt(evt);
    }
 
    public static function strings():Array {
@@ -730,6 +729,17 @@ public class BlockMenus implements DragClient {
 
       showMenu(m);
    }
+
+
+
+   private function menuLabExt(evt:MouseEvent):void{
+      var m:Menu = new Menu(setBlockArg, 'menuLabExt');
+      m.addItem("A0");
+      m.addItem("A1");
+      showMenu(m);
+   }
+
+
 
 
    private function on_off(evt:MouseEvent):void {

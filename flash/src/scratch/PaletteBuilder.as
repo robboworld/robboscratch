@@ -123,8 +123,14 @@ public class PaletteBuilder {
             var showCheckbox:Boolean = isCheckboxReporter(spec[3]);
             if (showCheckbox) addReporterCheckbox(block);
 
+//AZ
             if(label == "Claw closed %n %" || label == "Claw %m.robotClawMenu" || label == "Robot Color Sensor %m.digitalRobot %m.brightRobot"){
                if(app.isExtensionPackEnabled){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "Lab ext %m.menuLabExt"){
+               if(app.areExternalSensorsEnabled){
                   addItem(block, showCheckbox);
                }
             }
