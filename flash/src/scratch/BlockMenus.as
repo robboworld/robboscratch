@@ -121,6 +121,7 @@ public class BlockMenus implements DragClient {
       if (menuName == 'sensorMenuRobot') menuHandler.sensorMenuRobot(evt);
       if (menuName == 'analogLab') menuHandler.analogMenuLab(evt);
       if (menuName == 'analogMenuLabRaw') menuHandler.analogMenuLabRaw(evt);
+      if (menuName == 'analogMenuLabRawWithoutA0') menuHandler.analogMenuLabRawWithoutA0(evt);
       if (menuName == 'getDigitalMenuLabRaw') menuHandler.getDigitalMenuLabRaw(evt);
       if (menuName == 'setDigitalMenuLabRaw') menuHandler.setDigitalMenuLabRaw(evt);
       if (menuName == 'setDigitalMenuLabPwmRaw') menuHandler.setDigitalMenuLabPwmRaw(evt);
@@ -128,6 +129,7 @@ public class BlockMenus implements DragClient {
       if (menuName == 'on_off')     menuHandler.on_off(evt);
       if (menuName == 'menu0_255')  menuHandler.menu0_255(evt);
       if (menuName == 'menuLabExt') menuHandler.menuLabExt(evt);
+      if (menuName == 'menuLabExtWithoutA0') menuHandler.menuLabExtWithoutA0(evt);
    }
 
    public static function strings():Array {
@@ -673,6 +675,15 @@ public class BlockMenus implements DragClient {
    private function analogMenuLabRaw(evt:MouseEvent):void {
       var m:Menu = new Menu(setBlockArg, 'analogLabRaw');
 
+      for(var f:int = 0; f <= 5; f++){
+         m.addItem('A' + f);
+      }
+
+      showMenu(m);
+   }
+   private function analogMenuLabRawWithoutA0(evt:MouseEvent):void {
+      var m:Menu = new Menu(setBlockArg, 'analogLabRawWithoutA0');
+
       for(var f:int = 1; f <= 5; f++){
          m.addItem('A' + f);
       }
@@ -735,6 +746,11 @@ public class BlockMenus implements DragClient {
    private function menuLabExt(evt:MouseEvent):void{
       var m:Menu = new Menu(setBlockArg, 'menuLabExt');
       m.addItem("A0");
+      m.addItem("A1");
+      showMenu(m);
+   }
+   private function menuLabExtWithoutA0(evt:MouseEvent):void{
+      var m:Menu = new Menu(setBlockArg, 'menuLabExt');
       m.addItem("A1");
       showMenu(m);
    }

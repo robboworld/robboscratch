@@ -130,7 +130,22 @@ public class PaletteBuilder {
                }
             }
             else if(label == "Lab ext %m.menuLabExt"){
-               if(app.areExternalSensorsEnabled){
+               if(app.areExternalSensorsEnabled && app.labVersion != 1){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "Lab ext %m.menuLabExtWithoutA0"){
+               if(app.areExternalSensorsEnabled && app.labVersion == 1){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "Lab pin %m.analogMenuLabRaw"){
+               if(app.labVersion != 1){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "Lab pin %m.analogMenuLabRawWithoutA0"){
+               if(app.labVersion == 1){
                   addItem(block, showCheckbox);
                }
             }

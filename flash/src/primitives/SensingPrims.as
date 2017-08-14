@@ -358,13 +358,13 @@ public class SensingPrims {
       var a:String = interp.arg(b, 0);
 
       if(a == "A0"){
-         return app.labAnalogRaw[0];
+         return app.labAnalogTypedBased[0];
       }
       else if(a == "A1"){
-         return app.labAnalogRaw[1];
+         return app.labAnalogTypedBased[1];
       }
 
-      return app.labAnalogRaw[0];
+      return app.labAnalogTypedBased[1];
    }
 
 

@@ -212,7 +212,7 @@ public class Scratch extends Sprite {
     protected var topBarPart:TopBarPart;
     protected var stagePart:StagePart;
     private var tabsPart:TabsPart;
-    protected var scriptsPart:ScriptsPart;
+    public var scriptsPart:ScriptsPart;
     public var imagesPart:ImagesPart;
     public var soundsPart:SoundsPart;
 
@@ -237,6 +237,7 @@ public class Scratch extends Sprite {
     public var labButtons:Array = [false, false, false, false, false];
     public var labDigital:Array = [false, false, false, false, false, false];
     public var labAnalogRaw:Array = [0, 0, 0, 0, 0, 0];
+    public var labAnalogTypedBased:Array = [0, 0];
 
     public var labLight:int = 0;
     public var labSound:int = 0;
@@ -711,12 +712,14 @@ public class Scratch extends Sprite {
           }
           case LAB_SENSOR_TYPE_TEMPERATURE:{
              //External Sensor 0
-             setAnalogTextLab(8, "" + Math.round((data[3] * 256 + data[4]) * 0.244379276637341153));
+             labAnalogTypedBased[0] = Math.round((data[3] * 256 + data[4]) * 0.244379276637341153);
+             setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
              break;
           }
           case LAB_SENSOR_TYPE_CROCODILE:{
              //External Sensor 0
-             setAnalogTextLab(8, "" + int(((data[3]*256 + data[4]) / 1023) * 100));
+             labAnalogTypedBased[0] = int(((data[3]*256 + data[4]) / 1023) * 100);
+             setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
              break;
           }
        }
@@ -727,12 +730,14 @@ public class Scratch extends Sprite {
           }
           case LAB_SENSOR_TYPE_TEMPERATURE:{
              //External Sensor 0
-             setAnalogTextLab(9, "" + Math.round((data[7] * 256 + data[8]) * 0.244379276637341153));
+             labAnalogTypedBased[1] = Math.round((data[7] * 256 + data[8]) * 0.244379276637341153);
+             setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
              break;
           }
           case LAB_SENSOR_TYPE_CROCODILE:{
              //External Sensor 0
-             setAnalogTextLab(9, "" + int(((data[7]*256 + data[8]) / 1023) * 100));
+             labAnalogTypedBased[1] = int(((data[7]*256 + data[8]) / 1023) * 100);
+             setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
              break;
           }
        }
@@ -741,7 +746,12 @@ public class Scratch extends Sprite {
 
 
 
-       labAnalogRaw[0] = data[3]*256 + data[4];
+       if(app.labVersion == 1){
+          labAnalogRaw[0] = 0;
+       }
+       else{
+          labAnalogRaw[0] = data[3]*256 + data[4];
+       }
        labAnalogRaw[1] = data[7]*256 + data[8];
        labAnalogRaw[2] = data[11]*256 + data[12];
        labAnalogRaw[3] = data[15]*256 + data[16];
@@ -749,12 +759,12 @@ public class Scratch extends Sprite {
        labAnalogRaw[5] = data[23]*256 + data[24];
 
 
-/*
-        for (var i:int = 0; i < data.length; ++i) {
-            runtime.rawsLab[i] = data[i];
-            setAnalogTextLab(i, data[i]);
-        }
-*/
+       if(labVersion == 1){
+          scratchLabPart.setA0(false);
+       }
+       else{
+          scratchLabPart.setA0(true);
+       }
     }
 
 
@@ -775,11 +785,6 @@ public class Scratch extends Sprite {
 //    }
 
 
-/*
-   public function setAnalogTextRobot(index:int, text:String):void {
-      scratchBoardPart.setAnalogText(index, text);
-   }
-*/
    public function setAnalogTextLab(index:int, text:String):void {
       scratchLabPart.setAnalogText(index, text);
    }

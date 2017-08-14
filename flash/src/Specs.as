@@ -363,11 +363,14 @@ public class Specs {
 //      ["move finished?",                     "b", 13, "robotMoveFinished"],
 
       ["Lab button %m.labButtons pressed?",  "b", 14, "labButtons",   1],
-      ["Lab ext %m.menuLabExt",              "b", 14, "sensorExtLab", "A0"],
+      ["Lab ext %m.menuLabExt",              "r", 14, "sensorExtLab", "A0"],
+      ["Lab ext %m.menuLabExtWithoutA0",     "r", 14, "sensorExtLab", "A1"],
 
       ["--"],
 
-      ["Lab pin %m.analogMenuLabRaw",        "r", 14, "sensorLabRaw",          "A1"],
+      ["Lab pin %m.analogMenuLabRaw",          "r", 14, "sensorLabRaw",          "A0"],
+      ["Lab pin %m.analogMenuLabRawWithoutA0", "r", 14, "sensorLabRaw",          "A1"],
+
       ["Lab pin %m.getDigitalMenuLabRaw",    "b", 14, "sensorLabDigitalRaw",   "D8"],
       ["set Lab pin %m.setDigitalMenuLabRaw %m.on_off",  " ", 14, "setLabDigitalRaw",    "D2", "on"],
       ["set Lab pin %m.setDigitalMenuLabPwmRaw PWM value %n",  " ", 14, "setLabDigitalPwmRaw",   "D3", 0],

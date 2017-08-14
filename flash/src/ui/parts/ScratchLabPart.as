@@ -140,6 +140,11 @@ package ui.parts {
          if(connected != status){
             connected = status;
             showConenctionIcon();
+
+            //Redraw lab blocks in case version is changed
+            if(app.scriptsPart.selector.selectedCategory == 14){
+               app.getPaletteBuilder().showBlocksForCategory(14, true, false);
+            }
          }
       }
 
@@ -179,7 +184,10 @@ package ui.parts {
       }
       public function disableValue(index:int):void {
          var label:TextField = dataLabels[index];
-         label.text = "-";
+         label.text = "--";
+      }
+      public function setA0(isEnabled:Boolean):void {
+         arrSensorSelectors[0].visible = isEnabled;
       }
 
 
