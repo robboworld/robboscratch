@@ -1,4 +1,8 @@
+#define FIRMWARE_VERSION "00002"
+
 #include <EEPROM.h>
+#include "Arduino.h"
+
 #define SERIAL_SPEED 115200
 #define SERIAL_ADDRESS 0
 
@@ -8,14 +12,7 @@
 
 
 
-#include "Arduino.h"
-#include "Arduino.h"
-#line 13
-void parseSerialNumber();
-void setup();
-void printSensors();
-void loop();
-#line 11
+
 char chararrSerialRaw[50];
 char chararrModel[21];
 char chararrVersion[21];
@@ -98,18 +95,27 @@ void parseSerialNumber(){
     }
 
 
-   if(strcmp(chararrModel, "R") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=0;
-   }
-   else if(strcmp(chararrModel, "L") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "1") == 0){
-      MODEL_ID=1;
-   }
-   else if(strcmp(chararrModel, "L") == 0 && strcmp(chararrVersion, "1") == 0 && strcmp(chararrPart, "2") == 0){
-      MODEL_ID=3;
-   }
-   else{
-      MODEL_ID=65535;
-   }
+    if(strcmp(chararrModel, "R") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0 || strcmp(chararrPart, "4") == 0)){
+
+       MODEL_ID=0;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "1") == 0
+       && strcmp(chararrPart, "1") == 0){
+
+       MODEL_ID=1;
+    }
+    else if(strcmp(chararrModel, "L") == 0
+       && strcmp(chararrVersion, "3") == 0
+       && (strcmp(chararrPart, "1") == 0 || strcmp(chararrPart, "2") == 0 || strcmp(chararrPart, "3") == 0)){
+
+       MODEL_ID=2;
+    }
+    else{
+       MODEL_ID=9999;
+    }
 }
 
 
@@ -127,7 +133,7 @@ void setup(){
 
     pinMode(clock, OUTPUT);
     pinMode(data , OUTPUT);
-    pinMode(A0 , OUTPUT);
+    pinMode(A5 , OUTPUT);
 
 
     pinMode(2, OUTPUT);
@@ -139,8 +145,12 @@ void setup(){
 
 
 
+    pinMode(13, INPUT);
 
-    digitalWrite(A0, HIGH);
+
+    //Lab greetings!
+    //Flashing lamps & bip-bip-bip
+    digitalWrite(A5, HIGH);
     for(int i = 0; i < 8; ++i)
     {
         shiftOut(data, clock, MSBFIRST, 1 << i);
@@ -148,7 +158,6 @@ void setup(){
         delay(100);
     }
     shiftOut(data, clock, MSBFIRST, 0);
-
 }
 
 
@@ -204,6 +213,14 @@ void printSensors(){
    iValue = int(analogRead(5));
    Serial.write((byte)(iValue >> 8));
    Serial.write((byte)(iValue));
+   
+   iValue = int(analogRead(6));
+   Serial.write((byte)(iValue >> 8));
+   Serial.write((byte)(iValue));
+   
+   iValue = int(analogRead(7));
+   Serial.write((byte)(iValue >> 8));
+   Serial.write((byte)(iValue));
 }
 
 
@@ -227,28 +244,54 @@ void loop(){
       if(commandState== COMMAND_STATE_WAITING_COMMAND){
          switch(b){
             case ' ':{
+               Serial.print(F("ROBBO-"));
+               if(MODEL_ID < 10000){
+                  Serial.write('0');
+               }
+               if(MODEL_ID < 1000){
+                  Serial.write('0');
+               }
+               if(MODEL_ID < 100){
+                  Serial.write('0');
+               }
+               if(MODEL_ID < 10){
+                  Serial.write('0');
+               }
+               Serial.print(MODEL_ID);
 
-      Serial.print(F("ROBBO-"));
-      if(MODEL_ID < 10000){
-      Serial.write('0');
-      }
-      if(MODEL_ID < 1000){
-      Serial.write('0');
-      }
-      if(MODEL_ID < 100){
-      Serial.write('0');
-      }
-      if(MODEL_ID < 10){
-      Serial.write('0');
-      }
-      Serial.print(MODEL_ID);
 
-      Serial.print(F("-00002-"));
 
-      for(int f = strlen(chararrSerial); f < 20; f++){
-      Serial.write('0');
-      }
-      Serial.print(chararrSerial);
+               Serial.write('-');
+               Serial.print(F(FIRMWARE_VERSION));
+
+
+               Serial.write('-');
+               Serial.print(chararrModel);
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrVersion); f < 5; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrVersion);
+
+
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrPart); f < 5; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrPart);
+
+
+
+
+               Serial.print('-');
+               for(int f = strlen(chararrSerial); f < 20; f++){
+                  Serial.write('0');
+               }
+               Serial.print(chararrSerial);
 
                break;
             }
@@ -488,7 +531,9 @@ void loop(){
    }
    else{
       double peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
-      soundVolume = peakToPeak * 0.5;  //
+      //No more 0.5, the sound is ok without that
+      //soundVolume = peakToPeak * 0.5;
+      soundVolume = peakToPeak;
 
       startMillis= millis();  // Start of sample window
       peakToPeak = 0;   // peak-to-peak level

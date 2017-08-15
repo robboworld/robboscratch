@@ -50,6 +50,7 @@ ServoTimer2 myservo;
 
 
 #define SENSOR_RESPONSE_LENGTH 4
+#define SENSOR_LAB_RESPONSE_LENGTH 2
 
 
 
@@ -242,11 +243,11 @@ class SensorLab: public ISensor{
    }
 
    byte* getResult(){
-      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin) / 1023.0 * 100)};
+      return new byte[SENSOR_LAB_RESPONSE_LENGTH]{0, byte(analogRead(pin) / 1023.0 * 100)};
    }
    byte* getResultRaw(){
       int raw = analogRead(pin);
-      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, raw >> 8, raw & 0xFF};
+      return new byte[SENSOR_LAB_RESPONSE_LENGTH]{raw >> 8, raw & 0xFF};
    }
 };
 
@@ -553,7 +554,7 @@ class ColorSensor: public ISensor{
 
 
 
-ISensor* sensors[5];
+ISensor* sensors[7];
 
 
 
@@ -590,7 +591,7 @@ void setup(){
       pinMode(LAB_SHIFT_REG_DATA , OUTPUT);
       
       
-      pinMode(A0 , OUTPUT);
+//      pinMode(A0 , OUTPUT);
       pinMode(2, OUTPUT);
       pinMode(3, OUTPUT);
       pinMode(4, OUTPUT);
@@ -600,11 +601,14 @@ void setup(){
       
       
       
-      sensors[0]  = new SensorLab(A1);
-      sensors[1]  = new SensorLab(A0);
+      sensors[0]  = new SensorLab(A0);
+      sensors[1]  = new SensorLab(A1);
       sensors[2]  = new SensorLab(A2);
-      sensors[3]  = new SensorLab(A4);
-      sensors[4]  = new SensorLab(A2);
+      sensors[3]  = new SensorLab(A3);
+      sensors[4]  = new SensorLab(A4);
+      sensors[5]  = new SensorLab(A5);
+      sensors[6]  = new SensorLab(A6);
+      sensors[7]  = new SensorLab(A7);
       
 
 
@@ -619,8 +623,7 @@ void setup(){
         delay(100);
       }
       shiftOut(LAB_SHIFT_REG_DATA, LAB_SHIFT_REG_CLOCK, LSBFIRST, B00000000);    
-   }
-   
+   }   
 }
 
 
@@ -680,7 +683,7 @@ void printSensors(){
       if(digitalRead(12) == HIGH){
          bValue |= 16;
       }
-      if(digitalRead(0) == HIGH){
+      if(digitalRead(13) == HIGH){
          bValue |= 32;
       }
       Serial.write(bValue);
@@ -688,27 +691,31 @@ void printSensors(){
 
 
       byte* result = sensors[0] -> getResultRaw();
-      Serial.write(result, SENSOR_RESPONSE_LENGTH);
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
       delete[] result;
       result = sensors[1] -> getResultRaw();
-      Serial.write(result, SENSOR_RESPONSE_LENGTH);
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
       delete[] result;
-      result = sensors[2] -> getResult();
-      Serial.write(result, SENSOR_RESPONSE_LENGTH);
+      result = sensors[2] -> getResultRaw();
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
       delete[] result;
 
       unsigned int iValue = soundVolume;
-      Serial.write(0x00);
-      Serial.write(0x00);
       Serial.write((byte)(iValue >> 8));
       Serial.write((byte)(iValue));
       
       
-      result = sensors[3] -> getResult();
-      Serial.write(result, SENSOR_RESPONSE_LENGTH);
+      result = sensors[4] -> getResultRaw();
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
       delete[] result;
-      result = sensors[4] -> getResult();
-      Serial.write(result, SENSOR_RESPONSE_LENGTH);
+      result = sensors[5] -> getResultRaw();
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
+      delete[] result;
+      result = sensors[6] -> getResultRaw();
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
+      delete[] result;
+      result = sensors[7] -> getResultRaw();
+      Serial.write(result, SENSOR_LAB_RESPONSE_LENGTH);
       delete[] result;
    }
       

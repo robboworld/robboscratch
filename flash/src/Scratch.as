@@ -670,7 +670,7 @@ public class Scratch extends Sprite {
 
 
        if(labVersion == 4){
-          labLight  = int(data[20]);
+          labLight  = int(((data[9]*256 + data[10]) / 1023) * 100);
        }
        else{
           //Both v1 & v3
