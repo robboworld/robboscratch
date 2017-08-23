@@ -45,6 +45,7 @@ import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.events.TextEvent;
 import flash.events.UncaughtErrorEvent;
+import flash.globalization.*;
 TARGET::android {
    import flash.filesystem.File;
    import flash.filesystem.FileMode;
@@ -132,7 +133,7 @@ import flash.events.*;
 public class Scratch extends Sprite {
     // Version
     //public static const versionString:String = 'v426';
-    public static const versionString:String = '2.1.56';
+    public static const versionString:String = '2.1.59';
     private static const REPORT_BUG_URL:String = 'http://feedback.robbo.world';
     private static const DONATE_URL:String = 'https://play.google.com/store/apps/details?id=air.ru.scratchduino.android.appdonate';
     public static var app:Scratch; // static reference to the app, used for debugging
@@ -254,6 +255,9 @@ public class Scratch extends Sprite {
     public var areExternalSensorsEnabled:Boolean = false;
 
 
+    public var lang:String = "";
+
+
 
 
 
@@ -267,6 +271,9 @@ public class Scratch extends Sprite {
 
 
    public function Scratch() {
+      this.lang = new StringTools(LocaleID.DEFAULT).actualLocaleIDName.split("-")[0];
+      trace("User Lang=" + this.lang);
+
       loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
       app = this;
 
@@ -322,7 +329,7 @@ public class Scratch extends Sprite {
    }
 
 
-    protected function initialize():void {
+    protected function initialize():void{
         isOffline = loaderInfo.url.indexOf('http:') == -1;
         checkFlashVersion();
         initServer();
@@ -387,6 +394,10 @@ public class Scratch extends Sprite {
 
         // make stage small at startup
         toggleSmallStage();
+
+//AZ
+        Translator.setLanguage(lang);
+        languageChanged = true;
     }
 
 
@@ -1540,6 +1551,7 @@ public class Scratch extends Sprite {
       var m:Menu = new Menu(null, 'Options', CSS.topBarColor, 28);
       m.addItem('Extension Pack',   switchExtensionPack,   true, isExtensionPackEnabled);
       m.addItem('External Sensors', switchExternalSensors, true, areExternalSensorsEnabled);
+      m.addItem('set font size', Translator.fontSizeMenu);
       m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
    }
 
@@ -2085,11 +2097,14 @@ public class Scratch extends Sprite {
 
    public function setLanguagePressed(b:IconButton):void {
       function setLanguage(lang:String):void {
+         trace("Switch lang=" + lang);
          Translator.setLanguage(lang);
          languageChanged = true;
       }
       if (Translator.languages.length == 0) return; // empty language list
       var m:Menu = new Menu(setLanguage, 'Language', CSS.topBarColor, 28);
+
+
       if (b.lastEvent.shiftKey) {
          m.addItem('import translation file');
          m.addItem('set font size');

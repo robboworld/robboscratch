@@ -161,6 +161,7 @@ public class Specs {
 
 
       ["set motors power %n %",                           " ", 13,   "setMotorSpeed:",                  "100",    0.1],
+      ["set motors power %n % ",                          " ", 13,   "setMotorSpeed:",                  "100",    0.1],
       ["set motors power L %n R %n %",                    " ", 13,   "setMotorSpeedBoth:",       "100", "100",    0.1],
 
       ["L %m.motorDirection R %m.motorDirection set power L %n R %n %", " ", 13,   "setMotorDirectionAndSpeed:",        "forward",  "forward", "100", "100",  0.1],
