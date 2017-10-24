@@ -524,13 +524,16 @@ public class Scratch extends Sprite {
                  case ROBOT_SENSOR_TYPE_COLOR: {
                     var color:uint = 0;
 
-/*
+
+                    robotSensors[i].raw[2] *= 1.3;
+                    robotSensors[i].raw[3] *= 1.3;
+
                     color += (robotSensors[i].raw[1] * 2.5) << 16;
                     color += (robotSensors[i].raw[2] * 2.5) << 8;
                     color += (robotSensors[i].raw[3] * 2.5);
                     scratchBoardPart.setColorValue(i, color);
-*/
 
+/*
                     switch(robotSensors[i].raw[3]){
                        case 1:{
                           color = 0;
@@ -566,6 +569,7 @@ public class Scratch extends Sprite {
                        }
                     }
                     scratchBoardPart.setColorValue(i, color);
+*/
 
                     break;
                  }

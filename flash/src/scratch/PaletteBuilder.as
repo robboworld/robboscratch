@@ -124,7 +124,10 @@ public class PaletteBuilder {
             if (showCheckbox) addReporterCheckbox(block);
 
 //AZ
-            if(label == "Claw closed %n %" || label == "Claw %m.robotClawMenu" || label == "Robot Color Sensor %m.digitalRobot %m.brightRobot"){
+            if(label == "Claw closed %n %"
+               || label == "Claw %m.robotClawMenu"
+               || label == "Robot Color Sensor %m.digitalRobot %m.brightRobot"
+               || label == "Robot Color Sensor RGB %m.digitalRobot %m.brightRobotRGB"){
                if(app.isExtensionPackEnabled){
                   addItem(block, showCheckbox);
                }

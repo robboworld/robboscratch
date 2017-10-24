@@ -118,6 +118,7 @@ public class BlockMenus implements DragClient {
       if (menuName == 'analogRobot')  menuHandler.analogMenuRobot(evt);
       if (menuName == 'digitalRobot') menuHandler.digitalMenuRobot(evt);
       if (menuName == 'brightRobot') menuHandler.brightMenuRobot(evt);
+      if (menuName == 'brightRobotRGB') menuHandler.brightMenuRobotRGB(evt);
       if (menuName == 'sensorMenuRobot') menuHandler.sensorMenuRobot(evt);
       if (menuName == 'analogLab') menuHandler.analogMenuLab(evt);
       if (menuName == 'analogMenuLabRaw') menuHandler.analogMenuLabRaw(evt);
@@ -623,16 +624,16 @@ public class BlockMenus implements DragClient {
       m.addItem('sensor 5');
       showMenu(m);
    }
-/*
-   private function brightMenuRobot(evt:MouseEvent):void {
-      var m:Menu = new Menu(setBlockArg, 'analogRobot');
+
+
+   private function brightMenuRobotRGB(evt:MouseEvent):void {
+      var m:Menu = new Menu(setBlockArg, 'colorRobotRGB');
       m.addItem('R');
       m.addItem('G');
       m.addItem('B');
-      m.addItem('Bright');
       showMenu(m);
    }
-*/
+
 
 
 

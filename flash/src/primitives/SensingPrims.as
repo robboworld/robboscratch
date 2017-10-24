@@ -83,6 +83,7 @@ public class SensingPrims {
       primTable['hideList:']           = primHideListWatcher;
       primTable['sensorRobot']         = primAnalogRobot;
       primTable['brightRobot']         = primBrightRobot;
+      primTable['brightRobotRGB']      = primBrightRobotRGB;
       primTable['sensorLab']           = primAnalogLab;
       primTable['sensorExtLab']        = sensorExtLab;
       primTable['sensorLabRaw']        = sensorLabRaw;
@@ -235,6 +236,62 @@ public class SensingPrims {
 
       return false;
    }
+
+
+
+
+
+   private function primBrightRobotRGB(b:Block):int {
+      var sensor:String  = interp.arg(b, 0);
+      var color:String = interp.arg(b, 1);
+
+      //trace("SUKA=" + b.args[1].argValue);
+      //b.args[1].argValue = 0;
+
+
+      var sensorNumber:int;
+
+
+      if(sensor == 'sensor 1'){
+         sensorNumber = 0;
+      }
+      if(sensor == 'sensor 2'){
+         sensorNumber = 1;
+      }
+      if(sensor == 'sensor 3'){
+         sensorNumber = 2;
+      }
+      if(sensor == 'sensor 4'){
+         sensorNumber = 3;
+      }
+      if(sensor == 'sensor 5'){
+         sensorNumber = 4;
+      }
+
+
+      var colorToDisplay:uint = (app.robotSensors[sensorNumber].raw[1] * 2.5) << 16;
+      colorToDisplay += (app.robotSensors[sensorNumber].raw[2] * 2.5) << 8;
+      colorToDisplay += (app.robotSensors[sensorNumber].raw[3] * 2.5);
+
+
+
+      b.base.setColor(colorToDisplay);
+      b.base.redraw();
+
+
+      if(color == 'R'){
+         return app.robotSensors[sensorNumber].raw[1];
+      }
+      if(color == 'G'){
+         return app.robotSensors[sensorNumber].raw[2];
+      }
+      if(color == 'B'){
+         return app.robotSensors[sensorNumber].raw[3];
+      }
+
+      return 0;
+   }
+
 
 
 
