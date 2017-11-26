@@ -81,9 +81,9 @@ public class BlockColorSensorCorrector extends Sprite {
                 bSlider.x = bBox.x + 20;
                 rSlider.y = gSlider.y = bSlider.y = rBox.y + 30;
 
-                r = 0.8;
-                g = 0.9;
-                b = 1;
+                r = application.colorCorrectionR;
+                g = application.colorCorrectionG;
+                b = application.colorCorrectionB;
 
                 update();
         }
@@ -101,6 +101,8 @@ public class BlockColorSensorCorrector extends Sprite {
                 rSlider.update(r, 0.08);
                 gSlider.update(g, 0.08);
                 bSlider.update(b, 0.08);
+
+                application.setColorSensorCorrection(r, g, b);
         }
 
         private function rTextChanged():void {

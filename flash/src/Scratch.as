@@ -260,6 +260,12 @@ public class Scratch extends Sprite {
 
 
 
+    public var colorCorrectionR:Number = 0.8;
+    public var colorCorrectionG:Number = 0.9;
+    public var colorCorrectionB:Number = 1;
+
+
+
 
     /* Default directory for projects */
     TARGET::android {
@@ -525,8 +531,9 @@ public class Scratch extends Sprite {
                     var color:uint = 0;
 
 
-                    robotSensors[i].raw[2] *= 1.3;
-                    robotSensors[i].raw[3] *= 1.3;
+                    robotSensors[i].raw[1] *= this.colorCorrectionR;
+                    robotSensors[i].raw[2] *= this.colorCorrectionG;
+                    robotSensors[i].raw[3] *= this.colorCorrectionB;
 
                     color += (robotSensors[i].raw[1] * 2.5) << 16;
                     color += (robotSensors[i].raw[2] * 2.5) << 8;
@@ -1560,7 +1567,7 @@ public class Scratch extends Sprite {
       m.addItem('External Sensors', switchExternalSensors, true, areExternalSensorsEnabled);
       m.addItem('Font Size', Translator.fontSizeMenu);
       m.addLine();
-      m.addItem('Color Sensor Correction', setColorSensorCorrection);
+      m.addItem('Color Sensor Correction', dialogColorSensorCorrection);
       m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
    }
 
@@ -1708,13 +1715,23 @@ public class Scratch extends Sprite {
    }
 
 
-   protected function setColorSensorCorrection():void {
+   protected function dialogColorSensorCorrection():void {
       var d:DialogBox = new DialogBox();
       d.addTitle('Color Sensor Correction');
       d.addWidget(new BlockColorSensorCorrector(this));
       d.addButton('Close', d.cancel);
       d.showOnStage(stage, true);
    }
+
+
+   public function setColorSensorCorrection(r:Number, g:Number, b:Number):void{
+      trace("setColorSensorCorrection R=" + r + " G=" + g + " B=" + b);
+
+      this.colorCorrectionR = r;
+      this.colorCorrectionG = g;
+      this.colorCorrectionB = b;
+   }
+
 
 
    protected function canExportInternals():Boolean {
