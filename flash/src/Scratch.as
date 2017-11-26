@@ -109,7 +109,7 @@ import ui.parts.StagePart;
 import ui.parts.TabsPart;
 import ui.parts.TopBarPart;
 
-import uiwidgets.BlockColorEditor;
+import uiwidgets.*;
 import uiwidgets.CursorTool;
 import uiwidgets.DialogBox;
 import uiwidgets.IconButton;
@@ -1532,6 +1532,9 @@ public class Scratch extends Sprite {
       m.addItem('Edit block colors', editBlockColors);
    }
 
+
+
+
    //Devices menu
 
    public function showHelpMenu(b:*):void {
@@ -1555,7 +1558,9 @@ public class Scratch extends Sprite {
       var m:Menu = new Menu(null, 'Options', CSS.topBarColor, 28);
       m.addItem('Extension Pack',   switchExtensionPack,   true, isExtensionPackEnabled);
       m.addItem('External Sensors', switchExternalSensors, true, areExternalSensorsEnabled);
-      m.addItem('set font size', Translator.fontSizeMenu);
+      m.addItem('Font Size', Translator.fontSizeMenu);
+      m.addLine();
+      m.addItem('Color Sensor Correction', setColorSensorCorrection);
       m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
    }
 
@@ -1701,6 +1706,16 @@ public class Scratch extends Sprite {
       d.addButton('Close', d.cancel);
       d.showOnStage(stage, true);
    }
+
+
+   protected function setColorSensorCorrection():void {
+      var d:DialogBox = new DialogBox();
+      d.addTitle('Color Sensor Correction');
+      d.addWidget(new BlockColorSensorCorrector(this));
+      d.addButton('Close', d.cancel);
+      d.showOnStage(stage, true);
+   }
+
 
    protected function canExportInternals():Boolean {
       return false;
