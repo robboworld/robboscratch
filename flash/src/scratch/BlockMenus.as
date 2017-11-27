@@ -636,7 +636,7 @@ public class BlockMenus implements DragClient {
 
 
 
-
+/*
    private function brightMenuRobot(evt:MouseEvent):void {
       var m:Menu = new Menu(setBlockArg, 'colorRobot');
       m.addItem('Black');
@@ -648,6 +648,16 @@ public class BlockMenus implements DragClient {
       m.addItem('Magenta');
       showMenu(m);
    }
+*/
+
+   private function brightMenuRobot(evt:MouseEvent):void {
+      var m:Menu = new Menu(setBlockArg, 'colorRobot');
+      m.addItem('Red');
+      m.addItem('Green');
+      m.addItem('Blue');
+      showMenu(m);
+   }
+
 
 
 

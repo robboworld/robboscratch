@@ -260,8 +260,8 @@ public class Scratch extends Sprite {
 
 
 
-    public var colorCorrectionR:Number = 0.8;
-    public var colorCorrectionG:Number = 0.9;
+    public var colorCorrectionR:Number = 0.66;
+    public var colorCorrectionG:Number = 1;
     public var colorCorrectionB:Number = 1;
 
 
@@ -536,10 +536,34 @@ public class Scratch extends Sprite {
                     robotSensors[i].raw[2] *= this.colorCorrectionG;
                     robotSensors[i].raw[3] *= this.colorCorrectionB;
 
+/*
                     color += (robotSensors[i].raw[1] * 2.5) << 16;
                     color += (robotSensors[i].raw[2] * 2.5) << 8;
                     color += (robotSensors[i].raw[3] * 2.5);
                     scratchBoardPart.setColorValue(i, color);
+*/
+
+
+            if(robotSensors[i].raw[1] > 4
+               && robotSensors[i].raw[1] > robotSensors[i].raw[2]
+               && robotSensors[i].raw[1] > robotSensors[i].raw[3]){
+               scratchBoardPart.setColorValue(i, 0xFF0000);
+            }
+            else if(robotSensors[i].raw[2] > 4
+               && robotSensors[i].raw[2] > robotSensors[i].raw[1]
+               && robotSensors[i].raw[2] > robotSensors[i].raw[3]){
+               scratchBoardPart.setColorValue(i, 0x00FF00);
+            }
+            else if(robotSensors[i].raw[3] > 4
+               && robotSensors[i].raw[3] > robotSensors[i].raw[1]
+               && robotSensors[i].raw[3] > robotSensors[i].raw[2]){
+               scratchBoardPart.setColorValue(i, 0x0000FF);
+            }
+            else{
+               scratchBoardPart.setColorValue(i, 0x000000);
+            }
+
+
 
 /*
                     switch(robotSensors[i].raw[3]){

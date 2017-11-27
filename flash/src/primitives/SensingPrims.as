@@ -180,6 +180,41 @@ public class SensingPrims {
 */
 
 
+
+
+
+
+
+
+      switch(color){
+         case "Red":{
+            if(app.robotSensors[sensorNumber].raw[1] > app.robotSensors[sensorNumber].raw[2]
+               && app.robotSensors[sensorNumber].raw[1] > app.robotSensors[sensorNumber].raw[3]) return true;
+         }
+         case "Green":{
+            if(app.robotSensors[sensorNumber].raw[2] > app.robotSensors[sensorNumber].raw[1]
+               && app.robotSensors[sensorNumber].raw[2] > app.robotSensors[sensorNumber].raw[3]) return true;
+         }
+         case "Blue":{
+            if(app.robotSensors[sensorNumber].raw[3] > app.robotSensors[sensorNumber].raw[1]
+               && app.robotSensors[sensorNumber].raw[3] > app.robotSensors[sensorNumber].raw[2]) return true;
+         }
+         default:{
+            return false;
+            break;
+         }
+      }
+
+
+
+
+
+
+
+
+
+
+/*
       switch(color){
          case "Black":{
             if(app.robotSensors[sensorNumber].raw[3] == 0 || app.robotSensors[sensorNumber].raw[3] == 1) return true;
@@ -218,6 +253,7 @@ public class SensingPrims {
             break;
          }
       }
+*/
 
 /*
       if(color == 'R'){
