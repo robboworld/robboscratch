@@ -520,6 +520,7 @@ public class Scratch extends Sprite {
                  case ROBOT_SENSOR_TYPE_LIGHT:
                  case ROBOT_SENSOR_TYPE_TOUCH:
                  case ROBOT_SENSOR_TYPE_PROXIMITY: {
+                    robotSensors[i].raw[3] = Math.round(robotSensors[i].raw[3] / 2.55);
                     scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
                     break;
                  }
@@ -585,6 +586,7 @@ public class Scratch extends Sprite {
            else{
               //No extension pack
               if(scratchBoardPart.arrSensorCheckboxes[i].state){
+                 robotSensors[i].raw[3] = Math.round(robotSensors[i].raw[3] / 2.55);
                  scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
               }
               else{

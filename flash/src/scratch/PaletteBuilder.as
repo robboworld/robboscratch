@@ -132,6 +132,36 @@ public class PaletteBuilder {
                   addItem(block, showCheckbox);
                }
             }
+            else if(label == "set motors power %n %"){
+               if(app.robVersion != 3){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "set motors power %n % "){
+               if(app.robVersion != 0){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "set motors power L %n R %n %"){
+               if(app.robVersion != 3){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "set motors power L %n R %n % "){
+               if(app.robVersion != 0){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "L %m.motorDirection R %m.motorDirection set power L %n R %n %"){
+               if(app.robVersion != 3){
+                  addItem(block, showCheckbox);
+               }
+            }
+            else if(label == "L %m.motorDirection R %m.motorDirection set power L %n R %n % "){
+               if(app.robVersion != 0){
+                  addItem(block, showCheckbox);
+               }
+            }
             else if(label == "Lab ext %m.menuLabExt"){
                if(app.areExternalSensorsEnabled && app.labVersion != 1){
                   addItem(block, showCheckbox);

@@ -145,6 +145,11 @@ package ui.parts{
          if(connected != status){
             connected = status;
             showConenctionIcon();
+
+            //Redraw lab blocks in case version is changed
+            if(app.scriptsPart.selector.selectedCategory == 13){
+               app.getPaletteBuilder().showBlocksForCategory(13, true, false);
+            }
          }
       }
 
