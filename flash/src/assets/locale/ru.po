@@ -2373,16 +2373,27 @@ msgid "L %m.motorDirection R %m.motorDirection set power L %n R %n %"
 msgstr "Л %m.motorDirection П %m.motorDirection уст мощность Л %n П %n %"
 
 
+msgid "L %m.motorDirection R %m.motorDirection set power L %n R %n % "
+msgstr "Л %m.motorDirection П %m.motorDirection уст мощность Л %n П %n %"
+
 
 
 
 msgid "set motors power L %n R %n %"
 msgstr "уст мощность моторов Л %n П %n %"
 
+msgid "set motors power L %n R %n % "
+msgstr "уст мощность моторов Л %n П %n %"
+
+
 
 
 msgid "set motors power %n %"
 msgstr "уст мощность моторов %n %"
+
+msgid "set motors power %n % "
+msgstr "уст мощность моторов %n %"
+
 
 
 msgid "turn Lab led %m.ledMenu on"
@@ -2480,4 +2491,28 @@ msgid "play note on lab %m.noteLab"
 msgstr "играть ноту на Лаборатории %m.noteLab"
 
 
+
+msgid "Font Size"
+msgstr "Размер шрифта"
+
+
+
+msgid "Robot Color Sensor %m.digitalRobot %m.brightRobot"
+msgstr "Датчик цвета %m.digitalRobot %m.brightRobot"
+
+
+msgid "Robot Color Sensor RGB %m.digitalRobot %m.brightRobotRGB"
+msgstr "Датчик цвета RGB %m.digitalRobot %m.brightRobotRGB"
+
+
+msgid "Red"
+msgstr "Красный"
+
+
+msgid "Green"
+msgstr "Зеленый"
+
+
+msgid "Blue"
+msgstr "Синий"
 

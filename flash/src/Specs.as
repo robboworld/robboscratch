@@ -174,7 +174,7 @@ public class Specs {
       ["Robot %m.analogRobot",                               "r", 13, "sensorRobot",          "sensor 1"],
 //      ["Robot Bright Sensor %m.brightRobot %c",            "r", 13, "brightRobot",          "R"],
 
-      ["Robot Color Sensor %m.digitalRobot %m.brightRobot",        "b", 13, "brightRobot",    "sensor 1", "Black"],
+      ["Robot Color Sensor %m.digitalRobot %m.brightRobot",        "b", 13, "brightRobot",    "sensor 1", "Red"],
       ["Robot Color Sensor RGB %m.digitalRobot %m.brightRobotRGB", "r", 13, "brightRobotRGB", "sensor 1", "R"],
 
 
