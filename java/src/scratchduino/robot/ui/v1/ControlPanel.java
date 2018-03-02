@@ -22,7 +22,7 @@ import scratchduino.robot.*;
 
 
 
-public class ControlPanel extends JDialog implements IControlPanel{
+public class ControlPanel extends JFrame implements IControlPanel{
    private static final long serialVersionUID = -8510057476499416417L;
    
    private static Log log = LogFactory.getLog(ControlPanel.class);
@@ -114,7 +114,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
    private JButton btnDiagnostic;
    private JButton btnExit;
    
-//   private String bestDeviceIcon = null;
+   private String bestDeviceIcon = null;
    
    private enum STATE{NO_DEVICE, IN_PROGRESS, READY, WRONG_VERSION};
    
@@ -131,13 +131,10 @@ public class ControlPanel extends JDialog implements IControlPanel{
    private volatile byte[] loadFileData = null;
    
 
-   public ControlPanel(final IConfiguration config,
-                       final IDeviceLocator locator,
-                       final IFirmware firmware) throws InvocationTargetException, InterruptedException{
+   public ControlPanel(IConfiguration config, IDeviceLocator locator, IFirmware firmware) throws InvocationTargetException, InterruptedException{
       this.locator  = locator;
       this.config   = config;
       this.firmware = firmware;
-      
       
 
       if(this.config.getIOS().getType() == IOS.TYPE.MAC){
@@ -164,8 +161,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                ControlPanel.this.addWindowListener(new WindowAdapter(){
                   public void windowClosing(WindowEvent e){
-//Test                     
-//                     ControlPanel.this.setState(Frame.ICONIFIED);
+                     ControlPanel.this.setState(Frame.ICONIFIED);
                   }
                });
             }      
@@ -274,10 +270,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
                @Override
                public void actionPerformed(ActionEvent paramActionEvent){
                   //System.exit(0);
-                  
-                  ControlPanel.this.setVisible(false);
-//Test                  
-//                  ControlPanel.this.setState(Frame.ICONIFIED);
+                  ControlPanel.this.setState(Frame.ICONIFIED);
                }
             });
             ControlPanel.this.add(btnExit);
@@ -286,23 +279,29 @@ public class ControlPanel extends JDialog implements IControlPanel{
             
       
             //Tray
-            if(SystemTray.isSupported()){      
+            if(SystemTray.isSupported()){
+      
                SystemTray tray = SystemTray.getSystemTray();
       
-               MouseListener mouseListener = new MouseListener(){      
+               MouseListener mouseListener = new MouseListener(){
+      
                   public void mouseClicked(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse clicked!");
                   }
+      
                   public void mouseEntered(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse entered!");
                   }
+      
                   public void mouseExited(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse exited!");
                   }
+      
                   public void mousePressed(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse pressed!");
                      ControlPanel.this.popUp();
                   }
+      
                   public void mouseReleased(MouseEvent e){
                      // System.out.println("Tray Icon - Mouse released!");
                   }
@@ -314,6 +313,8 @@ public class ControlPanel extends JDialog implements IControlPanel{
                      System.exit(0);
                   }
                };
+      
+      
                ActionListener actionListener = new ActionListener(){
                   public void actionPerformed(ActionEvent e){
                      //trayIcon.displayMessage("Action Event", "An Action Event Has Been Performed!", TrayIcon.MessageType.INFO);
@@ -335,97 +336,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
                catch (AWTException e){
                   System.err.println("TrayIcon could not be added.");
                }
-               
-               
-               Thread thIconStatus = new Thread(){
-                  private IPort.STATE prevState = null;
-                  
-                  public void run(){
-                     while(true) {
-                        if(locator.getStatus() == IDeviceLocator.STATUS.IN_PROGRESS){
-                           //ok, we are looking
-                           
-                           if(this.prevState == null){
-                              //ok, already set
-                           }
-                           else{
-                              SwingUtilities.invokeLater(new Thread(){
-                                 public void run(){                                    
-                                    trayIcon.setImage(iconWating.getImage());
-                                 }
-                              });
-                           }
-                           
-                           this.prevState = null;
-                        }
-                        else{                           
-                           IPort.STATE bestState = IPort.STATE.DETECTION; 
-                           
-                           for(IPort port : locator.getPortList()){
-                              switch(port.getState()){
-                                 case ROBOT_DETECTED:{
-                                    bestState = IPort.STATE.ROBOT_DETECTED;
-                                    break;
-                                 }
-                                 case UNKNOWN_DEVICE:
-                                 case WRONG_VERSION:{
-                                    if(bestState == IPort.STATE.ROBOT_DETECTED){
-                                       //At lest one is conencted
-                                    }
-                                    else{
-                                       bestState = port.getState();
-                                    }
-                                    break;
-                                 }
-                              }
-                           }
-                           
-                           
-                           if(bestState == this.prevState){
-                              //The same icon
-                           }
-                           else{
-                              switch(bestState){
-                                 case ROBOT_DETECTED:{
-                                    SwingUtilities.invokeLater(new Thread(){
-                                       public void run(){                                    
-                                          trayIcon.setImage(iconGreen.getImage());
-                                       }
-                                    });
-                                    break;
-                                 }
-                                 case UNKNOWN_DEVICE:
-                                 case WRONG_VERSION:{
-                                    SwingUtilities.invokeLater(new Thread(){
-                                       public void run(){                                    
-                                          trayIcon.setImage(iconYellow.getImage());
-                                       }
-                                    });
-                                    break;
-                                 }
-                                 default:{
-                                    SwingUtilities.invokeLater(new Thread(){
-                                       public void run(){                                    
-                                          trayIcon.setImage(iconRed.getImage());
-                                       }
-                                    });
-                                    break;
-                                 }
-                              }                              
-                              this.prevState = bestState;
-                           }
-                        }
-                        
-                        try{
-                           sleep(100);
-                        }
-                        catch (InterruptedException e){
-                           break;
-                        }
-                     }
-                  }
-               };
-               thIconStatus.start();
+      
             }
             else{
                // System Tray is not supported
@@ -759,31 +670,37 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case INIT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_init"));
             lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
             return lb;
          }
          case TIME_OUT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_timeout"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          case ERROR:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_error"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          case OPENNED:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_opened") + " " + port.getSpeed());
             lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
             return lb;
          }
          case TEST_DATA:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_data_sent") + " " + port.getSpeed());
             lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
             return lb;
          }
          case RESPONSE:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_analizing_response"));
             lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
             return lb;
          }
          case NO_RESPONSE:{
@@ -792,6 +709,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case ROBOT_DETECTED:{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_robot_ok"), port.getDevice()));
             lb.setIcon(iconGreen);
+            updateIcon(iconGreen);
             
             state = STATE.READY;
             return lb;
@@ -799,6 +717,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case WRONG_VERSION:{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_wrong_version"), port.getDevice()));
             lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
             
             state = STATE.WRONG_VERSION;
             return lb;
@@ -806,16 +725,19 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case UNKNOWN_DEVICE:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_unknown_device"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          case CLOSING:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_closing"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          case CLOSED:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_closed"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          
@@ -834,16 +756,19 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case TIME_OUT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_timeout"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          case ERROR:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_error"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
          case ROBOT_DETECTED:{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_robot_ok"), port.getDevice()));
             lb.setIcon(iconGreen);
+            updateIcon(iconGreen);
             
             state = STATE.READY;
             return lb;
@@ -851,6 +776,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case WRONG_VERSION:{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_wrong_version"), port.getDevice()));
             lb.setIcon(iconYellow);
+            updateIcon(iconYellow);
             
             state = STATE.WRONG_VERSION;
             return lb;
@@ -858,6 +784,7 @@ public class ControlPanel extends JDialog implements IControlPanel{
          case UNKNOWN_DEVICE:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_unknown_device"));
             lb.setIcon(iconRed);
+            updateIcon(iconRed);
             return lb;
          }
       }
@@ -886,32 +813,32 @@ public class ControlPanel extends JDialog implements IControlPanel{
    
    
    
-//   private void updateIcon(ImageIcon icon){
-//      if(bestDeviceIcon == null){
-//         //no status yet
-//         trayIcon.setImage(icon.getImage());
-//      }
-//      else if(bestDeviceIcon.equals(iconGreen.toString())){
-//         //At least one robot is ok!
-//         //We do not need to set it yellow or red
-//      }
-//      else if(bestDeviceIcon.equals(iconYellow.toString())){
-//         if(icon.toString().equals(iconGreen.toString())){
-//            //ok, one is red-> yellow or red-> green now
-//            trayIcon.setImage(icon.getImage());
-//         }
-//         else{
-//         }
-//      }
-//      else if(bestDeviceIcon.equals(iconRed.toString())){
-//         if(icon.toString().equals(iconGreen.toString()) || icon.getImage().equals(iconGreen.toString())){
-//            //ok, one is red-> yellow or red-> green now
-//            trayIcon.setImage(icon.getImage());
-//         }
-//      }
-//      
-//      bestDeviceIcon = icon.toString();
-//   }
+   private void updateIcon(ImageIcon icon){
+      if(bestDeviceIcon == null){
+         //no status yet
+         trayIcon.setImage(icon.getImage());
+      }
+      else if(bestDeviceIcon.equals(iconGreen.toString())){
+         //At least one robot is ok!
+         //We do not need to set it yellow or red
+      }
+      else if(bestDeviceIcon.equals(iconYellow.toString())){
+         if(icon.toString().equals(iconGreen.toString())){
+            //ok, one is red-> yellow or red-> green now
+            trayIcon.setImage(icon.getImage());
+         }
+         else{
+         }
+      }
+      else if(bestDeviceIcon.equals(iconRed.toString())){
+         if(icon.toString().equals(iconGreen.toString()) || icon.getImage().equals(iconGreen.toString())){
+            //ok, one is red-> yellow or red-> green now
+            trayIcon.setImage(icon.getImage());
+         }
+      }
+      
+      bestDeviceIcon = icon.toString();
+   }
    
    
 
@@ -920,11 +847,9 @@ public class ControlPanel extends JDialog implements IControlPanel{
       SwingUtilities.invokeLater(new Runnable(){
          public void run(){
             ControlPanel.this.setVisible(true);
-
-//Test            
-//            int state = getExtendedState();
-//            state &= ~JFrame.ICONIFIED;
-//            ControlPanel.this.setExtendedState(state);
+            int state = getExtendedState();
+            state &= ~JFrame.ICONIFIED;
+            ControlPanel.this.setExtendedState(state);
             ControlPanel.this.setAlwaysOnTop(true);
             ControlPanel.this.toFront();
             ControlPanel.this.requestFocus();

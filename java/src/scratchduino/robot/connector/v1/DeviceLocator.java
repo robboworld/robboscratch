@@ -58,6 +58,8 @@ public class DeviceLocator implements IDeviceLocator{
          for(String sPortName : arrPorts){
             if(config.excludePorts().contains(sPortName.toLowerCase())) continue;
             
+            if (sPortName.toLowerCase().contains("ttys")) continue; //modified_by_Yaroslav
+            
             Port port = new Port(this, deviceList, sPortName, config, iCounter); 
             
             ltf.addCell(iCounter);

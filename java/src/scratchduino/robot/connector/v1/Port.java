@@ -151,7 +151,22 @@ public class Port implements IPort{
                ISerialPortMode serialPortMode = it.next();
 
                // Let's open
+               
+               //modified_by_Yaroslav
+               
+              
+               while (serialPort.isOpened()) {
+            	   
+            	   Thread.sleep(1);
+            	   
+               }
+               
+              
+            	   
                serialPort.openPort();
+            	   
+               
+              
                log.debug(LOG + Port.this.portName + " opened.");
                log.debug(LOG + Port.this.portName + " setting params...");
 
@@ -236,6 +251,11 @@ public class Port implements IPort{
                      }
 
                      log.debug(LOG + Port.this.portName + "=" + sData);
+                     
+                     log.debug(LOG + "SB_Length" + "=" + sb.length());
+                     log.debug(LOG + "Port.this.internalTestID" + "=" + Port.this.internalTestID);
+                     log.debug(LOG + "52 * (Port.this.internalTestID + 1)" + "=" + 52 * (Port.this.internalTestID + 1));
+                     
 
                      if(sb.length() == (52 * (Port.this.internalTestID + 1))){
                         // we need THE EXACT acount of bytes

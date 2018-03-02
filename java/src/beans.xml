@@ -30,7 +30,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
                   <!-- Latest avaialble firmware version -->
                   <constructor-arg value="115200,NONE"/>
                   <constructor-arg value="7"/>
-                  <constructor-arg value="%avrdude% -C &quot;%root%/firmware/avrdude.conf&quot; -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:&quot;%root%/firmware/%firmware%&quot;:i"/>
+                  <constructor-arg value="%avrdude% -C %root%/firmware/avrdude.conf -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:%root%/firmware/%firmware%:i"/>
 
                   <constructor-arg>
                      <map>
@@ -80,8 +80,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
                   <!-- Latest avaialble firmware version -->
                   <constructor-arg value="115200,NONE"/>
-                  <constructor-arg value="4"/>
-                  <constructor-arg value="%avrdude% -C &quot;%root%/firmware/avrdude.conf&quot; -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:&quot;%root%/firmware/%firmware%&quot;:i"/>
+                  <constructor-arg value="5"/>
+                  <constructor-arg value="%avrdude% -C %root%/firmware/avrdude.conf -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:%root%/firmware/%firmware%:i"/>
 
                   <constructor-arg>
                      <map>
@@ -137,8 +137,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
                   <!-- Latest avaialble firmware version -->
                   <constructor-arg value="115200,NONE"/>
-                  <constructor-arg value="1"/>
-                  <constructor-arg value="%avrdude% -C &quot;%root%/firmware/avrdude.conf&quot; -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:&quot;%root%/firmware/%firmware%&quot;:i"/>
+                  <constructor-arg value="2"/>
+                  <constructor-arg value="%avrdude% -C %root%/firmware/avrdude.conf -v -patmega328p -b 57600 -carduino -P %port% -D -Uflash:w:%root%/firmware/%firmware%:i"/>
 
                   <constructor-arg>
                      <map>
@@ -331,27 +331,17 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
       <constructor-arg ref="devices"/>
    </bean>
 
-<!--
    <bean id="scratch" class="scratchduino.robot.ScratchExternalCommand" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
-      <constructor-arg value="flash2.1.57"/>
+      <constructor-arg value="flash2.1.59"/>
    </bean>
--->
-
 
 <!--
-   <bean id="scratch" class="scratchduino.robot.ScratchExternalCommand" scope="singleton" lazy-init="true">
-      <constructor-arg ref="config"/>
-      <constructor-arg ref="os"/>
-      <constructor-arg value="flash2.1.57"/>
-   </bean>
--->
-
-
    <bean id="scratch" class="scratchduino.robot.ScratchDisabled" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
    </bean>
+-->
 
 </beans>
