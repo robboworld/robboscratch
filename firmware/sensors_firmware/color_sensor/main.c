@@ -12,12 +12,19 @@
 #define OUTPUT_PIN       PA3
 #define FILTER 4
 
-uint8_t   que_size=9;
+#define APWIN 9						// Ðàçìåð àïåðòóðíîãî îêíà ôèëüòðà
+#define APWINMAX (APWIN-1)<<2
+#define MEDIAN APWIN>>1				//
+#define QMASK  0xFC					// Ñòàðøèå ðàçðÿäû äëÿ íóìåðàöèè ýëåìåíòîâ î÷åðåäè 
+#define NQMASK 0x3
+#define QSHIFT 0x4
+
+//uint8_t   que_size=9;
 
 //uint8_t CurrentFilter = 0;
 //uint8_t ColorValue[3][FILTER];
 //uint8_t CurrentValue[3];
-uint8_t CurrentColor = 0;
+//uint8_t CurrentColor = 0;
 //_Bool ColorComplete = 0;
 
 void ADC_config(void);
@@ -36,146 +43,118 @@ uint16_t t3,t2;
 //char toggle = 0;
 uint8_t arr_post[5]={0,255,1,1,1};  //170 (AA) for debug
 uint8_t post=255;
-//uint8_t tmpclr[3];
-
-// uint8_t que_index = 0;
 
 
-uint8_t   red_que[] =  {1,1,1,1,1,1,1,1,1};
-uint8_t   green_que[] ={1,1,1,1,1,1,1,1,1};
-uint8_t   blue_que[] = {1,1,1,1,1,1,1,1,1};
+typedef  struct {
+	uint8_t ApValHi[APWIN];      
+	uint8_t ApValLo[APWIN];      
+} RGB_t;
 
-//uint16_t   red_que[] =  {1,1,1,1,1,1,1,1,1};
-//uint16_t   green_que[] ={1,1,1,1,1,1,1,1,1};
-//uint16_t   blue_que[] = {1,1,1,1,1,1,1,1,1};
+static RGB_t RGB[3];
+RGB_t *Crnt;
+
+uint8_t  FrameRGB[3];        // Êàäð RGB äëÿ îòïðàâêè íàðóæó
+uint8_t  KRGB[3];
+uint8_t  CorrRGB[3];
+
+inline int8_t CompareAp(uint8_t Hi, uint8_t Lo, uint8_t Index) {  //нужно
+
+	register uint8_t H, L;
+	
+	H = Crnt->ApValHi[Index]&NQMASK;
+	// Hi &= NQMASK;
+	L = Crnt->ApValLo[Index];
+	H=  (Hi < H)? -1: (Hi > H);
+	if  (!H)  H = (Lo < L) ? -1 : (Lo > L);
+	return H;
+	}
+
+inline void initAP() {  //нужно в стартапе
+	register uint8_t i,j,k;
+	j =APWINMAX ;
+	Crnt = &RGB[0];    //указатель на структуру 
+   for (k=0; k^3; k++)
+	for (i = 0; i < APWIN; i++) {
+		Crnt[k].ApValHi[i] = j;
+		j -= QSHIFT;
+       	Crnt[k].ApValLo[i] = 0;
+	}
+}
 
 
 
-//int   red_que[] =  {1,1,1,1,1};
-//int   green_que[] ={1,1,1,1,1};
-//int   blue_que[] = {1,1,1,1,1};
+inline void AutoL() {  //запускать после фильра
+	register uint8_t i,Lo;
+	register uint16_t s;
 
-uint8_t color_buf[] = {1,1,1};
+	
+	Lo ^= Lo;
+	for (i^=i; i^3; i++) 
+	  Lo |= RGB[i].ApValHi[MEDIAN];
+
+	Lo = (Lo & 2) ? 2 : Lo & 1;
+	// cli(); //возможно включить
+		
+	for (i ^= i; i ^ 0x3; i++) {
+		//*((uint8_t *)&s + 1) = RGB[i].ApValHi[MEDIAN];
+		//*(uint8_t *) &s = RGB[i].ApValLo[MEDIAN];
+
+        s = (RGB[i].ApValHi[MEDIAN] << 8) + RGB[i].ApValLo[MEDIAN];
+		s >>= Lo;
+		FrameRGB[i] = s&0xFF;  //отдаю в канал
+	}
 
 
-int median_index = 4;
+	// sei(); //возможно включить
+	}
+	
 
-//uint16_t high_bit_signal_flag = 0;
 
 
 
- void bubleSort( uint8_t *arr, uint8_t *mas, int size) {
+
+
+inline void Median8(uint8_t Hi, uint8_t Lo) {
+
+	int8_t  j=0, i, Fl;
    
- int k = 0;
-  for (k = 0; k< size; k++ )
-          {
-
-              
-             mas[k] = arr[k];
-                 
-
-        }
-
-    int i = 0;       
-   for(i = 0; i < size; i++) {
-       // interruptFlag = true;
-	int j = 0;
-        for(j = 0; j < size - i - 1; j++) {
-            if(mas[j] > mas[j+1]) {
-                uint8_t tmp = mas[j];
-                mas[j] = mas[j+1];
-                mas[j+1] = tmp;
-                //Была хотя бы одна замена элементов => нужен еще проход по i
-             //   interruptFlag = false;
-            }
-        }
- 
-        //Если не было замен, то заканиваем проходы
-      /*  if(interruptFlag) {
-          
-            return mas;
-            break;
-        }*/
-    }
-
-
-
-}
-
-
-void arr_left_shift( uint8_t *arr,int arr_size){
-
-	int i = 0;
-        for (i = 0; i < (arr_size-1); i++)
-
-            {
-                
-                arr[i] = arr[i+1];
-
-
-            }  
-
-                arr[arr_size-1] = 0;
-
-
-}
-
- uint8_t median_filter(uint8_t* que, uint8_t new_que_element, int median_index, int size)
-{
     
-    uint8_t buf[9];  
 
-   
+	Hi &= NQMASK;
+	for (i = 0; i < APWIN; i++)
+		if (Crnt->ApValHi[i] & QMASK) Crnt->ApValHi[i] -= QSHIFT;   // äåêðåìåíò íîìåðà ýëåìåíòà â î÷åðåäè íà âûõîä    //Crnt перед вызовом median смотреть на канал, который фильтруем
+		else  j = i;							// îäíîâðåìåííî èùåì óäàëÿåìûé ýëåìåíò
 
-       bubleSort(que,buf,size);
+			
+    Fl = CompareAp(Hi, Lo, j);
 
+	if (Fl) {			// Ñðàâíèâàåì íîâûé ýëåìåíò ñ óäàëÿåìûì
 
-      /*  for (int i = 0; i< que_size; i++ )
-            {
+			i = (Fl < 0) ? 0 : APWIN - 1;
 
-              
-                printf("%d | ",buf[i]);
-                 
+			for (; j^i; j += Fl) {
 
-        }
+				if (Fl == CompareAp(Hi, Lo, j + Fl)) {
+					Crnt->ApValHi[j] = Crnt->ApValHi[j + Fl];
+					Crnt->ApValLo[j] = Crnt->ApValLo[j + Fl];
+				}
+				else break;
+			}
+		}
+	
+	Crnt->ApValHi[j] = Hi|APWINMAX;
+	Crnt->ApValLo[j] = Lo;
 
-            printf("\n\n"); */
-
-        
-        arr_left_shift(que,size);
-
-        
-     
-
-     
-
-        que[size-1] = new_que_element;
-
-  /*for (int i = 0; i< que_size; i++ )
-            {
-
-              
-                printf("%d | ",que[i]);
-                 
-
-        }
-
-            printf("\n\n");*/
-
-
-        
-
-        return buf[median_index];   
-
-     
-      
-
-
+	
 }
 
 
 int main(void)
 {
+
+  uint8_t CurrentColor = 0;
+
+
     //CLKPR = 0x80; 
     //CLKPR = 0x00; // установка предделителя частоты в 1
     DDRA |= (1 << OUTPUT_PIN) ; //Настраиваем пины на выход
@@ -193,6 +172,9 @@ TCNT0 = 0;
 
     
     sei();              // global interrupt enable
+
+    initAP(); //median filter init
+
 	while (1)
 	{
 		//for(CurrentFilter=0;CurrentFilter<FILTER;CurrentFilter++)
@@ -200,7 +182,7 @@ TCNT0 = 0;
 
 			//high_bit_signal_flag=0; //reset to 0
 
-			for(CurrentColor=0;CurrentColor<3;CurrentColor++)
+			for(CurrentColor=0;CurrentColor < 3;CurrentColor++)
 			{	
 				ADMUX = (ADMUX & 0xF0) | (CurrentColor);
 				//_delay_ms(3);  //delay    beetween  colors  read
@@ -210,71 +192,27 @@ TCNT0 = 0;
 				}
 				//ColorValue[CurrentColor][CurrentFilter]=ADCH;
 				t1=ADCL;
-				t2=ADCH;
-				//t3=(t2<<8)+t1;
-                if (t2) t3=254;
-                else t3 = t1;				
-                //scale 10bit to 8bit
+				t2=ADCH&0x3;
+				 
+            /*    if (t2){
 
-				//t3=t3>>2; 
+
+                     t2  = 0;
+                     t1 = 254;
+   
+                 } 
+*/
 				
-				/* if ((t3&0x300)){ //check 9th bit
-					
-					//t3=t3>>2; 
-                       t3 = 254; 
-					
-
-					//high_bit_signal_flag = 2;
-
-				} */
-
-				//high_bit_signal_flag|= (t3&0x300);
-				
-					
-				//t3 = t3&0xFF;
+                Crnt = &RGB[2-CurrentColor];
 
 
-				//if( t3 >= 254) t3= 254;
-				//if( t3 == 0) t3=1;
-			//	arr_post[2+2-CurrentColor]=(uint8_t)t3; //uncomment to restore normal mode  //write  170 (AA)  to debug
-				//arr_post[2+CurrentColor]+=ADCH;
-				
-				if (CurrentColor ==2)  
-					{
-							
-					//color_buf[CurrentColor] = median_filter(red_que,t3,median_index,que_size);
-                    //median_filter(red_que,t3,median_index,que_size);
-					color_buf[0] =  median_filter(red_que,(uint8_t)t3,median_index,que_size);
 
-                      //  color_buf[0] = t3;
-
-					}
-
-				if (CurrentColor == 1)
-					{
-							
-					//color_buf[CurrentColor] = median_filter(green_que,t3,median_index,que_size);
-                   // median_filter(green_que,t3,median_index,que_size);
-					color_buf[1] = median_filter(green_que,(uint8_t)t3,median_index,que_size);
-
-                       //  color_buf[1] = t3;
-	
-					}
-
-				if (CurrentColor == 0)
-					{
-
-						
-					// color_buf[CurrentColor] =    median_filter(blue_que,t3,median_index,que_size);
-
-                   // median_filter(blue_que,t3,median_index,que_size);
-					color_buf[2]  = median_filter(blue_que,(uint8_t)t3,median_index,que_size);
-
-                        //  color_buf[2] = t3;
-
-					}	
+				 Median8(t2,t1);
 				
 			}//end of for
+
+
+            AutoL();
 
 		
 			cli();//disable interrupts;
@@ -284,7 +222,7 @@ TCNT0 = 0;
            
             
 
-            arr_post[2] = (color_buf[0] == 0)?1:color_buf[0];
+            /*arr_post[2] = (color_buf[0] == 0)?1:color_buf[0];
             arr_post[2] = (color_buf[0] == 255)?254:color_buf[0];
 
               arr_post[3] = (color_buf[1] == 0)?1:color_buf[1];
@@ -292,7 +230,30 @@ TCNT0 = 0;
 
 
               arr_post[4] = (color_buf[2] == 0)?1:color_buf[2];
-              arr_post[4] = (color_buf[2] == 255)?254:color_buf[2]; 
+              arr_post[4] = (color_buf[2] == 255)?254:color_buf[2]; */
+
+
+                
+            
+            
+//            FrameRGB[0] = (RGB[0].ApValHi[MEDIAN]&0x03)?254:RGB[0].ApValLo[MEDIAN];
+//            FrameRGB[1]  = (RGB[1].ApValHi[MEDIAN]&0x03)?254:RGB[1].ApValLo[MEDIAN];
+//            FrameRGB[2]  = (RGB[2].ApValHi[MEDIAN]&0x03)?254:RGB[2].ApValLo[MEDIAN];
+
+
+               
+           
+
+                
+            arr_post[2] = (FrameRGB[0] == 0)?1:FrameRGB[0];
+            arr_post[2] = (FrameRGB[0] == 255)?254:FrameRGB[0];
+
+              arr_post[3] = (FrameRGB[1] == 0)?1:FrameRGB[1];
+             arr_post[3] = (FrameRGB[1] == 255)?254:FrameRGB[1];
+
+
+              arr_post[4] = (FrameRGB[2] == 0)?1:FrameRGB[2];
+              arr_post[4] = (FrameRGB[2] == 255)?254:FrameRGB[2];
 
             
              //    arr_post[2] = 170;
@@ -301,38 +262,7 @@ TCNT0 = 0;
 
             
 
-			//high_bit_signal_flag = high_bit_signal_flag>>8;
 			
-			//if (high_bit_signal_flag >= 0x300) high_bit_signal_flag = 2;
-			//if (high_bit_signal_flag >= 0x200) high_bit_signal_flag = 1;
-			
-			// color_buf[0] >>=high_bit_signal_flag;
-
-			//color_buf[0] = color_buf[0] >> high_bit_signal_flag;
-				
-			//arr_post[2]=( color_buf[0] >= 254)?254:(uint8_t)color_buf[0];  
-			//	 arr_post[2]=( color_buf[0])?(uint8_t)color_buf[0]:1;	
-
-
-				
-	
-			 //color_buf[1] >>= high_bit_signal_flag;
-			// color_buf[1] = color_buf[1] >> high_bit_signal_flag;
-
-			//arr_post[3]=( color_buf[1] >= 254)?254:(uint8_t)color_buf[1];  
-			//	 arr_post[3]=( color_buf[1])?(uint8_t)color_buf[1]:1;
-
-				// arr_post[3] = 114;
-				
-			// color_buf[2] >>= high_bit_signal_flag;
-			//color_buf[2] = color_buf[2] >> high_bit_signal_flag;	
-
-					
-			//arr_post[4]=( color_buf[2] >= 254)?254:(uint8_t)color_buf[2];  
-			//	arr_post[4]=( color_buf[2])?(uint8_t)color_buf[2]:1;
-
-			//	arr_post[4] = 114;
-
 			
 			sei(); //enable interrupts
 
@@ -342,34 +272,7 @@ TCNT0 = 0;
 
 			
 
-    //  que_index++;
-
-
-		//}
-/*
-		for(CurrentColor=0;CurrentColor<3;CurrentColor++)
-		{
-				
-			for(CurrentFilter=0;CurrentFilter<FILTER;CurrentFilter++)
-			{
-				tmpclr[CurrentColor]+=ColorValue[CurrentColor][CurrentFilter];
-			}
-			tmpclr[CurrentColor]/=FILTER;
-		}
-		for(CurrentColor=0;CurrentColor<3;CurrentColor++)
-		{
-			arr_post[2+CurrentColor]=tmpclr[CurrentColor];
-		}
-*/	
-
-
-
- /*  for (t=2; t<= 4; t++)
-{
-   arr_post[t] = test_value;
-   
-}
-      test_value++; */
+    
 
       
 
