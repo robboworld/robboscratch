@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "00007"
+#define FIRMWARE_VERSION "00008"
 //toDO PIDpath обнулить при перполнении на обоих моторах
 
 #include <EEPROM.h>
@@ -8,7 +8,7 @@
 #define SERIAL_SPEED 115200
 #define SERIAL_ADDRESS 0
 #define ADDRCALIB 1000
-
+#define BLUE_CHECK 500
 
 
 #define portOfPin(P)\
@@ -67,7 +67,7 @@ ServoTimer2 myservo;
 
 
 
-
+char blue_num;
 const byte MOTOR_STATE_DISABLED = 0;
 const byte MOTOR_STATE_ENABLED = 1;
 const byte MOTOR_STATE_STEPS_LIMIT = 2;
@@ -600,23 +600,16 @@ class ColorSensor: public ISensor {
       
       long lMaxHighDuration = 0;
       long lMaxLowDuration = 0;
-
-
       long lCurrentHighDuration = 0;
       long lCurrentLowDuration = 0;
       
       
       boolean isLastHigh = false;
       boolean isLastLow = false;
-
-
 //      cli();
-
       long lLastTimeProbbed = micros();
-
       while(millis() - lTimeMillis < 10){
          //A 10 ms interval to probe channel
-
          if (digitalState(pin) == LOW){
             //It's low now
             
@@ -881,11 +874,9 @@ class ColorSensor: public ISensor {
     boolean isReady() {
 
       /*if (  (result[0] == 0) && (result[1] == 0) && (result[2] == 0 ) ) {
-
               booleanReady = false; 
         
       }else{
-
            booleanReady = true;
         
       }*/
@@ -993,6 +984,46 @@ void setup() {
       calibrateldr=-calib;
     }
 //    calibrating();*/
+  EEPROM.get(BLUE_CHECK, blue_num);
+    if(!blue_num)
+  {
+   Serial.write("$$$");
+   delay(100);
+   char a[3];
+     a[0] =Serial.read();
+    a[1] =Serial.read();
+    a[2] =Serial.read();
+    a[2] =Serial.read();
+   delay(1000);
+   if(a[0]=='C'){
+      Serial.println("SQ,16");
+      delay(100);
+      a[0] =Serial.read();
+      a[1] =Serial.read();
+      a[2] =Serial.read();
+      a[2] =Serial.read();
+      delay(100);
+      if(a[1]=='A'){
+      digitalWrite(10,HIGH);
+      delay(100);
+      digitalWrite(10,LOW);
+      EEPROM.put(BLUE_CHECK, '1');//   <----------------------------- У EEPROM ограничеено количество циклов записи, сначала думай, потом раскомменчивай!
+      Serial.println("---");
+      }
+      else
+      {
+      digitalWrite(9,HIGH);
+      delay(2000);
+      digitalWrite(9,LOW);
+      }
+   }
+    
+
+    
+  }
+
+
+  
   sensors[0]  = new AnalogSensor(A1, SENSOR_TYPE_LINE);
   //   sensors[0]  = new ColorSensor(DIGITAL_PIN_1);
   sensors[1]  = new AnalogSensor(A2, SENSOR_TYPE_LINE);
@@ -1241,9 +1272,7 @@ void printSensors() {
           
 
          /* byte * color_result_buf =  sensors[i]->getResult();
-
          if ( (color_result_buf[1] == 0) && (color_result_buf[2] == 0) && (color_result_buf[3] == 0 ) ) {
-
             break;
         
           } */
@@ -1601,10 +1630,10 @@ else
                 rightSpeed -= 64;
               }
                speed_proportion = ((float)leftSpeed / (float) rightSpeed) * calibraterdl / calibrateldr;
-               if(leftSpeed<13&&leftSpeed!=0&&leftSpeed!=1)
-               leftSpeed=13;
-               if(rightSpeed<13&&rightSpeed!=0&&rightSpeed!=1)
-               rightSpeed=13;
+               //if(leftSpeed<13&&leftSpeed!=0&&leftSpeed!=1)
+               //leftSpeed=13;
+               //if(rightSpeed<13&&rightSpeed!=0&&rightSpeed!=1)
+               //rightSpeed=13;
                globalLeftMotorSpeed = leftSpeed;
                globalRightMotorSpeed = rightSpeed;
                globalLeftDir = leftDir;
@@ -1692,8 +1721,8 @@ else
               }
               if((leftSpeed<20&&leftSpeed!=0&&leftSpeed!=1) || (rightSpeed<20&&rightSpeed!=0&&rightSpeed!=1) )
                {
-               leftSpeed=20;
-                   rightSpeed=20;
+              // leftSpeed=20;
+              //     rightSpeed=20;
                Kr1= 15;
                Kd1 =1.4;
                kray1=2;
