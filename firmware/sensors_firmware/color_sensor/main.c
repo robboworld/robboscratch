@@ -42,6 +42,7 @@ uint16_t t3,t2;
 //uint8_t DeltaHalfColor;
 //char toggle = 0;
 uint8_t arr_post[5]={0,255,1,1,1};  //170 (AA) for debug
+uint8_t arr_pos[5]={0,255,170,85,170};  //170 (AA) for debug
 uint8_t post=255;
 
 
@@ -195,8 +196,6 @@ TCNT0 = 0;
 				t2=ADCH&0x3;
 				 
             /*    if (t2){
-
-
                      t2  = 0;
                      t1 = 254;
    
@@ -215,55 +214,21 @@ TCNT0 = 0;
             AutoL();
 
 		
+            FrameRGB[0] = (FrameRGB[0] == 0)?1:FrameRGB[0];
+            FrameRGB[0] = (FrameRGB[0] == 255)?254:FrameRGB[0];
+
+              FrameRGB[1] = (FrameRGB[1] == 0)?1:FrameRGB[1];
+             FrameRGB[1] = (FrameRGB[1] == 255)?254:FrameRGB[1];
+
+
+              FrameRGB[2] = (FrameRGB[2] == 0)?1:FrameRGB[2];
+              FrameRGB[2] = (FrameRGB[2] == 255)?254:FrameRGB[2];
 			cli();//disable interrupts;
 
-
-            
-           
-            
-
-            /*arr_post[2] = (color_buf[0] == 0)?1:color_buf[0];
-            arr_post[2] = (color_buf[0] == 255)?254:color_buf[0];
-
-              arr_post[3] = (color_buf[1] == 0)?1:color_buf[1];
-             arr_post[3] = (color_buf[1] == 255)?254:color_buf[1];
-
-
-              arr_post[4] = (color_buf[2] == 0)?1:color_buf[2];
-              arr_post[4] = (color_buf[2] == 255)?254:color_buf[2]; */
-
-
-                
-            
-            
-//            FrameRGB[0] = (RGB[0].ApValHi[MEDIAN]&0x03)?254:RGB[0].ApValLo[MEDIAN];
-//            FrameRGB[1]  = (RGB[1].ApValHi[MEDIAN]&0x03)?254:RGB[1].ApValLo[MEDIAN];
-//            FrameRGB[2]  = (RGB[2].ApValHi[MEDIAN]&0x03)?254:RGB[2].ApValLo[MEDIAN];
-
-
-               
-           
-
-                
-            arr_post[2] = (FrameRGB[0] == 0)?1:FrameRGB[0];
-            arr_post[2] = (FrameRGB[0] == 255)?254:FrameRGB[0];
-
-              arr_post[3] = (FrameRGB[1] == 0)?1:FrameRGB[1];
-             arr_post[3] = (FrameRGB[1] == 255)?254:FrameRGB[1];
-
-
-              arr_post[4] = (FrameRGB[2] == 0)?1:FrameRGB[2];
-              arr_post[4] = (FrameRGB[2] == 255)?254:FrameRGB[2];
-
-            
-             //    arr_post[2] = 170;
-             //    arr_post[3] = 170;
-             //    arr_post[4] = 170;   
-
-            
-
-			
-			
+            arr_post[2] = FrameRGB[0];
+            arr_post[3] = FrameRGB[1];
+	    arr_post[4] = FrameRGB[2];
+               			
 			sei(); //enable interrupts
 
 			
@@ -302,7 +267,9 @@ ISR (TIM0_OVF_vect)
 
 
 	}
-
+//uint8_t q = 0;
+//for(q=0;q<15;q++)
+//		asm volatile("NOP");
 
 }
 
@@ -352,4 +319,3 @@ ISR(ADC_vect)
 
 //avr-gcc -Wall -Os -DF_CPU=8000000UL -mmcu=attiny85 -o main.o main.c
 //avr-objcopy -j .text -j .data -O ihex main.o main.hex
-
