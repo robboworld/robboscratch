@@ -42,7 +42,7 @@ uint16_t t3,t2;
 //uint8_t DeltaHalfColor;
 //char toggle = 0;
 uint8_t arr_post[5]={0,255,1,1,1};  //170 (AA) for debug
-uint8_t arr_pos[5]={0,255,170,85,170};  //170 (AA) for debug
+//uint8_t arr_pos[5]={0,255,170,85,170};  //170 (AA) for debug
 uint8_t post=255;
 
 
