@@ -8,6 +8,9 @@ package ui.parts{
                 public var state:Boolean = true;
                 private var _mark:Shape;
 
+                private var arrFuncListeners:Array = [];
+
+
                 public function CheckBox() {
                         this.graphics.beginFill(0xcccccc, 1);
                         this.graphics.drawRect(0, 0, 11, 11);
@@ -25,14 +28,24 @@ package ui.parts{
                         this.addEventListener(MouseEvent.CLICK, turn);
                 }
 
-                private function turn(e:MouseEvent):void {
+                private function turn(e:MouseEvent):void{
+                   if(state){
+                      turnOff();
+                   }
+                   else{
+                      turnOn();
+                   }
 
-                        if (state) {
-                                turnOff();
-                        }else {
-                                turnOn();
-                        }
+                   for(var f:int = 0; f < arrFuncListeners.length; f++){
+                      arrFuncListeners[f]();
+                   }
                 }
+
+
+                public function addListener(listener:Function):void{
+                   arrFuncListeners.push(listener);
+                }
+
 
                 public function turnOn():void {
                         _mark = new Shape();

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Scratch Project Editor and Player
  * Copyright (C) 2014 Massachusetts Institute of Technology
  *
@@ -133,7 +133,7 @@ import flash.events.*;
 public class Scratch extends Sprite {
     // Version
     //public static const versionString:String = 'v426';
-    public static const versionString:String = '2.1.60';
+    public static const versionString:String = '2.1.70';
     private static const REPORT_BUG_URL:String = 'http://feedback.robbo.world';
     private static const DONATE_URL:String = 'https://play.google.com/store/apps/details?id=air.ru.scratchduino.android.appdonate';
     public static var app:Scratch; // static reference to the app, used for debugging
@@ -142,19 +142,19 @@ public class Scratch extends Sprite {
     public static const ROBOT_SENSOR_COUNT:int = 5;
     public static const LAB_SENSOR_FLEXIBLE_COUNT:int = 2;
 
-    public static const ROBOT_SENSOR_TYPE_NONE:int       = 0;
-    public static const ROBOT_SENSOR_TYPE_LINE:int       = 1;
-    public static const ROBOT_SENSOR_TYPE_LED:int        = 2;
-    public static const ROBOT_SENSOR_TYPE_LIGHT:int      = 3;
-    public static const ROBOT_SENSOR_TYPE_TOUCH:int      = 4;
+    public static const ROBOT_SENSOR_TYPE_NONE:int	 = 0;
+    public static const ROBOT_SENSOR_TYPE_LINE:int	 = 1;
+    public static const ROBOT_SENSOR_TYPE_LED:int	 = 2;
+    public static const ROBOT_SENSOR_TYPE_LIGHT:int	 = 3;
+    public static const ROBOT_SENSOR_TYPE_TOUCH:int	 = 4;
     public static const ROBOT_SENSOR_TYPE_PROXIMITY:int  = 5;
     public static const ROBOT_SENSOR_TYPE_ULTRASONIC:int = 6;
-    public static const ROBOT_SENSOR_TYPE_COLOR:int      = 7;
+    public static const ROBOT_SENSOR_TYPE_COLOR:int	 = 7;
 
 
-    public static const LAB_SENSOR_TYPE_NONE:int         = 0;
+    public static const LAB_SENSOR_TYPE_NONE:int	 = 0;
     public static const LAB_SENSOR_TYPE_TEMPERATURE:int  = 1;
-    public static const LAB_SENSOR_TYPE_CROCODILE:int    = 2;
+    public static const LAB_SENSOR_TYPE_CROCODILE:int	 = 2;
 
 
     public var robotSensors:Array = new Array(ROBOT_SENSOR_COUNT);
@@ -259,24 +259,64 @@ public class Scratch extends Sprite {
 
 
 
+   public var arrColorCorrectionBright:Array = [];
+   public var arrColorCorrectionColor:Array  = [];
+   public var arrColorMaxBright:Array	     = [765, 765, 765, 765, 765];
 
-    public var colorCorrectionR:Number = 0.66;
-    public var colorCorrectionG:Number = 1;
-    public var colorCorrectionB:Number = 1;
+
+
+/*
+    public var colorCorrectionBrightR:Number = 0.5;
+    public var colorCorrectionBrightG:Number = 0.5;
+    public var colorCorrectionBrightB:Number = 0.5;
+
+
+    public var colorCorrectionColorR:Number = 0.3333333;
+    public var colorCorrectionColorG:Number = 0.3333333;
+    public var colorCorrectionColorB:Number = 0.3333333;
+*/
+
+
+    public var arrColorNames:Array  = [];
+    public var arrColorRegion:Array = [];
+
+
+
+    public var arrayBlockColorSensorCorrector:Array = [];
 
 
 
 
     /* Default directory for projects */
     TARGET::android {
-        private static const scratchProjectsDirectory:File = File.userDirectory.resolvePath("scratch-projects");
-        private static var currentProjectsDirectory:File;
+	private static const scratchProjectsDirectory:File = File.userDirectory.resolvePath("scratch-projects");
+	private static var currentProjectsDirectory:File;
     }
 
 
 
 
    public function Scratch() {
+      for(var f:int = 0; f < 5; f++){
+	 arrColorCorrectionBright.push([0.5, 0.5, 0.5]);
+	 arrColorCorrectionColor.push([0.3333333, 0.3333333, 0.3333333]);
+      }
+
+
+      this.arrColorNames = ['Red', 'Magenta', 'Yellow', 'Green', 'Blue', 'Cyan', 'Custom', 'Black', 'Gray', 'White'];
+
+      this.arrColorRegion['Red']    =  [ 51.00,64.00,  13.00,25.00,	  20.00,27.00 ,     0,100  , 0xFF0000];
+      this.arrColorRegion['Magenta'] = [ 35.00,58.00,  13.00,25.00,	  26.00,32.00  ,    0,100  , 0xFF00FF];
+      this.arrColorRegion['Yellow'] =  [ 40.00,47.00,  33.00,40.00,	  17.00,23.00  ,    0,100  , 0xFFFF00];
+      this.arrColorRegion['Green']  =  [  23.00,32.00,	 38.00,49.00,	  25.00,33.00  ,    0,100  , 0x00FF00];
+      this.arrColorRegion['Blue']   =  [  15.00,27.00,	 24.00,34.00,	  41.00,58.00,	    0,100  , 0x0000FF];
+      this.arrColorRegion['Cyan'] =    [  24.00,32.00,	 32.00,39.00,	  32.00,40.00  ,    0,100  , 0x00FFFF];
+      this.arrColorRegion['Custom'] =  [  28.00,34.00,	  22.00,28.00,	  41.00,47.00 ,     0,0    , 0xFF00FF];
+      this.arrColorRegion['Black'] =   [  30.00,40.00,	30.00,40.00,	  30.00,40.00,	    0,20   , 0x000000];
+      this.arrColorRegion['Gray']  =   [  30.00,40.00,	30.00,40.00,	  30.00,40.00,	   20,80   , 0xCCCCCC];
+      this.arrColorRegion['White'] =   [  30.00,40.00,	 30.00,40.00,	   30.00,40.00,   80,100   , 0xFFFFFF];
+
+
       this.lang = new StringTools(LocaleID.DEFAULT).actualLocaleIDName.split("-")[0];
       trace("User Lang=" + this.lang);
 
@@ -285,21 +325,21 @@ public class Scratch extends Sprite {
 
 
       for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
-         robotSensors[i] = new RobotSensor(ROBOT_SENSOR_TYPE_NONE);
+	 robotSensors[i] = new RobotSensor(ROBOT_SENSOR_TYPE_NONE);
       }
       for (var j:int = 0; j < LAB_SENSOR_FLEXIBLE_COUNT; j++) {
-         labSensors[j] = new LabSensor(ROBOT_SENSOR_TYPE_NONE);
+	 labSensors[j] = new LabSensor(ROBOT_SENSOR_TYPE_NONE);
       }
 
 
       TARGET::desktop {
-         loadSettings(null);
+	 loadSettings(null);
       }
 
 
 
       TARGET::android {
-         determineJSAccess();
+	 determineJSAccess();
       }
    }
 
@@ -336,74 +376,74 @@ public class Scratch extends Sprite {
 
 
     protected function initialize():void{
-        isOffline = loaderInfo.url.indexOf('http:') == -1;
-        checkFlashVersion();
-        initServer();
+	isOffline = loaderInfo.url.indexOf('http:') == -1;
+	checkFlashVersion();
+	initServer();
 
-        isShowingTextInputDialog = false;
+	isShowingTextInputDialog = false;
 
-        stage.align = StageAlign.TOP_LEFT;
-        stage.scaleMode = StageScaleMode.NO_SCALE;
+	stage.align = StageAlign.TOP_LEFT;
+	stage.scaleMode = StageScaleMode.NO_SCALE;
 
-        stage.frameRate = 30;
+	stage.frameRate = 30;
 
-        Block.setFonts(10, 9, true, 0); // default font sizes
-        Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
-        CursorTool.init(this);
-        app = this;
+	Block.setFonts(10, 9, true, 0); // default font sizes
+	Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
+	CursorTool.init(this);
+	app = this;
 
-        stagePane = new ScratchStage();
-        gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
-        initInterpreter();
-        initRuntime();
-        initExtensionManager();
-        Translator.initializeLanguageList();
+	stagePane = new ScratchStage();
+	gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
+	initInterpreter();
+	initRuntime();
+	initExtensionManager();
+	Translator.initializeLanguageList();
 
-        playerBG = new Shape(); // create, but don't add
-        addParts();
+	playerBG = new Shape(); // create, but don't add
+	addParts();
 
-        stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
-        stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
-        stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
-        stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
-        stage.addEventListener('rightClick', gh.rightMouseClick);
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
-        stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); // to handle escape key
-        stage.addEventListener(Event.ENTER_FRAME, step);
-        stage.addEventListener(Event.RESIZE, onResize);
+	stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
+	stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
+	stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
+	stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
+	stage.addEventListener('rightClick', gh.rightMouseClick);
+	stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
+	stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
+	stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); // to handle escape key
+	stage.addEventListener(Event.ENTER_FRAME, step);
+	stage.addEventListener(Event.RESIZE, onResize);
 
-        setEditMode(startInEditMode());
+	setEditMode(startInEditMode());
 
-        // install project before calling fixLayout()
-        if (editMode) runtime.installNewProject();
-        else runtime.installEmptyProject();
+	// install project before calling fixLayout()
+	if (editMode) runtime.installNewProject();
+	else runtime.installEmptyProject();
 
-        initCatSprite();
+	initCatSprite();
 
 
 
-        fixLayout();
-        TARGET::android {
-            RobotANE.init();
-            RobotANE.locateDevices();
-            robotCommunicator = new AndroidRobotCommunicator(settingsDefaultMotorSpeed, refreshAnalogsRobot, refreshAnalogsLab);
-        }
+	fixLayout();
+	TARGET::android {
+	    RobotANE.init();
+	    RobotANE.locateDevices();
+	    robotCommunicator = new AndroidRobotCommunicator(settingsDefaultMotorSpeed, refreshAnalogsRobot, refreshAnalogsLab);
+	}
 
-        TARGET::desktop {
-            robotCommunicator = new DesktopRobotCommunicator(this, settingsDefaultMotorSpeed, refreshAnalogsRobot, refreshAnalogsLab);
-        }
+	TARGET::desktop {
+	    robotCommunicator = new DesktopRobotCommunicator(this, settingsDefaultMotorSpeed, refreshAnalogsRobot, refreshAnalogsLab);
+	}
 
-        //Analyze.collectAssets(0, 119110);
-        //Analyze.checkProjects(56086, 64220);
-        //Analyze.countMissingAssets();
+	//Analyze.collectAssets(0, 119110);
+	//Analyze.checkProjects(56086, 64220);
+	//Analyze.countMissingAssets();
 
-        // make stage small at startup
-        toggleSmallStage();
+	// make stage small at startup
+	toggleSmallStage();
 
 //AZ
-        Translator.setLanguage(lang);
-        languageChanged = true;
+	Translator.setLanguage(lang);
+	languageChanged = true;
     }
 
 
@@ -412,323 +452,413 @@ public class Scratch extends Sprite {
 
 
     public function refreshAnalogsRobot(data:Array):void {
-        trace("refreshAnalogsRobot() " + data.length + " data=" + data);
+	trace("refreshAnalogsRobot() " + data.length + " data=" + data);
 
 
-        if(data.length == 0){
-           if(robotMotorLeft.path > 0 || robotMotorRight.path > 0){
-              robotMotorLeft.pathCorrection  -= robotMotorLeft.path;
-              robotMotorRight.pathCorrection -= robotMotorRight.path;
+	if(data.length == 0){
+	   if(robotMotorLeft.path > 0 || robotMotorRight.path > 0){
+	      robotMotorLeft.pathCorrection  -= robotMotorLeft.path;
+	      robotMotorRight.pathCorrection -= robotMotorRight.path;
 
-              robotMotorLeft.path  = 0;
-              robotMotorRight.path = 0;
-           }
-
-
-           if(robotMotorLeft.pathCorrection != 0 || robotMotorLeft.pathCorrection != 0){
-              for(var f:int = 2; f < ROBOT_SENSOR_COUNT; f++){
-                 scratchBoardPart.disableValue(f);
-              }
-           }
-           else{
-              scratchBoardPart.setLeftPathDisabled();
-              scratchBoardPart.setRightPathDisabled();
-
-              for(var h:int = 0; h < ROBOT_SENSOR_COUNT; h++){
-                 scratchBoardPart.disableValue(h);
-              }
-
-              scratchBoardPart.setStartButton(false);
-           }
-
-           return;
-        }
+	      robotMotorLeft.path  = 0;
+	      robotMotorRight.path = 0;
+	   }
 
 
+	   if(robotMotorLeft.pathCorrection != 0 || robotMotorLeft.pathCorrection != 0){
+	      for(var f:int = 2; f < ROBOT_SENSOR_COUNT; f++){
+		 scratchBoardPart.disableValue(f);
+	      }
+	   }
+	   else{
+	      scratchBoardPart.setLeftPathDisabled();
+	      scratchBoardPart.setRightPathDisabled();
 
-        robotMotorLeft.steps  = data[0] * 256 + data[1];
-        robotMotorRight.steps = data[2] * 256 + data[3];
+	      for(var h:int = 0; h < ROBOT_SENSOR_COUNT; h++){
+		 scratchBoardPart.disableValue(h);
+	      }
 
-        robotMotorLeft.pathNew  = data[4] * 256 + data[5];
-        robotMotorRight.pathNew = data[6] * 256 + data[7];
+	      scratchBoardPart.setStartButton(false);
+	   }
+
+	   return;
+	}
 
 
 
-        if(robotMotorLeft.pathNew < robotMotorLeft.path){
-           robotMotorLeft.pathMultiplier++;
-        }
-        robotMotorLeft.path = robotMotorLeft.pathNew;
+	robotMotorLeft.steps  = data[0] * 256 + data[1];
+	robotMotorRight.steps = data[2] * 256 + data[3];
 
-
-        if(robotMotorRight.pathNew < robotMotorRight.path){
-           robotMotorRight.pathMultiplier++;
-        }
-        robotMotorRight.path = robotMotorRight.pathNew;
+	robotMotorLeft.pathNew	= data[4] * 256 + data[5];
+	robotMotorRight.pathNew = data[6] * 256 + data[7];
 
 
 
-        robotMotorLeft.pathCorrected  = (65536 * robotMotorLeft.pathMultiplier)  + robotMotorLeft.path  - robotMotorLeft.pathCorrection;
-        robotMotorRight.pathCorrected = (65536 * robotMotorRight.pathMultiplier) + robotMotorRight.path - robotMotorRight.pathCorrection;
+	if(robotMotorLeft.pathNew < robotMotorLeft.path){
+	   robotMotorLeft.pathMultiplier++;
+	}
+	robotMotorLeft.path = robotMotorLeft.pathNew;
 
 
-        scratchBoardPart.setLeftPath(robotMotorLeft.pathCorrected);
-        scratchBoardPart.setRightPath(robotMotorRight.pathCorrected);
+	if(robotMotorRight.pathNew < robotMotorRight.path){
+	   robotMotorRight.pathMultiplier++;
+	}
+	robotMotorRight.path = robotMotorRight.pathNew;
 
 
 
-//        setAnalogTextRobot(0, "" + pathCorrectedLeft);
-//        setAnalogTextRobot(1, "" + pathCorrectedRight);
+	robotMotorLeft.pathCorrected  = (65536 * robotMotorLeft.pathMultiplier)  + robotMotorLeft.path	- robotMotorLeft.pathCorrection;
+	robotMotorRight.pathCorrected = (65536 * robotMotorRight.pathMultiplier) + robotMotorRight.path - robotMotorRight.pathCorrection;
 
 
-//        runtime.analogsRobot[0] = pathCorrectedLeft;
-//        runtime.analogsRobot[1] = pathCorrectedRight;
+	scratchBoardPart.setLeftPath(robotMotorLeft.pathCorrected);
+	scratchBoardPart.setRightPath(robotMotorRight.pathCorrected);
 
 
-        //encoder[0-1], encoder[2-3]
-        //encoder[4-5], encoder[6-7]
 
-        //sensors:
-        //1 8-9-10-11
-        //2 12-13-14-15
-        //3 16-17-18-19
-        //4 20-21-22-23
-        //5 24-25-26-27
+//	  setAnalogTextRobot(0, "" + pathCorrectedLeft);
+//	  setAnalogTextRobot(1, "" + pathCorrectedRight);
 
-        //button
-        //B 28
 
-//        robotMotorLeft.path  = pathCorrectedLeft;
-//        robotMotorRight.path = pathCorrectedRight;
+//	  runtime.analogsRobot[0] = pathCorrectedLeft;
+//	  runtime.analogsRobot[1] = pathCorrectedRight;
 
-        for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
-           robotSensors[i].raw = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
+
+	//encoder[0-1], encoder[2-3]
+	//encoder[4-5], encoder[6-7]
+
+	//sensors:
+	//1 8-9-10-11
+	//2 12-13-14-15
+	//3 16-17-18-19
+	//4 20-21-22-23
+	//5 24-25-26-27
+
+	//button
+	//B 28
+
+//	  robotMotorLeft.path  = pathCorrectedLeft;
+//	  robotMotorRight.path = pathCorrectedRight;
+
+	for (var i:int = 0; i < ROBOT_SENSOR_COUNT; i++) {
+	   robotSensors[i].raw	= [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
+	   robotSensors[i].raw_ = [data[8 + (i*4)], data[9 + (i*4)], data[10 + (i*4)], data[11 + (i*4)]];
 
 //What's for?
-//           robotSensors[i].raw[0] = int(robotSensors[i].raw[0] * 0.9);
+//	     robotSensors[i].raw[0] = int(robotSensors[i].raw[0] * 0.9);
 
-           trace("sensor" + (i + 1) + "=" + robotSensors[i].raw);
-
-
-           if(isExtensionPackEnabled){
-              switch(robotSensors[i].type){
-                 case ROBOT_SENSOR_TYPE_NONE:
-                 case ROBOT_SENSOR_TYPE_LED: {
-                    scratchBoardPart.disableValue(i);
-                    break;
-                 }
-                 case ROBOT_SENSOR_TYPE_LINE:
-                 case ROBOT_SENSOR_TYPE_LIGHT:
-                 case ROBOT_SENSOR_TYPE_TOUCH:
-                 case ROBOT_SENSOR_TYPE_PROXIMITY: {
-                    robotSensors[i].raw[3] = Math.round(robotSensors[i].raw[3] / 2.55);
-                    scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
-                    break;
-                 }
-                 case ROBOT_SENSOR_TYPE_ULTRASONIC: {
-                    scratchBoardPart.setTextValue(i, robotSensors[i].raw[2]*256 + robotSensors[i].raw[3]);
-                    break;
-                 }
-                 case ROBOT_SENSOR_TYPE_COLOR: {
-                    var color:uint = 0;
+	   trace("sensor" + (i + 1) + "=" + robotSensors[i].raw);
 
 
-                    robotSensors[i].raw[1] *= this.colorCorrectionR;
-                    robotSensors[i].raw[2] *= this.colorCorrectionG;
-                    robotSensors[i].raw[3] *= this.colorCorrectionB;
+	   if(isExtensionPackEnabled){
+	      switch(robotSensors[i].type){
+		 case ROBOT_SENSOR_TYPE_NONE:
+		 case ROBOT_SENSOR_TYPE_LED: {
+		    scratchBoardPart.disableValue(i);
+		    break;
+		 }
+		 case ROBOT_SENSOR_TYPE_LINE:
+		 case ROBOT_SENSOR_TYPE_LIGHT:
+		 case ROBOT_SENSOR_TYPE_TOUCH:
+		 case ROBOT_SENSOR_TYPE_PROXIMITY: {
+		    robotSensors[i].raw[3] = Math.round(robotSensors[i].raw[3] / 2.55);
+		    scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
+		    break;
+		 }
+		 case ROBOT_SENSOR_TYPE_ULTRASONIC: {
+		    scratchBoardPart.setTextValue(i, robotSensors[i].raw[2]*256 + robotSensors[i].raw[3]);
+		    break;
+		 }
+		 case ROBOT_SENSOR_TYPE_COLOR: {
+		    var color:uint = 0;
 
-/*
-                    color += (robotSensors[i].raw[1] * 2.5) << 16;
-                    color += (robotSensors[i].raw[2] * 2.5) << 8;
-                    color += (robotSensors[i].raw[3] * 2.5);
-                    scratchBoardPart.setColorValue(i, color);
-*/
+
+		    robotSensors[i].raw[1] *= (this.arrColorCorrectionBright[i][0] * 2);
+		    robotSensors[i].raw[2] *= (this.arrColorCorrectionBright[i][1] * 2);
+		    robotSensors[i].raw[3] *= (this.arrColorCorrectionBright[i][2] * 2);
 
 
-            if(robotSensors[i].raw[1] > 4
-               && robotSensors[i].raw[1] > robotSensors[i].raw[2]
-               && robotSensors[i].raw[1] > robotSensors[i].raw[3]){
-               scratchBoardPart.setColorValue(i, 0xFF0000);
-            }
-            else if(robotSensors[i].raw[2] > 4
-               && robotSensors[i].raw[2] > robotSensors[i].raw[1]
-               && robotSensors[i].raw[2] > robotSensors[i].raw[3]){
-               scratchBoardPart.setColorValue(i, 0x00FF00);
-            }
-            else if(robotSensors[i].raw[3] > 4
-               && robotSensors[i].raw[3] > robotSensors[i].raw[1]
-               && robotSensors[i].raw[3] > robotSensors[i].raw[2]){
-               scratchBoardPart.setColorValue(i, 0x0000FF);
-            }
-            else{
-               scratchBoardPart.setColorValue(i, 0x000000);
-            }
+		    var iTotalBright:Number = robotSensors[i].raw[1] + robotSensors[i].raw[2] + robotSensors[i].raw[3];
+		    robotSensors[i].raw[1] = robotSensors[i].raw[1] * this.arrColorCorrectionColor[i][0] * 3;
+		    robotSensors[i].raw[2] = robotSensors[i].raw[2] * this.arrColorCorrectionColor[i][1] * 3;
+		    robotSensors[i].raw[3] = robotSensors[i].raw[3] * this.arrColorCorrectionColor[i][2] * 3;
 
+
+
+		    var colorForViewR:int = robotSensors[i].raw[1];
+		    var colorForViewG:int = robotSensors[i].raw[2];
+		    var colorForViewB:int = robotSensors[i].raw[3];
 
 
 /*
-                    switch(robotSensors[i].raw[3]){
-                       case 1:{
-                          color = 0;
-                          break;
-                       }
-                       case 2:{
-                          color = 0xFFFFFF;
-                          break;
-                       }
-                       case 3:{
-                          color = 0xFF0000;
-                          break;
-                       }
-                       case 4:{
-                          color = 0x00FF00;
-                          break;
-                       }
-                       case 5:{
-                          color = 0x0000FF;
-                          break;
-                       }
-                       case 6:{
-                          color = 0xFFFF00;
-                          break;
-                       }
-                       case 7:{
-                          color = 0xFF00FF;
-                          break;
-                       }
-                       case 8:{
-                          color = 0x00FFFF;
-                          break;
-                       }
-                    }
-                    scratchBoardPart.setColorValue(i, color);
+		   if(colorForViewR < 100 && colorForViewG < 100 && colorForViewB < 100){
+		      colorForViewR *= 2.5;
+		      colorForViewG *= 2.5;
+		      colorForViewB *= 2.5;
+		   }
 */
 
-                    break;
-                 }
-              }
-           }
-           else{
-              //No extension pack
-              if(scratchBoardPart.arrSensorCheckboxes[i].state){
-                 robotSensors[i].raw[3] = Math.round(robotSensors[i].raw[3] / 2.55);
-                 scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
-              }
-              else{
-                 scratchBoardPart.disableValue(i);
-              }
-           }
-        }
+		   var correction:Number;
+		   if(colorForViewR >= colorForViewG && colorForViewR >= colorForViewB){
+		     correction = 240/colorForViewR;
+		     colorForViewR = 240;
+		     colorForViewG = correction * colorForViewG;
+		     colorForViewB = correction * colorForViewB;
 
-        robotStartButton = data[28] == 0;
-        scratchBoardPart.setStartButton(robotStartButton);
+		   }
+		   else if(colorForViewG >= colorForViewR && colorForViewG >= colorForViewB){
+		     correction = 240/colorForViewG;
+		     colorForViewG = 240;
+		     colorForViewR = correction * colorForViewR;
+		     colorForViewB = correction * colorForViewB;
+		   }
+		   else if(colorForViewB >= colorForViewR && colorForViewB >= colorForViewG){
+		     correction = 240/colorForViewB;
+		     colorForViewB = 240;
+		     colorForViewR = correction * colorForViewR;
+		     colorForViewG = correction * colorForViewG;
+		   }
+
+
+
+		    color += colorForViewR << 16;
+		    color += colorForViewG << 8;
+		    color += colorForViewB * 1;
+		    //scratchBoardPart.setColorValue(i, color);
+
+		    if(arrayBlockColorSensorCorrector[i] == null){
+		       //No dialog opened yet
+		    }
+		    else{
+		       arrayBlockColorSensorCorrector[i].showColor(color);
+		    }
+
+
+
+
+/*
+		    if(robotSensors[i].raw[1] > 4
+		       && robotSensors[i].raw[1] > robotSensors[i].raw[2]
+		       && robotSensors[i].raw[1] > robotSensors[i].raw[3]){
+		       scratchBoardPart.setColorValue(i, 0xFF0000);
+		    }
+		    else if(robotSensors[i].raw[2] > 4
+		       && robotSensors[i].raw[2] > robotSensors[i].raw[1]
+		       && robotSensors[i].raw[2] > robotSensors[i].raw[3]){
+		       scratchBoardPart.setColorValue(i, 0x00FF00);
+		    }
+		    else if(robotSensors[i].raw[3] > 4
+		       && robotSensors[i].raw[3] > robotSensors[i].raw[1]
+		       && robotSensors[i].raw[3] > robotSensors[i].raw[2]){
+		       scratchBoardPart.setColorValue(i, 0x0000FF);
+		    }
+		    else{
+		       scratchBoardPart.setColorValue(i, 0x000000);
+		    }
+*/
+
+
+
+		    iTotalBright = app.robotSensors[i].raw[1] + app.robotSensors[i].raw[2] + app.robotSensors[i].raw[3];
+		    trace("CORRECTED RGB=" + app.robotSensors[i].raw[1] + "," + app.robotSensors[i].raw[2] + "," + app.robotSensors[i].raw[3] + " " + iTotalBright);
+
+
+
+		    var isColorFound:Boolean = false;
+		    for(var iColor:int = 0; iColor < arrColorNames.length; iColor++){
+
+		       var arrCorrectionArray:Array = app.arrColorRegion[arrColorNames[iColor]];
+
+/*
+		       if(arrColorMaxBright[i] < iTotalBright){
+			  arrColorMaxBright[i] = iTotalBright;
+		       }
+*/
+
+		       if(   app.robotSensors[i].raw[1] >= arrCorrectionArray[0] / 100 * iTotalBright
+			  && app.robotSensors[i].raw[1] <= arrCorrectionArray[1] / 100 * iTotalBright
+			  && app.robotSensors[i].raw[2] >= arrCorrectionArray[2] / 100 * iTotalBright
+			  && app.robotSensors[i].raw[2] <= arrCorrectionArray[3] / 100 * iTotalBright
+			  && app.robotSensors[i].raw[3] >= arrCorrectionArray[4] / 100 * iTotalBright
+			  && app.robotSensors[i].raw[3] <= arrCorrectionArray[5] / 100 * iTotalBright
+			  && iTotalBright >= arrCorrectionArray[6] / 100 * arrColorMaxBright[i]
+			  && iTotalBright <= arrCorrectionArray[7] / 100 * arrColorMaxBright[i]
+			 ){
+
+			  scratchBoardPart.setColorValue(i, arrCorrectionArray[8]);
+			  isColorFound = true;
+			  break;
+		       }
+		    }
+
+		    if(!isColorFound) scratchBoardPart.setTextValue(i, 'x');
+
+
+
+/*
+		    switch(robotSensors[i].raw[3]){
+		       case 1:{
+			  color = 0;
+			  break;
+		       }
+		       case 2:{
+			  color = 0xFFFFFF;
+			  break;
+		       }
+		       case 3:{
+			  color = 0xFF0000;
+			  break;
+		       }
+		       case 4:{
+			  color = 0x00FF00;
+			  break;
+		       }
+		       case 5:{
+			  color = 0x0000FF;
+			  break;
+		       }
+		       case 6:{
+			  color = 0xFFFF00;
+			  break;
+		       }
+		       case 7:{
+			  color = 0xFF00FF;
+			  break;
+		       }
+		       case 8:{
+			  color = 0x00FFFF;
+			  break;
+		       }
+		    }
+		    scratchBoardPart.setColorValue(i, color);
+*/
+
+		    break;
+		 }
+	      }
+	   }
+	   else{
+	      //No extension pack
+	      if(scratchBoardPart.arrSensorCheckboxes[i].state){
+		 robotSensors[i].raw[3] = Math.round(robotSensors[i].raw[3] / 2.55);
+		 scratchBoardPart.setTextValue(i, robotSensors[i].raw[3]);
+	      }
+	      else{
+		 scratchBoardPart.disableValue(i);
+	      }
+	   }
+	}
+
+	robotStartButton = data[28] == 0;
+	scratchBoardPart.setStartButton(robotStartButton);
     }
 
 
 
 
     public function refreshAnalogsLab(data:Array):void {
-        trace("refreshAnalogsLab() " + data.length + " data=" + data);
+	trace("refreshAnalogsLab() " + data.length + " data=" + data);
 
-        if(data.length == 0){
-           for(var f:int = 0; f < ScratchLabPart.TITLES.length; f++){
-              scratchLabPart.disableValue(f);
-           }
+	if(data.length == 0){
+	   for(var f:int = 0; f < ScratchLabPart.TITLES.length; f++){
+	      scratchLabPart.disableValue(f);
+	   }
 
-           return;
-        }
+	   return;
+	}
 
 
 
        if(data[0] & 1){
-          labButtons[0] = true;
-          labDigital[0] = true;
-          setAnalogTextLab(0, Translator.map("true"));
+	  labButtons[0] = true;
+	  labDigital[0] = true;
+	  setAnalogTextLab(0, Translator.map("true"));
        }
        else{
-          labButtons[0] = false;
-          labDigital[0] = false;
-          setAnalogTextLab(0, Translator.map("false"));
+	  labButtons[0] = false;
+	  labDigital[0] = false;
+	  setAnalogTextLab(0, Translator.map("false"));
        }
 
        if(data[0] & 2){
-          labButtons[1] = true;
-          labDigital[1] = true;
-          setAnalogTextLab(1, Translator.map("true"));
+	  labButtons[1] = true;
+	  labDigital[1] = true;
+	  setAnalogTextLab(1, Translator.map("true"));
        }
        else{
-          labButtons[1] = false;
-          labDigital[1] = false;
-          setAnalogTextLab(1, Translator.map("false"));
+	  labButtons[1] = false;
+	  labDigital[1] = false;
+	  setAnalogTextLab(1, Translator.map("false"));
        }
 
        if(data[0] & 4){
-          labButtons[2] = true;
-          labDigital[2] = true;
-          setAnalogTextLab(2, Translator.map("true"));
+	  labButtons[2] = true;
+	  labDigital[2] = true;
+	  setAnalogTextLab(2, Translator.map("true"));
        }
        else{
-          labButtons[2] = false;
-          labDigital[2] = false;
-          setAnalogTextLab(2, Translator.map("false"));
+	  labButtons[2] = false;
+	  labDigital[2] = false;
+	  setAnalogTextLab(2, Translator.map("false"));
        }
 
        if(data[0] & 8){
-          labButtons[3] = true;
-          labDigital[3] = true;
-          setAnalogTextLab(3, Translator.map("true"));
+	  labButtons[3] = true;
+	  labDigital[3] = true;
+	  setAnalogTextLab(3, Translator.map("true"));
        }
        else{
-          labButtons[3] = false;
-          labDigital[3] = false;
-          setAnalogTextLab(3, Translator.map("false"));
+	  labButtons[3] = false;
+	  labDigital[3] = false;
+	  setAnalogTextLab(3, Translator.map("false"));
        }
 
        if(data[0] & 16){
-          labButtons[4] = true;
-          labDigital[4] = true;
-          setAnalogTextLab(4, Translator.map("true"));
+	  labButtons[4] = true;
+	  labDigital[4] = true;
+	  setAnalogTextLab(4, Translator.map("true"));
        }
        else{
-          labButtons[4] = false;
-          labDigital[4] = false;
-          setAnalogTextLab(4, Translator.map("false"));
+	  labButtons[4] = false;
+	  labDigital[4] = false;
+	  setAnalogTextLab(4, Translator.map("false"));
        }
 
        //External Sensor Digital
        if(data[0] & 32){
-          labDigital[5] = true;
-          setAnalogTextLab(10, Translator.map("true"));
+	  labDigital[5] = true;
+	  setAnalogTextLab(10, Translator.map("true"));
        }
        else{
-          labDigital[5] = false;
-          setAnalogTextLab(10, Translator.map("false"));
+	  labDigital[5] = false;
+	  setAnalogTextLab(10, Translator.map("false"));
        }
 
 
-       //0 0                PINs
-       //1 1-2              A0
-       //2 3-4              A1
-       //3 5-6              A2
-       //4 7-8              A3
-       //5 9-10             A4
-       //6 11-12            A5
-       //7 13-14            A6
-       //8 15-16            A7
+       //0 0		    PINs
+       //1 1-2		    A0
+       //2 3-4		    A1
+       //3 5-6		    A2
+       //4 7-8		    A3
+       //5 9-10 	    A4
+       //6 11-12     A5
+       //7 13-14	    A6
+       //8 15-16	    A7
 
 
 
        if(labVersion == 4){
-          labLight  = int(((data[9]*256 + data[10]) / 1023) * 100);
+	  labLight  = int(((data[9]*256 + data[10]) / 1023) * 100);
        }
        else{
-          //Both v1 & v3
-//          labLight  = int(((data[9]*256 + data[10]) / 1023) * 100);
-//          labLight  = 1.34 * labLight;
+	  //Both v1 & v3
+//	    labLight  = int(((data[9]*256 + data[10]) / 1023) * 100);
+//	    labLight  = 1.34 * labLight;
 //What's for?
-          labLight  = 1.34 * data[10];
+	  labLight  = 1.34 * data[10];
        }
        if(labLight > 100){
-          labLight = 100;
+	  labLight = 100;
        }
 
 
@@ -739,16 +869,16 @@ public class Scratch extends Sprite {
        trace("LAB VERSION=" + app.labVersion);
 
        if(labVersion == 1){
-          labSlider = 1.34 * Math.abs(75 - int(((data[5]*256 + data[6]) / 1023) * 100));
+	  labSlider = 1.34 * Math.abs(75 - int(((data[5]*256 + data[6]) / 1023) * 100));
        }
        else if(labVersion == 2){
-          labSlider = Math.abs(100 - int(((data[15]*256 + data[16]) / 1023) * 100));
+	  labSlider = Math.abs(100 - int(((data[15]*256 + data[16]) / 1023) * 100));
        }
        else if(labVersion == 4){
-          labSlider = Math.abs(100 - int(((data[5]*256 + data[6]) / 1023) * 100));
+	  labSlider = Math.abs(100 - int(((data[5]*256 + data[6]) / 1023) * 100));
        }
        if(labSlider > 100){
-          labSlider = 100;
+	  labSlider = 100;
        }
 
 
@@ -759,42 +889,42 @@ public class Scratch extends Sprite {
 
 
        switch(labSensors[0].type){
-          case LAB_SENSOR_TYPE_NONE:{
-             labAnalogTypedBased[0] = 0;
-             scratchLabPart.disableValue(8);
-             break;
-          }
-          case LAB_SENSOR_TYPE_TEMPERATURE:{
-             //External Sensor 0
-             labAnalogTypedBased[0] = Math.round((data[1] * 256 + data[2]) * 0.244379276637341153);
-             setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
-             break;
-          }
-          case LAB_SENSOR_TYPE_CROCODILE:{
-             //External Sensor 0
-             labAnalogTypedBased[0] = int(((data[1]*256 + data[2]) / 1023) * 100);
-             setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
-             break;
-          }
+	  case LAB_SENSOR_TYPE_NONE:{
+	     labAnalogTypedBased[0] = 0;
+	     scratchLabPart.disableValue(8);
+	     break;
+	  }
+	  case LAB_SENSOR_TYPE_TEMPERATURE:{
+	     //External Sensor 0
+	     labAnalogTypedBased[0] = Math.round((data[1] * 256 + data[2]) * 0.244379276637341153);
+	     setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
+	     break;
+	  }
+	  case LAB_SENSOR_TYPE_CROCODILE:{
+	     //External Sensor 0
+	     labAnalogTypedBased[0] = int(((data[1]*256 + data[2]) / 1023) * 100);
+	     setAnalogTextLab(8, "" + labAnalogTypedBased[0]);
+	     break;
+	  }
        }
        switch(labSensors[1].type){
-          case LAB_SENSOR_TYPE_NONE:{
-             labAnalogTypedBased[1] = 0;
-             scratchLabPart.disableValue(9);
-             break;
-          }
-          case LAB_SENSOR_TYPE_TEMPERATURE:{
-             //External Sensor 0
-             labAnalogTypedBased[1] = Math.round((data[3] * 256 + data[4]) * 0.244379276637341153);
-             setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
-             break;
-          }
-          case LAB_SENSOR_TYPE_CROCODILE:{
-             //External Sensor 0
-             labAnalogTypedBased[1] = int(((data[3]*256 + data[4]) / 1023) * 100);
-             setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
-             break;
-          }
+	  case LAB_SENSOR_TYPE_NONE:{
+	     labAnalogTypedBased[1] = 0;
+	     scratchLabPart.disableValue(9);
+	     break;
+	  }
+	  case LAB_SENSOR_TYPE_TEMPERATURE:{
+	     //External Sensor 0
+	     labAnalogTypedBased[1] = Math.round((data[3] * 256 + data[4]) * 0.244379276637341153);
+	     setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
+	     break;
+	  }
+	  case LAB_SENSOR_TYPE_CROCODILE:{
+	     //External Sensor 0
+	     labAnalogTypedBased[1] = int(((data[3]*256 + data[4]) / 1023) * 100);
+	     setAnalogTextLab(9, "" + labAnalogTypedBased[1]);
+	     break;
+	  }
        }
 
 
@@ -802,10 +932,10 @@ public class Scratch extends Sprite {
 
 
        if(app.labVersion == 1){
-          labAnalogRaw[0] = 0;
+	  labAnalogRaw[0] = 0;
        }
        else{
-          labAnalogRaw[0] = data[1]*256 + data[2];
+	  labAnalogRaw[0] = data[1]*256 + data[2];
        }
        labAnalogRaw[1] = data[3]*256 + data[4];
        labAnalogRaw[2] = data[5]*256 + data[6];
@@ -817,28 +947,28 @@ public class Scratch extends Sprite {
 
 
        if(labVersion == 1){
-          scratchLabPart.setA0(false);
+	  scratchLabPart.setA0(false);
        }
        else{
-          scratchLabPart.setA0(true);
+	  scratchLabPart.setA0(true);
        }
     }
 
 
 
 //    TARGET::android {
-//        private function onResume(event:Event):void {
-//            robotCommunicator.setActive(true);
-//        }
+//	  private function onResume(event:Event):void {
+//	      robotCommunicator.setActive(true);
+//	  }
 //
-//        private function onPause(event:Event):void {
-//            robotCommunicator.setActive(false);
-//            runtime.resetAnalogsRobot();
-//            var projectFileName:String = projectName();
-//            if (projectFileName.length == 0 || projectFileName == ' ')
-//                return;
-//            saveCurrentProject();
-//        }
+//	  private function onPause(event:Event):void {
+//	      robotCommunicator.setActive(false);
+//	      runtime.resetAnalogsRobot();
+//	      var projectFileName:String = projectName();
+//	      if (projectFileName.length == 0 || projectFileName == ' ')
+//		  return;
+//	      saveCurrentProject();
+//	  }
 //    }
 
 
@@ -851,37 +981,37 @@ public class Scratch extends Sprite {
    public function robotMoveFinished():Boolean{
       if(robotEncoderActivated){
 
-         if(robotMotorLeft.steps >= stepLimit || robotMotorRight.steps >= stepLimit){
-            robotEncoderActivated = false;
+	 if(robotMotorLeft.steps >= stepLimit || robotMotorRight.steps >= stepLimit){
+	    robotEncoderActivated = false;
 
-            robotCommunicator.setMotionTerminated();
+	    robotCommunicator.setMotionTerminated();
 
-            trace("FINISHED LIMIT:" + stepLimit + " L:" + robotMotorLeft.steps + " R:" + robotMotorRight.steps);
-            return true;
-         }
+	    trace("FINISHED LIMIT:" + stepLimit + " L:" + robotMotorLeft.steps + " R:" + robotMotorRight.steps);
+	    return true;
+	 }
 
-         if(robotMotorLeft.steps > robotMotorLeft._steps || robotMotorRight.steps > robotMotorRight._steps){
-            app.lastTimeMoved = getTimer();
+	 if(robotMotorLeft.steps > robotMotorLeft._steps || robotMotorRight.steps > robotMotorRight._steps){
+	    app.lastTimeMoved = getTimer();
 
-            robotMotorLeft._steps  = robotMotorLeft.steps;
-            robotMotorRight._steps = robotMotorRight.steps;
+	    robotMotorLeft._steps  = robotMotorLeft.steps;
+	    robotMotorRight._steps = robotMotorRight.steps;
 
-            return false;
-         }
+	    return false;
+	 }
 
-         if(getTimer() - app.lastTimeMoved > 300){
-            robotEncoderActivated = false;
+	 if(getTimer() - app.lastTimeMoved > 300){
+	    robotEncoderActivated = false;
 
-            robotCommunicator.setMotionTerminated();
-            robotCommunicator.motorOff();
-            trace("FINISHED TIMER");
-            return true;
-         }
+	    robotCommunicator.setMotionTerminated();
+	    robotCommunicator.motorOff();
+	    trace("FINISHED TIMER");
+	    return true;
+	 }
 
-         return false;
+	 return false;
       }
       else{
-         return true;
+	 return true;
       }
    }
 
@@ -951,13 +1081,13 @@ public class Scratch extends Sprite {
    {
       if (event.error is Error)
       {
-         var error:Error = event.error as Error;
-         logException(error);
+	 var error:Error = event.error as Error;
+	 logException(error);
       }
       else if (event.error is ErrorEvent)
       {
-         var errorEvent:ErrorEvent = event.error as ErrorEvent;
-         logMessage(errorEvent.toString());
+	 var errorEvent:ErrorEvent = event.error as ErrorEvent;
+	 logMessage(errorEvent.toString());
       }
    }
 
@@ -971,17 +1101,17 @@ public class Scratch extends Sprite {
 
    protected function checkFlashVersion():void {
       {
-         if (Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
-            var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ') + 1);
-            var versionParts:Array = versionString.split(',');
-            var majorVersion:int = parseInt(versionParts[0]);
-            var minorVersion:int = parseInt(versionParts[1]);
-            if ((majorVersion > 11 || (majorVersion == 11 && minorVersion >= 7)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
-               render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
-               render3D.setStatusCallback(handleRenderCallback);
-               return;
-            }
-         }
+	 if (Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
+	    var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ') + 1);
+	    var versionParts:Array = versionString.split(',');
+	    var majorVersion:int = parseInt(versionParts[0]);
+	    var minorVersion:int = parseInt(versionParts[1]);
+	    if ((majorVersion > 11 || (majorVersion == 11 && minorVersion >= 7)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
+	       render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
+	       render3D.setStatusCallback(handleRenderCallback);
+	       return;
+	    }
+	 }
       }
 
       render3D = null;
@@ -989,35 +1119,35 @@ public class Scratch extends Sprite {
 
    protected function handleRenderCallback(enabled:Boolean):void {
       if(!enabled) {
-         go2D();
-         render3D = null;
+	 go2D();
+	 render3D = null;
       }
       else {
-         for(var i:int=0; i<stagePane.numChildren; ++i) {
-            var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
-            if(spr) {
-               spr.clearCachedBitmap();
-               spr.updateCostume();
-               spr.applyFilters();
-            }
-         }
-         stagePane.clearCachedBitmap();
-         stagePane.updateCostume();
-         stagePane.applyFilters();
+	 for(var i:int=0; i<stagePane.numChildren; ++i) {
+	    var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
+	    if(spr) {
+	       spr.clearCachedBitmap();
+	       spr.updateCostume();
+	       spr.applyFilters();
+	    }
+	 }
+	 stagePane.clearCachedBitmap();
+	 stagePane.updateCostume();
+	 stagePane.applyFilters();
       }
    }
 
    public function clearCachedBitmaps():void {
       for(var i:int=0; i<stagePane.numChildren; ++i) {
-         var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
-         if(spr) spr.clearCachedBitmap();
+	 var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
+	 if(spr) spr.clearCachedBitmap();
       }
       stagePane.clearCachedBitmap();
 
       // unsupported technique that seems to force garbage collection
       try {
-         new LocalConnection().connect('foo');
-         new LocalConnection().connect('foo');
+	 new LocalConnection().connect('foo');
+	 new LocalConnection().connect('foo');
       } catch (e:Error) {}
    }
 
@@ -1040,12 +1170,12 @@ public class Scratch extends Sprite {
       stagePart.addChildAt(stagePane, i);
       isIn3D = false;
       for(i=0; i<stagePane.numChildren; ++i) {
-         var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
-         if(spr) {
-            spr.clearCachedBitmap();
-            spr.updateCostume();
-            spr.applyFilters();
-         }
+	 var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
+	 if(spr) {
+	    spr.clearCachedBitmap();
+	    spr.updateCostume();
+	    spr.applyFilters();
+	 }
       }
       stagePane.clearCachedBitmap();
       stagePane.updateCostume();
@@ -1065,19 +1195,19 @@ public class Scratch extends Sprite {
       var g:Graphics = debugRect.graphics;
       g.clear();
       if (r) {
-         g.lineStyle(2, 0xFFFF00);
-         g.drawRect(p.x + r.x, p.y + r.y, r.width, r.height);
-         addChild(debugRect);
+	 g.lineStyle(2, 0xFFFF00);
+	 g.drawRect(p.x + r.x, p.y + r.y, r.width, r.height);
+	 addChild(debugRect);
       }
    }
 
    public function strings():Array {
       return [
-         'a copy of the project file on your computer.',
-         'Project not saved!', 'Save now', 'Not saved; project did not load.',
-         'Save now', 'Saved',
-         'Revert', 'Undo Revert', 'Reverting...',
-         'Throw away all changes since opening this project?',
+	 'a copy of the project file on your computer.',
+	 'Project not saved!', 'Save now', 'Not saved; project did not load.',
+	 'Save now', 'Saved',
+	 'Revert', 'Undo Revert', 'Reverting...',
+	 'Throw away all changes since opening this project?',
       ];
    }
 
@@ -1118,19 +1248,19 @@ public class Scratch extends Sprite {
    protected var wasEditing:Boolean;
    public function setPresentationMode(enterPresentation:Boolean):void {
       if (enterPresentation) {
-         wasEditing = editMode;
-         if (wasEditing) {
-            setEditMode(false);
-            if(jsEnabled) externalCall('tip_bar_api.hide');
-         }
+	 wasEditing = editMode;
+	 if (wasEditing) {
+	    setEditMode(false);
+	    if(jsEnabled) externalCall('tip_bar_api.hide');
+	 }
       } else {
-         if (wasEditing) {
-            setEditMode(true);
-            if(jsEnabled) externalCall('tip_bar_api.show');
-         }
+	 if (wasEditing) {
+	    setEditMode(true);
+	    if(jsEnabled) externalCall('tip_bar_api.show');
+	 }
       }
       if (isOffline) {
-         stage.displayState = enterPresentation ? StageDisplayState.FULL_SCREEN_INTERACTIVE : StageDisplayState.NORMAL;
+	 stage.displayState = enterPresentation ? StageDisplayState.FULL_SCREEN_INTERACTIVE : StageDisplayState.NORMAL;
       }
       for each (var o:ScratchObj in stagePane.allObjects()) o.applyFilters();
 
@@ -1142,20 +1272,20 @@ public class Scratch extends Sprite {
    private function keyDown(evt:KeyboardEvent):void {
       // Escape exists presentation mode.
       if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
-         setPresentationMode(false);
-         stagePart.exitPresentationMode();
+	 setPresentationMode(false);
+	 stagePart.exitPresentationMode();
       }
       // Handle enter key
 //    else if(evt.keyCode == 13 && !stage.focus) {
-//       stagePart.playButtonPressed(null);
-//       evt.preventDefault();
-//       evt.stopImmediatePropagation();
+//	 stagePart.playButtonPressed(null);
+//	 evt.preventDefault();
+//	 evt.stopImmediatePropagation();
 //    }
       // Handle ctrl-m and toggle 2d/3d mode
       else if(evt.ctrlKey && evt.charCode == 109) {
-         { isIn3D ? go2D() : go3D(); }
-         evt.preventDefault();
-         evt.stopImmediatePropagation();
+	 { isIn3D ? go2D() : go3D(); }
+	 evt.preventDefault();
+	 evt.stopImmediatePropagation();
       }
    }
 
@@ -1177,7 +1307,7 @@ public class Scratch extends Sprite {
 
       // translate the blocks of the newly loaded project
       for each (var o:ScratchObj in stagePane.allObjects()) {
-         o.updateScriptsAfterTranslation();
+	 o.updateScriptsAfterTranslation();
       }
    }
 
@@ -1202,16 +1332,16 @@ public class Scratch extends Sprite {
       libraryPart.refresh();
       tabsPart.refresh();
       if (isShowing(imagesPart)) {
-         imagesPart.refresh();
+	 imagesPart.refresh();
       }
       if (isShowing(soundsPart)) {
-         soundsPart.currentIndex = 0;
-         soundsPart.refresh();
+	 soundsPart.currentIndex = 0;
+	 soundsPart.refresh();
       }
       if (isShowing(scriptsPart)) {
-         scriptsPart.updatePalette();
-         scriptsPane.viewScriptsFor(obj);
-         scriptsPart.updateSpriteWatermark();
+	 scriptsPart.updatePalette();
+	 scriptsPane.viewScriptsFor(obj);
+	 scriptsPart.updateSpriteWatermark();
       }
    }
 
@@ -1223,17 +1353,17 @@ public class Scratch extends Sprite {
       hide(soundsPart);
       if (!editMode) return;
       if (tabName == 'images') {
-         show(imagesPart);
-         imagesPart.refresh();
+	 show(imagesPart);
+	 imagesPart.refresh();
       } else if (tabName == 'sounds') {
-         soundsPart.refresh();
-         show(soundsPart);
+	 soundsPart.refresh();
+	 show(soundsPart);
       } else if (tabName && (tabName.length > 0)) {
-         tabName = 'scripts';
-         scriptsPart.updatePalette();
-         scriptsPane.viewScriptsFor(viewedObject);
-         scriptsPart.updateSpriteWatermark();
-         show(scriptsPart);
+	 tabName = 'scripts';
+	 scriptsPart.updatePalette();
+	 scriptsPane.viewScriptsFor(viewedObject);
+	 scriptsPart.updateSpriteWatermark();
+	 show(scriptsPart);
       }
       show(tabsPart);
       show(stagePart); // put stage in front
@@ -1294,25 +1424,25 @@ public class Scratch extends Sprite {
       Menu.removeMenusFrom(stage);
       editMode = newMode;
       if (editMode) {
-         interp.showAllRunFeedback();
-         hide(playerBG);
-         show(topBarPart);
-         show(scratchBoardPart);
-         show(scratchLabPart);
-         show(libraryPart);
-         show(tabsPart);
-         setTab(lastTab);
-         stagePart.hidePlayButton();
-         runtime.edgeTriggersEnabled = true;
+	 interp.showAllRunFeedback();
+	 hide(playerBG);
+	 show(topBarPart);
+	 show(scratchBoardPart);
+	 show(scratchLabPart);
+	 show(libraryPart);
+	 show(tabsPart);
+	 setTab(lastTab);
+	 stagePart.hidePlayButton();
+	 runtime.edgeTriggersEnabled = true;
       } else {
-         addChildAt(playerBG, 0); // behind everything
-         playerBG.visible = false;
-         hide(topBarPart);
-         hide(libraryPart);
-         hide(tabsPart);
-         hide(scratchBoardPart);
-         hide(scratchLabPart);
-         setTab(null); // hides scripts, images, and sounds
+	 addChildAt(playerBG, 0); // behind everything
+	 playerBG.visible = false;
+	 hide(topBarPart);
+	 hide(libraryPart);
+	 hide(tabsPart);
+	 hide(scratchBoardPart);
+	 hide(scratchLabPart);
+	 setTab(null); // hides scripts, images, and sounds
       }
       stagePane.updateListWatchers();
       show(stagePart); // put stage in front
@@ -1330,21 +1460,21 @@ public class Scratch extends Sprite {
 
    public function fixLayout():void {
       TARGET::desktop {
-         var w:int = stage.stageWidth;
-         var h:int = stage.stageHeight - 1; // fix to show bottom border...
-         w = Math.ceil(w / scaleX);
-         h = Math.ceil(h / scaleY);
+	 var w:int = stage.stageWidth;
+	 var h:int = stage.stageHeight - 1; // fix to show bottom border...
+	 w = Math.ceil(w / scaleX);
+	 h = Math.ceil(h / scaleY);
       }
       TARGET::android {
-         var w:int = 1280;
-         var h:int = 680;
-         if (stage.stageWidth < 1280) {
-            w = 1024;
-            h = 580;
-            ScratchObj.STAGEH = 360 * 3 / 4;
-         }
-         scaleX = 1.0 * stage.stageWidth / w;
-         scaleY = 1.0 * stage.stageHeight / h;
+	 var w:int = 1280;
+	 var h:int = 680;
+	 if (stage.stageWidth < 1280) {
+	    w = 1024;
+	    h = 580;
+	    ScratchObj.STAGEH = 360 * 3 / 4;
+	 }
+	 scaleX = 1.0 * stage.stageWidth / w;
+	 scaleY = 1.0 * stage.stageHeight / h;
       }
       updateLayout(w, h);
    }
@@ -1362,30 +1492,30 @@ public class Scratch extends Sprite {
       var extraW:int = 2;
       var extraH:int = stagePart.computeTopBarHeight() + 1;
       if (editMode) {
-         // adjust for global scale (from browser zoom)
+	 // adjust for global scale (from browser zoom)
 
-         if (stageIsContracted) {
-            stagePart.setWidthHeight(SMALL_STAGE_W + extraW, SMALL_STAGE_H /*nikita value 135*/ + extraH, 0.5);
-         } else {
-            stagePart.setWidthHeight(BIG_STAGE_W + extraW, BIG_STAGE_H/*nikita value 270*/ + extraH, 1);
-         }
-         stagePart.x = 5;
-         stagePart.y = topBarPart.bottom() + 5;
-         fixLoadProgressLayout();
+	 if (stageIsContracted) {
+	    stagePart.setWidthHeight(SMALL_STAGE_W + extraW, SMALL_STAGE_H /*nikita value 135*/ + extraH, 0.5);
+	 } else {
+	    stagePart.setWidthHeight(BIG_STAGE_W + extraW, BIG_STAGE_H/*nikita value 270*/ + extraH, 1);
+	 }
+	 stagePart.x = 5;
+	 stagePart.y = topBarPart.bottom() + 5;
+	 fixLoadProgressLayout();
       } else {
-         drawBG();
-         var pad:int = (w > 550) ? 16 : 0; // add padding for full-screen mode
-         var scale:Number = Math.min((w - extraW - pad) / 480, (h - extraH - pad) / 360);
-         scale = Math.max(0.01, scale);
-         var scaledW:int = Math.floor((scale * 480) / 4) * 4; // round down to a multiple of 4
-         scale = scaledW / 480;
-         var playerW:Number = (scale * 480) + extraW;
-         var playerH:Number = (scale * 360) + extraH;
-         stagePart.setWidthHeight(playerW, playerH, scale);
-         stagePart.x = int((w - playerW) / 2);
-         stagePart.y = int((h - playerH) / 2);
-         fixLoadProgressLayout();
-         return;
+	 drawBG();
+	 var pad:int = (w > 550) ? 16 : 0; // add padding for full-screen mode
+	 var scale:Number = Math.min((w - extraW - pad) / 480, (h - extraH - pad) / 360);
+	 scale = Math.max(0.01, scale);
+	 var scaledW:int = Math.floor((scale * 480) / 4) * 4; // round down to a multiple of 4
+	 scale = scaledW / 480;
+	 var playerW:Number = (scale * 480) + extraW;
+	 var playerH:Number = (scale * 360) + extraH;
+	 stagePart.setWidthHeight(playerW, playerH, scale);
+	 stagePart.x = int((w - playerW) / 2);
+	 stagePart.y = int((h - playerH) / 2);
+	 fixLoadProgressLayout();
+	 return;
       }
 
       var restHeight:Number = h - stagePart.bottom();
@@ -1399,9 +1529,9 @@ public class Scratch extends Sprite {
 
 //AZ What's for?
       TARGET::desktop {
-         if (scratchBoardPartHeight < 125) {
-            scratchBoardPartHeight = 125;
-         }
+	 if (scratchBoardPartHeight < 125) {
+	    scratchBoardPartHeight = 125;
+	 }
       }
 
       scratchBoardPart.x = stagePart.x;
@@ -1415,12 +1545,12 @@ public class Scratch extends Sprite {
 
 
       if(this.areExternalSensorsEnabled){
-         scratchBoardPart.setWidthHeight(123, 220);
-         scratchLabPart.setWidthHeight(115, 220);
+	 scratchBoardPart.setWidthHeight(123, 220);
+	 scratchLabPart.setWidthHeight(115, 220);
       }
       else{
-         scratchBoardPart.setWidthHeight(123, 166);
-         scratchLabPart.setWidthHeight(115, 166);
+	 scratchBoardPart.setWidthHeight(123, 166);
+	 scratchLabPart.setWidthHeight(115, 166);
       }
       libraryPart.y = scratchLabPart.bottom() + 5;
 
@@ -1452,8 +1582,8 @@ public class Scratch extends Sprite {
 
       if (mediaLibrary) mediaLibrary.setWidthHeight(topBarPart.w, fullH);
       if (frameRateGraph) {
-         frameRateGraph.y = stage.stageHeight - frameRateGraphH;
-         addChild(frameRateGraph); // put in front
+	 frameRateGraph.y = stage.stageHeight - frameRateGraphH;
+	 addChild(frameRateGraph); // put in front
       }
        { if (isIn3D) render3D.onStageResize(); }
    }
@@ -1473,12 +1603,12 @@ public class Scratch extends Sprite {
       // The translation has changed. Fix scripts and update the UI.
       // directionChanged is true if the writing direction (e.g. left-to-right) has changed.
       for each (var o:ScratchObj in stagePane.allObjects()) {
-         o.updateScriptsAfterTranslation();
+	 o.updateScriptsAfterTranslation();
       }
       var uiLayer:Sprite = app.stagePane.getUILayer();
       for (var i:int = 0; i < uiLayer.numChildren; ++i) {
-         var lw:ListWatcher = uiLayer.getChildAt(i) as ListWatcher;
-         if (lw) lw.updateTranslation();
+	 var lw:ListWatcher = uiLayer.getChildAt(i) as ListWatcher;
+	 if (lw) lw.updateTranslation();
       }
       topBarPart.updateTranslation();
       stagePart.updateTranslation();
@@ -1509,43 +1639,43 @@ public class Scratch extends Sprite {
 
       m.addItem('Open', runtime.selectProjectFile);
 
-        TARGET::android {
-            m.addItem('Save', saveCurrentProject);
-        }
-        TARGET::desktop {
-            m.addItem('Save', exportProjectToFile);
-        }
+	TARGET::android {
+	    m.addItem('Save', saveCurrentProject);
+	}
+	TARGET::desktop {
+	    m.addItem('Save', exportProjectToFile);
+	}
 
 
       m.addItem('Save as', exportProjectToFileAs);
       if (canUndoRevert()) {
-         m.addLine();
-         m.addItem('Undo Revert', undoRevert);
+	 m.addLine();
+	 m.addItem('Undo Revert', undoRevert);
       } else if (canRevert()) {
-         m.addLine();
-         m.addItem('Revert', revertToOriginalProject);
+	 m.addLine();
+	 m.addItem('Revert', revertToOriginalProject);
       }
 
 
 
       if (b.lastEvent.shiftKey) {
-         m.addLine();
-         m.addItem('Save Project Summary', saveSummary);
+	 m.addLine();
+	 m.addItem('Save Project Summary', saveSummary);
       }
       if (b.lastEvent.shiftKey && jsEnabled) {
-         m.addLine();
-         m.addItem('Import experimental extension', function():void {
-            function loadJSExtension(dialog:DialogBox):void {
-               var url:String = dialog.getField('URL').replace(/^\s+|\s+$/g, '');
-               if (url.length == 0) return;
-               externalCall('ScratchExtensions.loadExternalJS', null, url);
-            }
-            var d:DialogBox = new DialogBox(loadJSExtension);
-            d.addTitle('Load Javascript Scratch Extension');
-            d.addField('URL', 120);
-            d.addAcceptCancelButtons('Load');
-            d.showOnStage(app.stage);
-         });
+	 m.addLine();
+	 m.addItem('Import experimental extension', function():void {
+	    function loadJSExtension(dialog:DialogBox):void {
+	       var url:String = dialog.getField('URL').replace(/^\s+|\s+$/g, '');
+	       if (url.length == 0) return;
+	       externalCall('ScratchExtensions.loadExternalJS', null, url);
+	    }
+	    var d:DialogBox = new DialogBox(loadJSExtension);
+	    d.addTitle('Load Javascript Scratch Extension');
+	    d.addField('URL', 120);
+	    d.addAcceptCancelButtons('Load');
+	    d.showOnStage(app.stage);
+	 });
       }
    }
 
@@ -1577,8 +1707,8 @@ public class Scratch extends Sprite {
    }
 
     public function donate(b:*):void {//TODO write
-        var urlReq:URLRequest = new URLRequest(DONATE_URL);
-        navigateToURL(urlReq);
+	var urlReq:URLRequest = new URLRequest(DONATE_URL);
+	navigateToURL(urlReq);
     }
 
    protected function reportBug():void {
@@ -1593,141 +1723,160 @@ public class Scratch extends Sprite {
       m.addItem('External Sensors', switchExternalSensors, true, areExternalSensorsEnabled);
       m.addItem('Font Size', Translator.fontSizeMenu);
       m.addLine();
-      m.addItem('Color Sensor Correction', dialogColorSensorCorrection);
+
+
+
+      for(var i:int = 0; i < 5; i++){
+	 m.addItem('Color Sensor Correction ' + (i + 1), showCorrectionDialog(i));
+      }
+
       m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+   }
+
+
+   private function showCorrectionDialog(iSlot:int):Function{
+      return function():void{
+	 var d:DialogBox = new DialogBox();
+	 d.addTitle('Color Sensor Correction ' + (iSlot + 1));
+
+	 arrayBlockColorSensorCorrector[iSlot] = new BlockColorSensorCorrector(app, iSlot);
+	 d.addWidget(arrayBlockColorSensorCorrector[iSlot]);
+	 d.addButton('Close', d.cancel);
+	 d.showOnStage(stage, true);
+      };
    }
 
 
 
 
     TARGET::android {
-        public function showDevicesMenu(b:*):void {//for Android only
-            var m:Menu = new Menu(null, 'Devices', CSS.topBarColor, 28);
+	public function showDevicesMenu(b:*):void {//for Android only
+	    var m:Menu = new Menu(null, 'Devices', CSS.topBarColor, 28);
 
-            m.addItem('Reconnect', searchDevices);
+	    m.addItem('Reconnect', searchDevices);
 
 
-//            if (robotCommunicator != null)
-//                m.addItem('Disconnect', disconnectFromDevice);
-//            else
-//                m.addItem('Search devices', searchDevices);
+//	      if (robotCommunicator != null)
+//		  m.addItem('Disconnect', disconnectFromDevice);
+//	      else
+//		  m.addItem('Search devices', searchDevices);
 
-            m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
-        }
+	    m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+	}
 
-        protected function searchDevices():void {//for Android only
-            RobotANE.locateDevices();
+	protected function searchDevices():void {//for Android only
+	    RobotANE.locateDevices();
 
-//            function showProgressDialog():void {
-//                var p:NativeProgressDialog = new NativeProgressDialog();
-//                p.addEventListener(NativeDialogEvent.CLOSED, onCloseDialog);
-//                p.setIndeterminate(true);
-//                p.title = Translator.map("Searching for devices");//TRANSLATE
-//                p.message = Translator.map("Please wait");//TRANSLATE
-//                p.showSpinner();
-//                progressPopup = p;
-//            }
+//	      function showProgressDialog():void {
+//		  var p:NativeProgressDialog = new NativeProgressDialog();
+//		  p.addEventListener(NativeDialogEvent.CLOSED, onCloseDialog);
+//		  p.setIndeterminate(true);
+//		  p.title = Translator.map("Searching for devices");//TRANSLATE
+//		  p.message = Translator.map("Please wait");//TRANSLATE
+//		  p.showSpinner();
+//		  progressPopup = p;
+//	      }
 //
-//            function onCloseDialog(event:NativeDialogEvent):void {
-//                var m:iNativeDialog = iNativeDialog(event.target);
-//                m.removeEventListener(NativeDialogEvent.CLOSED, onCloseDialog);
-//                m.dispose();
-//            }
+//	      function onCloseDialog(event:NativeDialogEvent):void {
+//		  var m:iNativeDialog = iNativeDialog(event.target);
+//		  m.removeEventListener(NativeDialogEvent.CLOSED, onCloseDialog);
+//		  m.dispose();
+//	      }
 //
-//            var progressPopup:NativeProgressDialog;
+//	      var progressPopup:NativeProgressDialog;
 //
-//            var alreadyShown:Boolean = false;
+//	      var alreadyShown:Boolean = false;
 //
-//            var error:int = connector.scanForVisibleDevices(
-//                    function ():void {
-//                        showProgressDialog();
-//                    },
+//	      var error:int = connector.scanForVisibleDevices(
+//		      function ():void {
+//			  showProgressDialog();
+//		      },
 //
-//                    function (devices:Vector.<IDevice>):void {
-//                        //trace("devices = " + devices);
-//                        var scratchNames:Vector.<Object> = new Vector.<Object>();
-//                        var scratchDevices:Vector.<IDevice> = new Vector.<IDevice>();
-//
-//
-//
-//                        for each (var t:IDevice in devices) {
-////                            if (t.getName().substr(0, "Scratchduino".length) == "Scratchduino") {
-////                                scratchDevices.push(t);
-////                                scratchNames.push(t.getName());
-////                            }
-//
-//                            scratchDevices.push(t);
-//                            scratchNames.push(t.getName());
-//                        }
+//		      function (devices:Vector.<IDevice>):void {
+//			  //trace("devices = " + devices);
+//			  var scratchNames:Vector.<Object> = new Vector.<Object>();
+//			  var scratchDevices:Vector.<IDevice> = new Vector.<IDevice>();
 //
 //
-//                        if (scratchDevices.length != 0) {
-//                            var bluetoothDialog:NativeListDialog = new NativeListDialog();
-//                            bluetoothDialog.setTitle(Translator.map("Scratchduino devices"));
-//                            bluetoothDialog.dataProvider = scratchNames;
-//                            bluetoothDialog.buttons = Vector.<String>([Translator.map("OK"), Translator.map("Cancel")]);
-//                            bluetoothDialog.selectedIndex = 0;
 //
-//                            bluetoothDialog.addEventListener(NativeDialogEvent.CLOSED, function (ev:Event):void {
-//                                var n:NativeListDialog = NativeListDialog(ev.target);
-//                                n.dispose();
-//                                var device:IDevice = scratchDevices[bluetoothDialog.selectedIndex];
-//                                device.addDeviceConnectedListener(function (bev:BluetoothDeviceEvent):void {
-//                                    trace("connected to ", device.getName());
-//                                    robotCommunicator = new AndroidRobotCommunicator(device, refreshAnalogsRobot, refreshAnalogsLab);
-//                                    Toast.show(Translator.map("Connected to ") + device.getName(), Toast.LENGTH_SHORT);
-//                                    tabsPart.refresh();
-//                                });
+//			  for each (var t:IDevice in devices) {
+////				if (t.getName().substr(0, "Scratchduino".length) == "Scratchduino") {
+////				    scratchDevices.push(t);
+////				    scratchNames.push(t.getName());
+////				}
 //
-//                                device.addDeviceConnectErrorListener(function (bev:BluetoothDeviceEvent):void {
-//                                    disconnect();
-//                                });
+//			      scratchDevices.push(t);
+//			      scratchNames.push(t.getName());
+//			  }
 //
-//                                device.addDeviceDisconnectedListener(function (bev:BluetoothDeviceEvent):void {
-//                                    if (device == null)
-//                                        return;
-//                                    var name:String = device.getName();
-//                                    disconnect();
-//                                    if (alreadyShown)
-//                                        return;
-//                                    alreadyShown = true;
-//                                    NativeAlertDialog.showAlert(Translator.map("Lost connection to ") + name + ". " +
-//                                            Translator.map("Make sure that Bluetooth is enabled on robot and search for devices again"),
-//                                            Translator.map("Connection lost")).
-//                                            addEventListener(NativeDialogEvent.CLOSED, function ():void {
-//                                                alreadyShown = false;
-//                                            });
-//                                });
 //
-//                                if (!device.isConnected())
-//                                    device.connect();
+//			  if (scratchDevices.length != 0) {
+//			      var bluetoothDialog:NativeListDialog = new NativeListDialog();
+//			      bluetoothDialog.setTitle(Translator.map("Scratchduino devices"));
+//			      bluetoothDialog.dataProvider = scratchNames;
+//			      bluetoothDialog.buttons = Vector.<String>([Translator.map("OK"), Translator.map("Cancel")]);
+//			      bluetoothDialog.selectedIndex = 0;
 //
-//                            });
+//			      bluetoothDialog.addEventListener(NativeDialogEvent.CLOSED, function (ev:Event):void {
+//				  var n:NativeListDialog = NativeListDialog(ev.target);
+//				  n.dispose();
+//				  var device:IDevice = scratchDevices[bluetoothDialog.selectedIndex];
+//				  device.addDeviceConnectedListener(function (bev:BluetoothDeviceEvent):void {
+//				      trace("connected to ", device.getName());
+//				      robotCommunicator = new AndroidRobotCommunicator(device, refreshAnalogsRobot, refreshAnalogsLab);
+//				      Toast.show(Translator.map("Connected to ") + device.getName(), Toast.LENGTH_SHORT);
+//				      tabsPart.refresh();
+//				  });
 //
-//                            progressPopup.dispose();
+//				  device.addDeviceConnectErrorListener(function (bev:BluetoothDeviceEvent):void {
+//				      disconnect();
+//				  });
 //
-//                            bluetoothDialog.setCancelable(true);
-//                            bluetoothDialog.show();
-//                        } else {
-//                            progressPopup.dispose();
-//                            NativeAlertDialog.showAlert(Translator.map("There are no devices found. Make sure that Bluetooth is enabled on robot"), Translator.map("No devices found"));
-//                        }
-//                    }
-//            );
-        }
+//				  device.addDeviceDisconnectedListener(function (bev:BluetoothDeviceEvent):void {
+//				      if (device == null)
+//					  return;
+//				      var name:String = device.getName();
+//				      disconnect();
+//				      if (alreadyShown)
+//					  return;
+//				      alreadyShown = true;
+//				      NativeAlertDialog.showAlert(Translator.map("Lost connection to ") + name + ". " +
+//					      Translator.map("Make sure that Bluetooth is enabled on robot and search for devices again"),
+//					      Translator.map("Connection lost")).
+//					      addEventListener(NativeDialogEvent.CLOSED, function ():void {
+//						  alreadyShown = false;
+//					      });
+//				  });
+//
+//				  if (!device.isConnected())
+//				      device.connect();
+//
+//			      });
+//
+//			      progressPopup.dispose();
+//
+//			      bluetoothDialog.setCancelable(true);
+//			      bluetoothDialog.show();
+//			  } else {
+//			      progressPopup.dispose();
+//			      NativeAlertDialog.showAlert(Translator.map("There are no devices found. Make sure that Bluetooth is enabled on robot"), Translator.map("No devices found"));
+//			  }
+//		      }
+//	      );
+	}
 
-        public function disconnect():void {
-//            runtime.resetAnalogsRobot();
-//            tabsPart.refresh();
-//            if (robotCommunicator != null) {
-//                robotCommunicator.finishSession();
-//                robotCommunicator = null;
-//            }
-        }
+	public function disconnect():void {
+//	      runtime.resetAnalogsRobot();
+//	      tabsPart.refresh();
+//	      if (robotCommunicator != null) {
+//		  robotCommunicator.finishSession();
+//		  robotCommunicator = null;
+//		}
+	}
 
-        protected function disconnectFromDevice():void {
-            disconnect();
-        }
+	protected function disconnectFromDevice():void {
+	    disconnect();
+	}
     }
 
 
@@ -1741,21 +1890,24 @@ public class Scratch extends Sprite {
    }
 
 
-   protected function dialogColorSensorCorrection():void {
-      var d:DialogBox = new DialogBox();
-      d.addTitle('Color Sensor Correction');
-      d.addWidget(new BlockColorSensorCorrector(this));
-      d.addButton('Close', d.cancel);
-      d.showOnStage(stage, true);
-   }
 
 
-   public function setColorSensorCorrection(r:Number, g:Number, b:Number):void{
-      trace("setColorSensorCorrection R=" + r + " G=" + g + " B=" + b);
+   public function setColorSensorCorrection(iSlot:int,
+					    r:Number, g:Number, b:Number,
+					    rColor:Number, gColor:Number, bColor:Number,
+					    iMaxBright:int):void{
+      trace("setColorSensorCorrection R=" + r + " G=" + g + " B=" + b + " R_COLOR=" + rColor + " G_COLOR=" + gColor + " B_COLOR=" + bColor);
 
-      this.colorCorrectionR = r;
-      this.colorCorrectionG = g;
-      this.colorCorrectionB = b;
+      this.arrColorCorrectionBright[iSlot][0] = r;
+      this.arrColorCorrectionBright[iSlot][1] = g;
+      this.arrColorCorrectionBright[iSlot][2] = b;
+
+
+      this.arrColorCorrectionColor[iSlot][0] = rColor;
+      this.arrColorCorrectionColor[iSlot][1] = gColor;
+      this.arrColorCorrectionColor[iSlot][2] = bColor;
+
+      this.arrColorMaxBright[iSlot] = iMaxBright;
    }
 
 
@@ -1766,10 +1918,10 @@ public class Scratch extends Sprite {
 
    private function showAboutDialog():void {
       DialogBox.notify(
-         'Scratch 2.0 ' + versionString,
-         '\n\nCopyright © 2012 MIT Media Laboratory' +
-         '\nAll rights reserved.' +
-         '\n\nPlease do not distribute!', stage);
+	 'Scratch 2.0 ' + versionString,
+	 '\n\nCopyright © 2012 MIT Media Laboratory' +
+	 '\nAll rights reserved.' +
+	 '\n\nPlease do not distribute!', stage);
    }
 
    protected function createNewProject(ignore:* = null):void {
@@ -1781,20 +1933,20 @@ public class Scratch extends Sprite {
 
       function clearProject():void {
 
-         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/reset?timer=" + getTimer());
-         request.method = URLRequestMethod.GET;
-         var loader:URLLoader = new URLLoader();
-         loader.load(request);
+	 var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/reset?timer=" + getTimer());
+	 request.method = URLRequestMethod.GET;
+	 var loader:URLLoader = new URLLoader();
+	 loader.load(request);
 
 
-         startNewProject('', '');
-         /*  Empty project has empty string name ("").
-          *  Used to determine whether to show project name picker dialog
-          *  or not.
-          */
-         setProjectName('');
-         topBarPart.refresh();
-         stagePart.refresh();
+	 startNewProject('', '');
+	 /*  Empty project has empty string name ("").
+	  *  Used to determine whether to show project name picker dialog
+	  *  or not.
+	  */
+	 setProjectName('');
+	 topBarPart.refresh();
+	 stagePart.refresh();
       }
       saveProjectAndThen(clearProject);
    }
@@ -1804,37 +1956,37 @@ public class Scratch extends Sprite {
       function doNothing():void {}
 
       function cancel():void {
-         d.cancel();
+	 d.cancel();
       }
 
       function proceedWithoutSaving():void {
-         d.cancel();
-         postSaveAction()
+	 d.cancel();
+	 postSaveAction()
       }
 
 
       function save():void {
-         d.cancel();
-            TARGET::android {
-                saveCurrentProject(); // if this succeeds, saveNeeded will become false
-            }
-            TARGET::desktop {
-                exportProjectToFile();
-            }
+	 d.cancel();
+	    TARGET::android {
+		saveCurrentProject(); // if this succeeds, saveNeeded will become false
+	    }
+	    TARGET::desktop {
+		exportProjectToFile();
+	    }
 
-         saveNeeded = false;
-         if (!saveNeeded) {
-            postSaveAction();
-         }
+	 saveNeeded = false;
+	 if (!saveNeeded) {
+	    postSaveAction();
+	 }
       }
 
 
       if (postSaveAction == null) {
-         postSaveAction = doNothing;
+	 postSaveAction = doNothing;
       }
       if (!saveNeeded) {
-         postSaveAction();
-         return;
+	 postSaveAction();
+	 return;
       }
 
 
@@ -1858,30 +2010,30 @@ public class Scratch extends Sprite {
    *   pick a name for project.
    */
     TARGET::android {
-        protected function saveCurrentProject():void {
-            function squeakSoundsConverted():void {
-                scriptsPane.saveScripts(false);
-                var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
-                var projectFileName:String = projectName();
-                /*  Somewhere it is set to be one space, but we need an empty string
-                 *  name for empty project to determine whether we should
-                 *  save current project with an exiting name or pick a new one.
-                 */
-                if (projectFileName.length == 0 || projectFileName == ' ') {
-                    exportProjectToFile();
-                    return;
-                }
-                projectFileName = projectFileName + '.sb2';
-                writeBytesToFile(projectFileName, zipData);
-                setProjectName(projectFileName);
-            }
+	protected function saveCurrentProject():void {
+	    function squeakSoundsConverted():void {
+		scriptsPane.saveScripts(false);
+		var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
+		var projectFileName:String = projectName();
+		/*  Somewhere it is set to be one space, but we need an empty string
+		 *  name for empty project to determine whether we should
+		 *  save current project with an exiting name or pick a new one.
+		 */
+		if (projectFileName.length == 0 || projectFileName == ' ') {
+		    exportProjectToFile();
+		    return;
+		}
+		projectFileName = projectFileName + '.sb2';
+		writeBytesToFile(projectFileName, zipData);
+		setProjectName(projectFileName);
+	    }
 
-            if (loadInProgress) {
-                return;
-            }
-            var projIO:ProjectIO = new ProjectIO(this);
-            projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
-        }
+	    if (loadInProgress) {
+		return;
+	    }
+	    var projIO:ProjectIO = new ProjectIO(this);
+	    projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
+	}
     }
 
    /*  This method shows picker dialog, where user enters project name.
@@ -1894,19 +2046,19 @@ public class Scratch extends Sprite {
 
 
       if(saveNameSelected){
-         var projIO:ProjectIO = new ProjectIO(this);
-         var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
-         trace("SAVE: projIO.encodeProjectAsZipFile ok");
-         trace("SAVE: file.save length=" + zipData.length);
+	 var projIO:ProjectIO = new ProjectIO(this);
+	 var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
+	 trace("SAVE: projIO.encodeProjectAsZipFile ok");
+	 trace("SAVE: file.save length=" + zipData.length);
 
-         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save");
-         request.data = zipData;
-         request.method = URLRequestMethod.POST;
-         var loader:URLLoader = new URLLoader();
-         loader.load(request);
+	 var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save");
+	 request.data = zipData;
+	 request.method = URLRequestMethod.POST;
+	 var loader:URLLoader = new URLLoader();
+	 loader.load(request);
       }
       else{
-         exportProjectToFileAs(false);
+	 exportProjectToFileAs(false);
       }
    }
 
@@ -1915,186 +2067,186 @@ public class Scratch extends Sprite {
 
 
    protected function exportProjectToFileAs(fromJS:Boolean = false):void {
-//       TARGET::android{
-//           RobotANE.selectScratchFileName();
-//       }
+//	 TARGET::android{
+//	     RobotANE.selectScratchFileName();
+//	 }
 
       TARGET::android {
-         var projectFileName:String;
-         var zipData:ByteArray;
+	 var projectFileName:String;
+	 var zipData:ByteArray;
 
-         function squeakSoundsConverted():void {
-            scriptsPane.saveScripts(false);
-            zipData = projIO.encodeProjectAsZipFile(stagePane);
+	 function squeakSoundsConverted():void {
+	    scriptsPane.saveScripts(false);
+	    zipData = projIO.encodeProjectAsZipFile(stagePane);
 
-            /*  Create Text input dialog, where user inputs name for project.
-             */
+	    /*	Create Text input dialog, where user inputs name for project.
+	     */
 
-            var t:NativeTextInputDialog = new NativeTextInputDialog();
-            t.setTitle(Translator.map("Choose project name"));
-            t.setCancelable(true);
-            /*  Any button will trigger CLOSED event, so we need only OK button.
-             *  Dialog can be canceled with Android back button or tapping anywhere
-             *  outide the dialog.
-             */
-            t.buttons = Vector.<String>(["OK"/*, "Cancel"*/]);
+	    var t:NativeTextInputDialog = new NativeTextInputDialog();
+	    t.setTitle(Translator.map("Choose project name"));
+	    t.setCancelable(true);
+	    /*	Any button will trigger CLOSED event, so we need only OK button.
+	     *	Dialog can be canceled with Android back button or tapping anywhere
+	     *	outide the dialog.
+	     */
+	    t.buttons = Vector.<String>(["OK"/*, "Cancel"*/]);
 
-            t.addEventListener(NativeDialogEvent.CANCELED, onCancelDialog);
-            t.addEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
+	    t.addEventListener(NativeDialogEvent.CANCELED, onCancelDialog);
+	    t.addEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
 
-            var v:Vector.<NativeTextField> = new Vector.<NativeTextField>();
-
-
-            //creates a message text-field
-            var message:NativeTextField = new NativeTextField(null);
-            /*  Two extra spaces in the beginning and end to add some padding to message
-             */
-            message.text = Translator.map("  To cancel, tap outside the dialog or press back button  ");
-            message.editable = false;
-            v.push(message);
+	    var v:Vector.<NativeTextField> = new Vector.<NativeTextField>();
 
 
-            // create text-input
-            var projectNameTextInput:NativeTextField = new NativeTextField("Project name");
-            projectNameTextInput.displayAsPassword = false;
-            projectNameTextInput.prompText = Translator.map("Project name");
-            projectNameTextInput.softKeyboardType = SoftKeyboardType.DEFAULT;
-            projectNameTextInput.addEventListener(Event.CHANGE, function (event:Event):void {
-               var tf:NativeTextField = NativeTextField(event.target);
-               projectFileName = tf.text;
-            });
-            // on return click
-            projectNameTextInput.addEventListener(TextEvent.TEXT_INPUT, function (event:Event):void {
-               var tf:NativeTextField = NativeTextField(event.target);
-               tf.nativeTextInputDialog.hide(0);
-               trace(projectFileName);
-            });
+	    //creates a message text-field
+	    var message:NativeTextField = new NativeTextField(null);
+	    /*	Two extra spaces in the beginning and end to add some padding to message
+	     */
+	    message.text = Translator.map("  To cancel, tap outside the dialog or press back button  ");
+	    message.editable = false;
+	    v.push(message);
 
-            v.push(projectNameTextInput);
 
-            t.textInputs = v;
-            t.show(true);
+	    // create text-input
+	    var projectNameTextInput:NativeTextField = new NativeTextField("Project name");
+	    projectNameTextInput.displayAsPassword = false;
+	    projectNameTextInput.prompText = Translator.map("Project name");
+	    projectNameTextInput.softKeyboardType = SoftKeyboardType.DEFAULT;
+	    projectNameTextInput.addEventListener(Event.CHANGE, function (event:Event):void {
+	       var tf:NativeTextField = NativeTextField(event.target);
+	       projectFileName = tf.text;
+	    });
+	    // on return click
+	    projectNameTextInput.addEventListener(TextEvent.TEXT_INPUT, function (event:Event):void {
+	       var tf:NativeTextField = NativeTextField(event.target);
+	       tf.nativeTextInputDialog.hide(0);
+	       trace(projectFileName);
+	    });
 
-         }
+	    v.push(projectNameTextInput);
 
-         /*function fileSaved(e:Event):void {
-          if (!fromJS) {
-          setProjectName(e.target.name);
-          }
-          }*/
+	    t.textInputs = v;
+	    t.show(true);
 
-         /* Handler for dialog's close event. Dialog is used for picking
-          *  filename for project. Text is saved in onChange event, this is
-          *  used only to remove handler and show dialog once again if
-          *  user entered empty string for project name.
-          */
-         function onCloseOKDialog(event:NativeDialogEvent):void {
-            var m:iNativeDialog = iNativeDialog(event.target);
-            trace(event.target);
-            m.removeEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
-            trace(event);
-            m.dispose();
+	 }
 
-            projectFileName = fixFileName(projectFileName);
-            if (projectFileName.length == 0 || projectFileName == ' ') {
-               Toast.show("Project name must contain at least one symbol", Toast.LENGTH_SHORT);
-               // create and show dialog again
-               squeakSoundsConverted();
-               return;
-            }
-            if (!StringUtils.endsWith(projectFileName, ".sb2")) {
-               projectFileName = projectFileName + ".sb2";
-            }
-            setProjectName(projectFileName);
-            writeBytesToFile(projectFileName, zipData);
-         }
+	 /*function fileSaved(e:Event):void {
+	  if (!fromJS) {
+	  setProjectName(e.target.name);
+	  }
+	  }*/
 
-         function onCancelDialog(event:NativeDialogEvent):void {
-            var m:iNativeDialog = iNativeDialog(event.target);
-            trace(event.target);
-            m.removeEventListener(NativeDialogEvent.CANCELED, onCloseOKDialog);
-            trace(event);
-            m.dispose();
-         }
+	 /* Handler for dialog's close event. Dialog is used for picking
+	  *  filename for project. Text is saved in onChange event, this is
+	  *  used only to remove handler and show dialog once again if
+	  *  user entered empty string for project name.
+	  */
+	 function onCloseOKDialog(event:NativeDialogEvent):void {
+	    var m:iNativeDialog = iNativeDialog(event.target);
+	    trace(event.target);
+	    m.removeEventListener(NativeDialogEvent.CLOSED, onCloseOKDialog);
+	    trace(event);
+	    m.dispose();
 
-         if (loadInProgress) {
-            return;
-         }
-         var projIO:ProjectIO = new ProjectIO(this);
-         projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
+	    projectFileName = fixFileName(projectFileName);
+	    if (projectFileName.length == 0 || projectFileName == ' ') {
+	       Toast.show("Project name must contain at least one symbol", Toast.LENGTH_SHORT);
+	       // create and show dialog again
+	       squeakSoundsConverted();
+	       return;
+	    }
+	    if (!StringUtils.endsWith(projectFileName, ".sb2")) {
+	       projectFileName = projectFileName + ".sb2";
+	    }
+	    setProjectName(projectFileName);
+	    writeBytesToFile(projectFileName, zipData);
+	 }
+
+	 function onCancelDialog(event:NativeDialogEvent):void {
+	    var m:iNativeDialog = iNativeDialog(event.target);
+	    trace(event.target);
+	    m.removeEventListener(NativeDialogEvent.CANCELED, onCloseOKDialog);
+	    trace(event);
+	    m.dispose();
+	 }
+
+	 if (loadInProgress) {
+	    return;
+	 }
+	 var projIO:ProjectIO = new ProjectIO(this);
+	 projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
       }
 
 
       TARGET::desktop {
-         trace("save in progress=" + saveInProgress);
+	 trace("save in progress=" + saveInProgress);
 
-         if(saveInProgress) return;
-         saveInProgress = true;
-
-
-         trace("Let's save the project, name=" + projectName());
+	 if(saveInProgress) return;
+	 saveInProgress = true;
 
 
-         function squeakSoundsConvertedDesktop():void {
-            scriptsPane.saveScripts(false);
-            var defaultName:String = (projectName().length > 0) ? projectName() + '.sb2' : 'project.sb2';
-
-            var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
-            trace("SAVE: projIO.encodeProjectAsZipFile ok");
-            trace("SAVE: file.save length=" + zipData.length);
-
-            var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/" + defaultName);
-            request.data = zipData;
-            request.method = URLRequestMethod.POST;
-            var loader:URLLoader = new URLLoader();
-            loader.addEventListener(Event.COMPLETE, checkSaveIsDone);
-            loader.load(request);
+	 trace("Let's save the project, name=" + projectName());
 
 
-            trace("SAVE: file.save ok");
-         }
+	 function squeakSoundsConvertedDesktop():void {
+	    scriptsPane.saveScripts(false);
+	    var defaultName:String = (projectName().length > 0) ? projectName() + '.sb2' : 'project.sb2';
 
-         if (loadInProgress) return;
+	    var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
+	    trace("SAVE: projIO.encodeProjectAsZipFile ok");
+	    trace("SAVE: file.save length=" + zipData.length);
 
-         var projIO:ProjectIO = new ProjectIO(this);
-         projIO.convertSqueakSounds(stagePane, squeakSoundsConvertedDesktop);
+	    var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/" + defaultName);
+	    request.data = zipData;
+	    request.method = URLRequestMethod.POST;
+	    var loader:URLLoader = new URLLoader();
+	    loader.addEventListener(Event.COMPLETE, checkSaveIsDone);
+	    loader.load(request);
+
+
+	    trace("SAVE: file.save ok");
+	 }
+
+	 if (loadInProgress) return;
+
+	 var projIO:ProjectIO = new ProjectIO(this);
+	 projIO.convertSqueakSounds(stagePane, squeakSoundsConvertedDesktop);
       }
 
       function initSaveChecker():void {
-         var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/check?timer=" + getTimer());
-         request.method = URLRequestMethod.GET;
-         var loader:URLLoader = new URLLoader();
+	 var request:URLRequest = new URLRequest("http://127.0.0.1:9876/dialog/save/check?timer=" + getTimer());
+	 request.method = URLRequestMethod.GET;
+	 var loader:URLLoader = new URLLoader();
 
-         loader.addEventListener(Event.COMPLETE, saveCheckOk);
+	 loader.addEventListener(Event.COMPLETE, saveCheckOk);
 
-         loader.load(request);
+	 loader.load(request);
       }
       function checkSaveIsDone(event:Event):void {
-         initSaveChecker();
+	 initSaveChecker();
       }
       function saveCheckOk(event:Event):void {
-         try{
-            var loader2:URLLoader = URLLoader(event.target);
-            //var tempArray:Array=loader2.data.split("\n");
-            trace("SAVE2() " + loader2.data);
+	 try{
+	    var loader2:URLLoader = URLLoader(event.target);
+	    //var tempArray:Array=loader2.data.split("\n");
+	    trace("SAVE2() " + loader2.data);
 
-            if(loader2.data.length == 0){
-               initSaveChecker();
-               trace("Save: File is not ready yet.");
-            }
-            else if(loader2.data == "---"){
-               saveInProgress = false;
-               trace("Save: cancel");
-            }
-            else{
-               saveInProgress = false;
-               saveNameSelected = true;
-               setProjectName(loader2.data);
-            }
-         }
-         catch (myError:Error){
-            initSaveChecker();
-         }
+	    if(loader2.data.length == 0){
+	       initSaveChecker();
+	       trace("Save: File is not ready yet.");
+	    }
+	    else if(loader2.data == "---"){
+	       saveInProgress = false;
+	       trace("Save: cancel");
+	    }
+	    else{
+	       saveInProgress = false;
+	       saveNameSelected = true;
+	       setProjectName(loader2.data);
+	    }
+	 }
+	 catch (myError:Error){
+	    initSaveChecker();
+	 }
       }
    }
 
@@ -2102,12 +2254,12 @@ public class Scratch extends Sprite {
 
    TARGET::android {
       private static function writeBytesToFile(fileName:String, data:ByteArray):void {
-         var outFile:File = File.userDirectory.resolvePath("scratch-projects");
-         outFile = outFile.resolvePath(fileName);
-         var outStream:FileStream = new FileStream();
-         outStream.open(outFile, FileMode.WRITE);
-         outStream.writeBytes(data, 0, data.length);
-         outStream.close();
+	 var outFile:File = File.userDirectory.resolvePath("scratch-projects");
+	 outFile = outFile.resolvePath(fileName);
+	 var outStream:FileStream = new FileStream();
+	 outStream.open(outFile, FileMode.WRITE);
+	 outStream.writeBytes(data, 0, data.length);
+	 outStream.close();
       }
    }
 
@@ -2117,15 +2269,15 @@ public class Scratch extends Sprite {
        *  it to make further code work properly.
        */
       if (s == null) {
-         s = '';
+	 s = '';
       }
       // Replace illegal characters in the given string with dashes.
       const illegal:String = '\\/:*?"<>|%';
       var result:String = '';
       for (var i:int = 0; i < s.length; i++) {
-         var ch:String = s.charAt(i);
-         if ((i == 0) && ('.' == ch)) ch = '-'; // don't allow leading period
-         result += (illegal.indexOf(ch) > -1) ? '-' : ch;
+	 var ch:String = s.charAt(i);
+	 if ((i == 0) && ('.' == ch)) ch = '-'; // don't allow leading period
+	 result += (illegal.indexOf(ch) > -1) ? '-' : ch;
       }
       return result;
    }
@@ -2159,21 +2311,21 @@ public class Scratch extends Sprite {
 
    public function setLanguagePressed(b:IconButton):void {
       function setLanguage(lang:String):void {
-         trace("Switch lang=" + lang);
-         Translator.setLanguage(lang);
-         languageChanged = true;
+	 trace("Switch lang=" + lang);
+	 Translator.setLanguage(lang);
+	 languageChanged = true;
       }
       if (Translator.languages.length == 0) return; // empty language list
       var m:Menu = new Menu(setLanguage, 'Language', CSS.topBarColor, 28);
 
 
       if (b.lastEvent.shiftKey) {
-         m.addItem('import translation file');
-         m.addItem('set font size');
-         m.addLine();
+	 m.addItem('import translation file');
+	 m.addItem('set font size');
+	 m.addLine();
       }
       for each (var entry:Array in Translator.languages) {
-         m.addItem(entry[1], entry[0], true, Translator.currentLang == entry[0]);
+	 m.addItem(entry[1], entry[0], true, Translator.currentLang == entry[0]);
       }
       var p:Point = b.localToGlobal(new Point(0, 0));
       m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
@@ -2227,8 +2379,8 @@ public class Scratch extends Sprite {
 
    protected function revertToOriginalProject():void {
       function preDoRevert():void {
-         revertUndo = new ProjectIO(Scratch.app).encodeProjectAsZipFile(stagePane);
-         doRevert();
+	 revertUndo = new ProjectIO(Scratch.app).encodeProjectAsZipFile(stagePane);
+	 doRevert();
       }
       if (!originalProj) return;
       DialogBox.confirm('Throw away all changes since opening this project?', stage, preDoRevert);
@@ -2247,8 +2399,8 @@ public class Scratch extends Sprite {
    public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false):void {
       var c:ScratchCostume, byteCount:int;
       for each (c in spr.costumes) {
-         if (!c.baseLayerData) c.prepareToSave()
-         byteCount += c.baseLayerData.length;
+	 if (!c.baseLayerData) c.prepareToSave()
+	 byteCount += c.baseLayerData.length;
       }
       if (!okayToAdd(byteCount)) return; // not enough room
       spr.objName = stagePane.unusedSpriteName(spr.objName);
@@ -2261,7 +2413,7 @@ public class Scratch extends Sprite {
       setSaveNeeded(true);
       libraryPart.refresh();
       for each (c in spr.costumes) {
-         if (ScratchCostume.isSVGData(c.baseLayerData)) c.setSVGData(c.baseLayerData, false);
+	 if (ScratchCostume.isSVGData(c.baseLayerData)) c.setSVGData(c.baseLayerData, false);
       }
    }
 
@@ -2272,8 +2424,8 @@ public class Scratch extends Sprite {
       targetObj.sounds.push(snd);
       setSaveNeeded(true);
       if (targetObj == viewedObj()) {
-         soundsPart.selectSound(snd);
-         setTab('sounds');
+	 soundsPart.selectSound(snd);
+	 setTab('sounds');
       }
    }
 
@@ -2294,20 +2446,20 @@ public class Scratch extends Sprite {
       const assetByteLimit:int = 50 * 1024 * 1024; // 50 megabytes
       var assetByteCount:int = newAssetBytes;
       for each (var obj:ScratchObj in stagePane.allObjects()) {
-         for each (var c:ScratchCostume in obj.costumes) {
-            if (!c.baseLayerData) c.prepareToSave();
-            assetByteCount += c.baseLayerData.length;
-         }
-         for each (var snd:ScratchSound in obj.sounds) assetByteCount += snd.soundData.length;
+	 for each (var c:ScratchCostume in obj.costumes) {
+	    if (!c.baseLayerData) c.prepareToSave();
+	    assetByteCount += c.baseLayerData.length;
+	 }
+	 for each (var snd:ScratchSound in obj.sounds) assetByteCount += snd.soundData.length;
       }
       if (assetByteCount > assetByteLimit) {
-         var overBy:int = Math.max(1, (assetByteCount - assetByteLimit) / 1024);
-         DialogBox.notify(
-            'Sorry!',
-            'Adding that media asset would put this project over the size limit by ' + overBy + ' KB\n' +
-            'Please remove some costumes, backdrops, or sounds before adding additional media.',
-            stage);
-         return false;
+	 var overBy:int = Math.max(1, (assetByteCount - assetByteLimit) / 1024);
+	 DialogBox.notify(
+	    'Sorry!',
+	    'Adding that media asset would put this project over the size limit by ' + overBy + ' KB\n' +
+	    'Please remove some costumes, backdrops, or sounds before adding additional media.',
+	    stage);
+	 return false;
       }
       return true;
    }
@@ -2381,10 +2533,10 @@ public class Scratch extends Sprite {
       var now:int = getTimer();
       var msecs:int = now - firstFrameTime;
       if (msecs > 500) {
-         var fps:Number = Math.round((1000 * frameCount) / msecs);
-         frameRateReadout.text = fps + ' fps (' + Math.round(msecs / frameCount) + ' msecs)';
-         firstFrameTime = now;
-         frameCount = 0;
+	 var fps:Number = Math.round((1000 * frameCount) / msecs);
+	 frameRateReadout.text = fps + ' fps (' + Math.round(msecs / frameCount) + ' msecs)';
+	 firstFrameTime = now;
+	 frameCount = 0;
       }
    }
 
@@ -2440,8 +2592,8 @@ public class Scratch extends Sprite {
 
    public function closeCameraDialog():void {
       if (cameraDialog) {
-         cameraDialog.closeDialog();
-         cameraDialog = null;
+	 cameraDialog.closeDialog();
+	 cameraDialog = null;
       }
    }
 
@@ -2456,130 +2608,130 @@ public class Scratch extends Sprite {
 
    static public function loadSingleFile(fileLoaded:Function, filters:Array = null):void {
       TARGET::android {
-         var selectedIndex:int;
+	 var selectedIndex:int;
 
-         /* Create directory if it doesn't exist (does nothing if already exist) */
-         scratchProjectsDirectory.createDirectory();
+	 /* Create directory if it doesn't exist (does nothing if already exist) */
+	 scratchProjectsDirectory.createDirectory();
 
-         /* Create dialog, where user can select project file to load. */
-         var m:NativeListDialog = new NativeListDialog();
-         m.setCancelable(true);
-         m.addEventListener(NativeDialogEvent.CANCELED, dialogCanceled);
-         m.addEventListener(NativeDialogEvent.OPENED, trace);
-         m.addEventListener(NativeDialogEvent.CLOSED, readSelected);
-         m.addEventListener(NativeDialogListEvent.LIST_CHANGE, fileSelected);
+	 /* Create dialog, where user can select project file to load. */
+	 var m:NativeListDialog = new NativeListDialog();
+	 m.setCancelable(true);
+	 m.addEventListener(NativeDialogEvent.CANCELED, dialogCanceled);
+	 m.addEventListener(NativeDialogEvent.OPENED, trace);
+	 m.addEventListener(NativeDialogEvent.CLOSED, readSelected);
+	 m.addEventListener(NativeDialogListEvent.LIST_CHANGE, fileSelected);
 
-         m.buttons = Vector.<String>([Translator.map("OK"), Translator.map("Cancel")]);
-         m.title = Translator.map("Select project");
-         m.message = "Message";
+	 m.buttons = Vector.<String>([Translator.map("OK"), Translator.map("Cancel")]);
+	 m.title = Translator.map("Select project");
+	 m.message = "Message";
 
-         if (currentProjectsDirectory == null) {
-            currentProjectsDirectory = scratchProjectsDirectory;
-         }
-         var curDirFiles:Array = currentProjectsDirectory.getDirectoryListing();
-         curDirFiles.sort(function (x:File, y:File):int {
+	 if (currentProjectsDirectory == null) {
+	    currentProjectsDirectory = scratchProjectsDirectory;
+	 }
+	 var curDirFiles:Array = currentProjectsDirectory.getDirectoryListing();
+	 curDirFiles.sort(function (x:File, y:File):int {
 
-            function cmp(f:File):int {
-               return f.isDirectory ? 0 : 1;
-            }
+	    function cmp(f:File):int {
+	       return f.isDirectory ? 0 : 1;
+	    }
 
-            var a:int = cmp(x);
-            var b:int = cmp(y);
-            if (a != b) {
-               return a - b;
-            } else {
-               if (x.name < y.name) return -1;
-               else if (x.name == y.name) return 0;
-               else return 1;
-            }
+	    var a:int = cmp(x);
+	    var b:int = cmp(y);
+	    if (a != b) {
+	       return a - b;
+	    } else {
+	       if (x.name < y.name) return -1;
+	       else if (x.name == y.name) return 0;
+	       else return 1;
+	    }
 
-         });
-         var files:Vector.<File> = new Vector.<File>();
-         var names:Array = new Array();
-         if (currentProjectsDirectory.parent != null) {
-            names.push("..");
-            files.push(currentProjectsDirectory.parent);
-         }
-         for (var i:uint = 0; i < curDirFiles.length; i++) {
-            var name:String = curDirFiles[i].name;
-            if (curDirFiles[i].isDirectory) {
-               files.push(curDirFiles[i]);
-               names.push("[" + name + "]");
-            } else if (StringUtils.endsWith(name, ".sb2")) {
-               files.push(curDirFiles[i]);
-               names.push(name.substring(0, name.length - ".sb2".length));
-            } else if (StringUtils.endsWith(name, ".sb")) {
-               files.push(curDirFiles[i]);
-               names.push(name.substring(0, name.length - ".sb".length));
-            }
-         }
+	 });
+	 var files:Vector.<File> = new Vector.<File>();
+	 var names:Array = new Array();
+	 if (currentProjectsDirectory.parent != null) {
+	    names.push("..");
+	    files.push(currentProjectsDirectory.parent);
+	 }
+	 for (var i:uint = 0; i < curDirFiles.length; i++) {
+	    var name:String = curDirFiles[i].name;
+	    if (curDirFiles[i].isDirectory) {
+	       files.push(curDirFiles[i]);
+	       names.push("[" + name + "]");
+	    } else if (StringUtils.endsWith(name, ".sb2")) {
+	       files.push(curDirFiles[i]);
+	       names.push(name.substring(0, name.length - ".sb2".length));
+	    } else if (StringUtils.endsWith(name, ".sb")) {
+	       files.push(curDirFiles[i]);
+	       names.push(name.substring(0, name.length - ".sb".length));
+	    }
+	 }
 
-         m.dataProvider = Vector.<Object>(names);
-         m.displayMode = NativeListDialog.DISPLAY_MODE_SINGLE;
-         m.selectedIndex = -1;
-         m.show();
+	 m.dataProvider = Vector.<Object>(names);
+	 m.displayMode = NativeListDialog.DISPLAY_MODE_SINGLE;
+	 m.selectedIndex = -1;
+	 m.show();
 
-         /* Seems to be easily replaced by @trace function.
-          * Disposing is redundant because this event is always dispatched after CLOSED
-          */
-         function dialogCanceled(event:NativeDialogEvent):void {
-            var d:NativeListDialog = NativeListDialog(event.target);
+	 /* Seems to be easily replaced by @trace function.
+	  * Disposing is redundant because this event is always dispatched after CLOSED
+	  */
+	 function dialogCanceled(event:NativeDialogEvent):void {
+	    var d:NativeListDialog = NativeListDialog(event.target);
 
-            trace("Dialog canceled");
+	    trace("Dialog canceled");
 
-            d.dispose();
-         }
+	    d.dispose();
+	 }
 
-         function fileSelected(event:NativeDialogListEvent):void {
-            var d:NativeListDialog = NativeListDialog(event.target);
+	 function fileSelected(event:NativeDialogListEvent):void {
+	    var d:NativeListDialog = NativeListDialog(event.target);
 
-            selectedIndex = d.selectedIndex;
-            trace("Selected index:", selectedIndex);
+	    selectedIndex = d.selectedIndex;
+	    trace("Selected index:", selectedIndex);
 
-            d.dispose();
-            if (selectedIndex == -1) {
-               return;
-            }
+	    d.dispose();
+	    if (selectedIndex == -1) {
+	       return;
+	    }
 
-            if (files[selectedIndex].isDirectory) {
-               currentProjectsDirectory = files[selectedIndex];
-               loadSingleFile(fileLoaded, filters);
-            } else {
-               var projectFile:FileReference = FileReference(files[selectedIndex]);
-               projectFile.addEventListener(Event.COMPLETE, fileLoaded);
-               projectFile.load();
-            }
-         }
+	    if (files[selectedIndex].isDirectory) {
+	       currentProjectsDirectory = files[selectedIndex];
+	       loadSingleFile(fileLoaded, filters);
+	    } else {
+	       var projectFile:FileReference = FileReference(files[selectedIndex]);
+	       projectFile.addEventListener(Event.COMPLETE, fileLoaded);
+	       projectFile.load();
+	    }
+	 }
 
-         function readSelected(event:NativeDialogEvent):void {
-            var m:NativeListDialog = NativeListDialog(event.target);
+	 function readSelected(event:NativeDialogEvent):void {
+	    var m:NativeListDialog = NativeListDialog(event.target);
 
-            trace(event);
+	    trace(event);
 
-            var projectFile:FileReference = FileReference(files[selectedIndex]);
-            projectFile.addEventListener(Event.COMPLETE, fileLoaded);
-            projectFile.load();
+	    var projectFile:FileReference = FileReference(files[selectedIndex]);
+	    projectFile.addEventListener(Event.COMPLETE, fileLoaded);
+	    projectFile.load();
 
-            m.dispose();
-         }
+	    m.dispose();
+	 }
       }
 
 
       TARGET::desktop {
-         function fileSelected1(event:Event):void {
-            if (fileList.fileList.length > 0) {
-               var file:FileReference = FileReference(fileList.fileList[0]);
-               file.addEventListener(Event.COMPLETE, fileLoaded);
-               file.load();
-            }
-         }
+	 function fileSelected1(event:Event):void {
+	    if (fileList.fileList.length > 0) {
+	       var file:FileReference = FileReference(fileList.fileList[0]);
+	       file.addEventListener(Event.COMPLETE, fileLoaded);
+	       file.load();
+	    }
+	 }
 
-         var fileList:FileReferenceList = new FileReferenceList();
-         fileList.addEventListener(Event.SELECT, fileSelected1);
-         try {
-            // Ignore the exception that happens when you call browse() with the file browser open
-            fileList.browse(filters);
-         } catch(e:*) {}
+	 var fileList:FileReferenceList = new FileReferenceList();
+	 fileList.addEventListener(Event.SELECT, fileSelected1);
+	 try {
+	    // Ignore the exception that happens when you call browse() with the file browser open
+	    fileList.browse(filters);
+	 } catch(e:*) {}
       }
    }
 
@@ -2611,7 +2763,7 @@ public class Scratch extends Sprite {
       trace("Current category=" + scriptsPart.selector.selectedCategory);
       //Let's show or hide proper blocks
       if(scriptsPart.selector.selectedCategory == 13){
-         getPaletteBuilder().showBlocksForCategory(13, true, false);
+	 getPaletteBuilder().showBlocksForCategory(13, true, false);
       }
    }
    public function switchExternalSensors():void {
@@ -2619,12 +2771,12 @@ public class Scratch extends Sprite {
       scratchLabPart.setExternalSensors(this.areExternalSensorsEnabled);
 
       if(this.areExternalSensorsEnabled){
-         scratchBoardPart.setWidthHeight(123, 220);
-         scratchLabPart.setWidthHeight(115, 220);
+	 scratchBoardPart.setWidthHeight(123, 220);
+	 scratchLabPart.setWidthHeight(115, 220);
       }
       else{
-         scratchBoardPart.setWidthHeight(123, 166);
-         scratchLabPart.setWidthHeight(115, 166);
+	 scratchBoardPart.setWidthHeight(123, 166);
+	 scratchLabPart.setWidthHeight(115, 166);
       }
       libraryPart.y = scratchLabPart.bottom() + 5;
 
@@ -2632,7 +2784,7 @@ public class Scratch extends Sprite {
       trace("Current category=" + scriptsPart.selector.selectedCategory);
       //Let's show or hide proper blocks
       if(scriptsPart.selector.selectedCategory == 14){
-         getPaletteBuilder().showBlocksForCategory(14, true, false);
+	 getPaletteBuilder().showBlocksForCategory(14, true, false);
       }
    }
 
@@ -2643,6 +2795,7 @@ class RobotSensor{
    public var type:int;
 
    public var raw:Array = [0, 0, 0, 0];
+   public var raw_:Array = [0, 0, 0, 0];
 
    public function RobotSensor(type:int){
       this.type = type;
@@ -2654,6 +2807,7 @@ class LabSensor{
    public var type:int;
 
    public var raw:Array = [0, 0, 0, 0];
+   public var raw_:Array = [0, 0, 0, 0];
 
    public function LabSensor(type:int){
       this.type = type;
@@ -2664,7 +2818,7 @@ class LabSensor{
 class RobotMotor{
    public var steps:int  = 0;
    public var _steps:int = 0;
-   public var path:int   = 0;
+   public var path:int	 = 0;
    public var pathNew:int = 0;
    public var pathCorrection:int = 0;
    public var pathMultiplier:int = 0;

@@ -180,31 +180,37 @@ public class SensingPrims {
 */
 
 
+      var arrCorrectionArray:Array = app.arrColorRegion[color];
+      var iTotalBright:int = app.robotSensors[sensorNumber].raw[1] + app.robotSensors[sensorNumber].raw[2] + app.robotSensors[sensorNumber].raw[3];
 
+      if(   app.robotSensors[sensorNumber].raw[1] >= arrCorrectionArray[0] / 100 * iTotalBright
+         && app.robotSensors[sensorNumber].raw[1] <= arrCorrectionArray[1] / 100 * iTotalBright
+         && app.robotSensors[sensorNumber].raw[2] >= arrCorrectionArray[2] / 100 * iTotalBright
+         && app.robotSensors[sensorNumber].raw[2] <= arrCorrectionArray[3] / 100 * iTotalBright
+         && app.robotSensors[sensorNumber].raw[3] >= arrCorrectionArray[4] / 100 * iTotalBright
+         && app.robotSensors[sensorNumber].raw[3] <= arrCorrectionArray[5] / 100 * iTotalBright
+         && iTotalBright >= arrCorrectionArray[6] / 100 * app.arrColorMaxBright[sensorNumber]
+         && iTotalBright <= arrCorrectionArray[7] / 100 * app.arrColorMaxBright[sensorNumber]
+        ){
 
-
-
-
-
-      switch(color){
-         case "Red":{
-            if(app.robotSensors[sensorNumber].raw[1] > app.robotSensors[sensorNumber].raw[2]
-               && app.robotSensors[sensorNumber].raw[1] > app.robotSensors[sensorNumber].raw[3]) return true;
-         }
-         case "Green":{
-            if(app.robotSensors[sensorNumber].raw[2] > app.robotSensors[sensorNumber].raw[1]
-               && app.robotSensors[sensorNumber].raw[2] > app.robotSensors[sensorNumber].raw[3]) return true;
-         }
-         case "Blue":{
-            if(app.robotSensors[sensorNumber].raw[3] > app.robotSensors[sensorNumber].raw[1]
-               && app.robotSensors[sensorNumber].raw[3] > app.robotSensors[sensorNumber].raw[2]) return true;
-         }
-         default:{
-            return false;
-            break;
-         }
+         return true;
       }
 
+
+/*
+      switch(color){
+         case "Red":{
+            return app.robotSensors[sensorNumber].raw[1] > app.robotSensors[sensorNumber].raw[2] && app.robotSensors[sensorNumber].raw[1] > app.robotSensors[sensorNumber].raw[3];
+         }
+         case "Green":{
+            return app.robotSensors[sensorNumber].raw[2] > app.robotSensors[sensorNumber].raw[1] && app.robotSensors[sensorNumber].raw[2] > app.robotSensors[sensorNumber].raw[3];
+         }
+         case "Blue":{
+            return app.robotSensors[sensorNumber].raw[3] > app.robotSensors[sensorNumber].raw[1] && app.robotSensors[sensorNumber].raw[3] > app.robotSensors[sensorNumber].raw[2];
+         }
+         return false;
+      }
+*/
 
 
 

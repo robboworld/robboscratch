@@ -36,7 +36,7 @@ package primitives {
 
 public class MotionAndPenPrims {
 
-   private var DEGREE_RATIO:Number = 3.2;
+   private var DEGREE_RATIO:Number = 5.19; //3.2 21.01.19 modificated
 
    private var app:Scratch;
    private var interp:Interpreter;

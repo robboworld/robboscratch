@@ -9,8 +9,12 @@ package ui.parts{
    import flash.text.TextField;
    import flash.text.TextFormat;
    import flash.display.Sprite;
+   import flash.events.MouseEvent;
+   import uiwidgets.DialogBox;
 
    import translation.Translator;
+   import uiwidgets.BlockColorSensorCorrector;
+
 
    public class ScratchBoardPart extends UIPart {
       private const stageAreaWidth:int = 50;
@@ -60,6 +64,21 @@ package ui.parts{
       private var connected:Boolean = false;
 
 
+   private function pizda(iSlot:int):Function{
+      return function(e:MouseEvent):void{
+         trace("Show corrector for slot=" + iSlot);
+
+         var d:DialogBox = new DialogBox();
+         d.addTitle('Color Sensor Correction ' + (iSlot + 1));
+         app.arrayBlockColorSensorCorrector[iSlot] = new BlockColorSensorCorrector(app, iSlot);
+         d.addWidget(app.arrayBlockColorSensorCorrector[iSlot]);
+         d.addButton('Close', d.cancel);
+         d.showOnStage(app.stage, true);
+      }
+   }
+
+
+
       public function ScratchBoardPart(app:Scratch) {
          this.app = app;
 
@@ -78,8 +97,13 @@ package ui.parts{
 
             var sprite:Sprite = new Sprite();
             dataSprites[i] = sprite;
+
+            sprite.addEventListener(MouseEvent.CLICK, pizda(i));
+
+
             addChild(sprite);
          }
+
 
          labelLeftMotor = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + 0  * TEXT_VERTICAL_STEP);
          addChild(labelLeftMotor);
@@ -162,6 +186,7 @@ package ui.parts{
 
          while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
 
+         dataSprites[index].graphics.clear();
          var label:TextField = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP);
          label.text = text;
          dataSprites[index].addChild(label);
@@ -169,6 +194,7 @@ package ui.parts{
       public function disableValue(index:int):void {
          while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
 
+         dataSprites[index].graphics.clear();
          var label:TextField = makeLabel(DEFAULT_VALUE, dataTextFormat, TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP);
          label.text = "--";
          dataSprites[index].addChild(label);
@@ -178,21 +204,20 @@ package ui.parts{
 
          while (dataSprites[index].numChildren > 0) dataSprites[index].removeChildAt(0);
 
-         var sprite:Sprite = new Sprite();
+         //var sprite:Sprite = new Sprite();
 
          //Border
-         sprite.graphics.beginFill(0x666666, 1);
-         sprite.graphics.drawRect(TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 2, 11, 11);
-         sprite.graphics.endFill();
+         dataSprites[index].graphics.beginFill(0x666666, 1);
+         dataSprites[index].graphics.drawRect(TEXT_DATA_X, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 2, 11, 11);
+         dataSprites[index].graphics.endFill();
 
 
-         sprite.graphics.beginFill(color);
-         sprite.graphics.drawRect(TEXT_DATA_X + 1, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 3, 9, 9);
-         sprite.graphics.endFill();
+         dataSprites[index].graphics.beginFill(color);
+         dataSprites[index].graphics.drawRect(TEXT_DATA_X + 1, TEXT_Y + (index + 2) * TEXT_VERTICAL_STEP + 3, 9, 9);
+         dataSprites[index].graphics.endFill();
 
-         dataSprites[index].addChild(sprite);
+//         dataSprites[index].addChild(sprite);
       }
-
 
 
 

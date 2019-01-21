@@ -650,11 +650,27 @@ public class BlockMenus implements DragClient {
    }
 */
 
+/*
    private function brightMenuRobot(evt:MouseEvent):void {
       var m:Menu = new Menu(setBlockArg, 'colorRobot');
       m.addItem('Red');
       m.addItem('Green');
       m.addItem('Blue');
+      showMenu(m);
+   }
+*/
+
+
+
+   private function brightMenuRobot(evt:MouseEvent):void {
+      var m:Menu = new Menu(setBlockArg, 'colorRobot');
+
+      for(var f:int = 0; f < Scratch.app.arrColorNames.length; f++){
+         m.addItem(Scratch.app.arrColorNames[f]);
+      }
+
+      m.addItem("Unknown");
+
       showMenu(m);
    }
 
