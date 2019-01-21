@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "00001"
+#define FIRMWARE_VERSION "00002"
 
 
 #include <EEPROM.h>
@@ -185,7 +185,7 @@ class AnalogSensor: public ISensor{
    }
 
    byte* getResult(){
-      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin) / 1023.0 * 100)};
+      return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, byte(analogRead(pin))};
    }
 };
 
@@ -200,20 +200,15 @@ class SonicSensor: public ISensor{
    unsigned long time;
    int result = 0;
    int pin;
-
    public:
    SonicSensor(int pin){
       this -> pin = pin;
    };
-
-
-
    void reset(){
       measuremnetWaiting = false;
       resetMode = true;
       time = micros();
    }
-
    void iteration(){
       //reset mode with delay
       if(resetMode){
@@ -226,19 +221,14 @@ class SonicSensor: public ISensor{
             time = micros();
             resetMode = false;
         }
-
         return;
       }
-
-
       // no response
       // we lost the impulse
       if(micros() - time > 100000){
          reset();
          return;
       }
-
-
       if(measuremnetWaiting){
          if(HIGH == digitalRead(pin)){
             result = ((micros() - time) *  34000) / 2000000 - 8;
@@ -254,7 +244,6 @@ class SonicSensor: public ISensor{
          }
       }
    }
-
    byte* getResult(){
       return new byte[SENSOR_RESPONSE_LENGTH]{0, 0, 0, result};
    }
@@ -955,7 +944,4 @@ void commandMotors(byte leftSpeed, byte rightSpeed){
       motorRight -> power(false, rightSpeed);
    }    
 }
-
-
-
 

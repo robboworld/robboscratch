@@ -132,4 +132,3 @@ static void initISR()
 
         isStarted = true;  // flag to indicate this initialisation code has been executed
 }
-
