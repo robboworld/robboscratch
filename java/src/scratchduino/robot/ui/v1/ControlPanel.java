@@ -24,60 +24,68 @@ import scratchduino.robot.*;
 
 public class ControlPanel extends JFrame implements IControlPanel{
    private static final long serialVersionUID = -8510057476499416417L;
-   
+
    private static Log log = LogFactory.getLog(ControlPanel.class);
    private static final String LOG = "[ControlPanel] ";
-   
+
    private static final ImageIcon iconWating;
    private static final ImageIcon iconLogo;
-   
+
    private static final ImageIcon iconRed;
    private static final ImageIcon iconYellow;
    private static final ImageIcon iconGreen;
-   
+
    private static final int FRAME_WIDTH  = 640;
    private static final int FRAME_HEIGHT = 400;
-   
-   
-   
+
+
+
    private static final JDialog dlgWaiting = new JDialog();
-   
-   
-   
-   public static final TrayIcon trayIcon;
+
+
+
+   public static /*final*/ TrayIcon trayIcon;
    public static final PopupMenu popup;
-   
-   
+
+
    protected final AtomicBoolean bFirstRun = new AtomicBoolean(true);
-   
-   
+
+
    private final String TEMP_FILE_NAME = "scratch_autosave_21.sb2";
 
-   
-   
+
+
    static{
       popup = new PopupMenu();
       Image image = Toolkit.getDefaultToolkit().getImage(JFrame.class.getResource("/loaderB32.gif"));
-      
-   
-      trayIcon = new TrayIcon(image, "", popup);
+
+   try{
+
+       trayIcon = new TrayIcon(image, "", popup);
+
+     }catch(UnsupportedOperationException e){
+
+          System.err.println("TrayIcon could not be initialized.");
+
+      }
+
    }
 
-   
-   
+
+
    static{
       iconWating = new ImageIcon(JFrame.class.getResource("/loaderB32.gif"));
       iconLogo   = new ImageIcon(JFrame.class.getResource("/robot.png"));
-      
+
       iconRed    = new ImageIcon(JFrame.class.getResource("/red.png"));
       iconYellow = new ImageIcon(JFrame.class.getResource("/yellow.png"));
       iconGreen  = new ImageIcon(JFrame.class.getResource("/green.png"));
-      
-      
+
+
       JPanel panel = new JPanel();
-      
+
       //panel.setBackground(new java.awt.Color(230, 230, 255));
-      
+
       JLabel jLabel = new JLabel(" Please wait...");
       jLabel.setIcon(iconWating);
       panel.add(jLabel);
@@ -94,48 +102,48 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
       panel.setBorder(BorderFactory.createLineBorder(new java.awt.Color(100, 100, 100)));
    }
-   
+
    static{
       // We need ".", not "," in numbers
       //Locale.setDefault(Locale.US);
-      
+
       InterfaceHelper.setLookAndFeel();
    }
-   
+
 
    private final IDeviceLocator locator;
    private final IConfiguration config;
    private final IFirmware firmware;
-   
+
    private JTable tblComPortList;
-   private JScrollPane scrollableList;   
+   private JScrollPane scrollableList;
    private JButton btnFind;
    private JCheckBox cbAutoFind;
    private JButton btnDiagnostic;
    private JButton btnExit;
-   
+
    private String bestDeviceIcon = null;
-   
+
    private enum STATE{NO_DEVICE, IN_PROGRESS, READY, WRONG_VERSION};
-   
+
    private volatile STATE state = STATE.NO_DEVICE;
-   
+
    private Map<String, JLabel>  mapStatuses = new HashMap<String, JLabel>();
    private Map<String, JButton> mapFirmwareButtons = new HashMap<String, JButton>();
-   
-   
-   
+
+
+
    private volatile String loadFileName = null;
    private volatile String saveFileName = null;
    private volatile File   selectedFile = null;
    private volatile byte[] loadFileData = null;
-   
+
 
    public ControlPanel(IConfiguration config, IDeviceLocator locator, IFirmware firmware) throws InvocationTargetException, InterruptedException{
       this.locator  = locator;
       this.config   = config;
       this.firmware = firmware;
-      
+
 
       if(this.config.getIOS().getType() == IOS.TYPE.MAC){
          try{
@@ -146,7 +154,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
          catch (IOException e){
             throw new Error(e);
          }
-      }      
+      }
 
       SwingUtilities.invokeAndWait(new Runnable(){
          public void run(){
@@ -154,9 +162,9 @@ public class ControlPanel extends JFrame implements IControlPanel{
             ControlPanel.this.setResizable(false);
             ControlPanel.this.setLocationRelativeTo(null);
             ControlPanel.this.setAlwaysOnTop(true);
-            
+
             ControlPanel.this.setLayout(null);
-         
+
             if(ControlPanel.this.config.getIOS().getType() == IOS.TYPE.MAC){
                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                ControlPanel.this.addWindowListener(new WindowAdapter(){
@@ -164,39 +172,39 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      ControlPanel.this.setState(Frame.ICONIFIED);
                   }
                });
-            }      
-            
-            
-            
+            }
+
+
+
             JPanel panel = new JPanel();
             panel.setLayout(null);
             panel.setBackground(new Color(220, 220, 220));
             panel.setSize(640, 55);
             panel.setBounds(0,0, 640, 55);
-      
+
             JLabel lbTitleIcon = new JLabel();
             lbTitleIcon.setIcon(iconLogo);
             lbTitleIcon.setBounds(15, 3, 640, 45);
             panel.add(lbTitleIcon);
             ControlPanel.this.add(panel);
-            
-            
+
+
             JLabel labelTitleText = new JLabel(ControlPanel.this.config.i18n("title").replaceAll("%v", ControlPanel.this.config.getVersion()));
             labelTitleText.setFont(new Font("Arial", Font.CENTER_BASELINE, 12));
             labelTitleText.setBounds(420, 18, 640, 45);
             panel.add(labelTitleText);
-            
-            
-            
+
+
+
             JLabel lbDeviceList = new JLabel(ControlPanel.this.config.i18n("label_device_list"));
             lbDeviceList.setBounds(20, 60, 595, 20);
             ControlPanel.this.add(lbDeviceList);
-            
-      
+
+
             String[] columnNames = {" ", "  ", "   "};
             DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames){
                private static final long serialVersionUID = -8731419365530875480L;
-      
+
                @Override
                public boolean isCellEditable(int row, int column) {
                   if(column == 2){
@@ -204,12 +212,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   }
                   return false;
                }
-           };      
-            
-            
+           };
+
+
             tblComPortList = new JTable(model){
                private static final long serialVersionUID = 9050870870092600975L;
-      
+
                public Class<?> getColumnClass(int column){
                   return getValueAt(0, column).getClass();
                }
@@ -219,23 +227,23 @@ public class ControlPanel extends JFrame implements IControlPanel{
             tblComPortList.getColumn(" ").setCellRenderer(new LabelRenderer());
             tblComPortList.getColumn("  ").setCellRenderer(new LabelRenderer());
             tblComPortList.getColumn("   ").setCellRenderer(new ButtonRenderer());
-            
+
             tblComPortList.getColumnModel().getColumn(2).setCellEditor(new ClientsTableRenderer(new JCheckBox()));
-            
-            
+
+
             tblComPortList.setCellSelectionEnabled(false);
             tblComPortList.setFocusable(false);
             tblComPortList.setBackground(new Color(232, 233, 237));
             tblComPortList.setGridColor(new Color(232, 233, 237));
-            
-            
+
+
             scrollableList = new JScrollPane(tblComPortList);
             scrollableList.setBorder(new LineBorder(new Color(150, 150, 150)));
             scrollableList.setBounds(20, 80, 595, 185);
-            
+
             ControlPanel.this.add(scrollableList);
-            
-            
+
+
             btnFind = new JButton(ControlPanel.this.config.i18n("button_search"));
             btnFind.setFont(new Font("Arial", Font.BOLD, 13));
             btnFind.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
@@ -247,21 +255,21 @@ public class ControlPanel extends JFrame implements IControlPanel{
                }
             });
             ControlPanel.this.add(btnFind);
-            
-            
+
+
             cbAutoFind = new JCheckBox("auto");
             cbAutoFind.setBounds(560, 280, 100, 35);
             //cbAutoFind.setSelected(true);
             ControlPanel.this.add(cbAutoFind);
-            
-            
+
+
             btnDiagnostic = new JButton(ControlPanel.this.config.i18n("button_diagnostic"));
             btnDiagnostic.setFont(new Font("Arial", Font.BOLD, 12));
             btnDiagnostic.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
             btnDiagnostic.setBounds(30, 322, 280, 28);
             btnDiagnostic.setEnabled(false);
             ControlPanel.this.add(btnDiagnostic);
-      
+
             btnExit = new JButton(ControlPanel.this.config.i18n("button_exit"));
             btnExit.setFont(new Font("Arial", Font.BOLD, 12));
             btnExit.setBorder(new TextBubbleBorder(new Color(150, 150, 150), 1, 8,0));
@@ -274,101 +282,101 @@ public class ControlPanel extends JFrame implements IControlPanel{
                }
             });
             ControlPanel.this.add(btnExit);
-            
-            
-            
-      
+
+
+
+
             //Tray
             if(SystemTray.isSupported()){
-      
+
                SystemTray tray = SystemTray.getSystemTray();
-      
+
                MouseListener mouseListener = new MouseListener(){
-      
+
                   public void mouseClicked(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse clicked!");
                   }
-      
+
                   public void mouseEntered(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse entered!");
                   }
-      
+
                   public void mouseExited(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse exited!");
                   }
-      
+
                   public void mousePressed(MouseEvent event){
                      // System.out.println("Tray Icon - Mouse pressed!");
                      ControlPanel.this.popUp();
                   }
-      
+
                   public void mouseReleased(MouseEvent e){
                      // System.out.println("Tray Icon - Mouse released!");
                   }
                };
-      
+
                ActionListener exitListener = new ActionListener(){
                   public void actionPerformed(ActionEvent e){
                      System.out.println("Exiting...");
                      System.exit(0);
                   }
                };
-      
-      
+
+
                ActionListener actionListener = new ActionListener(){
                   public void actionPerformed(ActionEvent e){
                      //trayIcon.displayMessage("Action Event", "An Action Event Has Been Performed!", TrayIcon.MessageType.INFO);
                   }
                };
-               
+
                MenuItem defaultItem = new MenuItem(ControlPanel.this.config.i18n("tray_menu_exit"));
                defaultItem.addActionListener(exitListener);
                popup.add(defaultItem);
-               
-      
+
+
                trayIcon.setImageAutoSize(true);
                trayIcon.addActionListener(actionListener);
                trayIcon.addMouseListener(mouseListener);
-      
+
                try{
                   tray.add(trayIcon);
                }
                catch (AWTException e){
                   System.err.println("TrayIcon could not be added.");
                }
-      
+
             }
             else{
                // System Tray is not supported
             }
-            
+
             ControlPanel.this.revalidate();
             ControlPanel.this.setVisible(true);
          }
       });
-      
+
 
       AutoFinder af = new AutoFinder();
       af.start();
-      
+
       FramePositionChecker fpc = new FramePositionChecker();
       fpc.start();
-      
+
       checkNewVersion();
-      
-      
-      
+
+
+
       loadFileData = dialogOpenTmp();
-      Context.ctx.getBean("scratch", IScratch.class).run();      
+      Context.ctx.getBean("scratch", IScratch.class).run();
    }
 
 
-   
-   
-      
+
+
+
    private class AutoFinder extends Thread{
       private boolean bFirstRun = true;
-      
+
       public void run(){
          while(true){
             if(cbAutoFind.isSelected()){
@@ -388,7 +396,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   bFirstRun = false;
                }
             }
-            
+
             try{
                Thread.sleep(1000);
             }
@@ -398,19 +406,19 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
       }
    }
-   
-   
-   
-   
+
+
+
+
    private class Finder extends Thread{
-      
+
       public void run(){
          synchronized(ControlPanel.this) {
             state = STATE.IN_PROGRESS;
          }
-         
-         
-         
+
+
+
          try{
             SwingUtilities.invokeAndWait(new Runnable(){
                public void run(){
@@ -428,10 +436,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
             return;
          }
 
-         
+
          if(mapStatuses.size() > 0){
             locator.stop();
-            
+
             for(final IPort port : locator.getPortList()){
                SwingUtilities.invokeLater(new Runnable(){
                   public void run(){
@@ -450,8 +458,8 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
          mapStatuses.clear();
          mapFirmwareButtons.clear();
-         
-         DefaultTableModel model = (DefaultTableModel) tblComPortList.getModel();         
+
+         DefaultTableModel model = (DefaultTableModel) tblComPortList.getModel();
          model.setRowCount(0);
 
          try{
@@ -470,47 +478,47 @@ public class ControlPanel extends JFrame implements IControlPanel{
             log.error(LOG, e);
             return;
          }
-         
-         
-         
-         
+
+
+
+
          // Let's build status map
-         locator.start();            
-         
+         locator.start();
+
          for(final IPort port : locator.getPortList()){
             final JLabel lbPortStatus = printStatus(port);
             mapStatuses.put(port.getPortName(), lbPortStatus);
          }
-         
 
-            
+
+
          try{
             SwingUtilities.invokeAndWait(new Runnable(){
                public void run(){
-                  
+
                   int iRowCount = 0;
                   for(final IPort port : locator.getPortList()){
-                     
+
                      JLabel lbPortName = new JLabel(port.getPortName() + ":");
                      lbPortName.setPreferredSize(new Dimension(90, 12));
                      lbPortName.setFont(new Font("Arial", Font.BOLD, 12));
                      lbPortName.setForeground(new Color(0, 0, 255));
-                     
-                     
+
+
                      JLabel lbPortStatus = mapStatuses.get(port.getPortName());
                      lbPortStatus.setPreferredSize(new Dimension(350, 16));
                      lbPortStatus.setFont(new Font("Arial", Font.PLAIN, 11));
                      lbPortStatus.setForeground(new Color(0, 0, 0));
-                     
-                     
+
+
                      final JButton btnUploadFirmware = new JButton(ControlPanel.this.config.i18n("button_upload_firmware"));
                      btnUploadFirmware.addActionListener(new ClickFirmwareUpload(port));
                      mapFirmwareButtons.put(port.getPortName(), btnUploadFirmware);
-                     
-                     //tblComPortList.getColumn("").setCellRenderer(new ButtonRenderer(btnUploadFirmware));      
-                     
-                     
-/*                     
+
+                     //tblComPortList.getColumn("").setCellRenderer(new ButtonRenderer(btnUploadFirmware));
+
+
+/*
                      final JPanel pnlPort = new JPanel(new FlowLayout(FlowLayout.LEFT));
                      pnlPort.setSize(593, 28);
                      pnlPort.setPreferredSize(new Dimension(593, 28));
@@ -533,26 +541,26 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      final JButton btnUploadFirmware = new JButton(ControlPanel.this.config.i18n("button_upload_firmware"));
                      btnUploadFirmware.addActionListener(new ClickFirmwareUpload(port));
                      mapFirmwareButtons.put(port.getPortName(), btnUploadFirmware);
-                     
+
                      btnUploadFirmware.setEnabled(false);
                      pnlPort.add(btnUploadFirmware);
 
                      pnlPort.setBounds(0, iRowCount * 30, 595, 30);
                      pnlComPortList.add(pnlPort);
 */
-                     
-                     
+
+
                      DefaultTableModel model = (DefaultTableModel) tblComPortList.getModel();
-                     
+
                      model.addRow(new Object[]{lbPortName,
                                                lbPortStatus,
                                                btnUploadFirmware});
-                     
-                     
-                     tblComPortList.setRowHeight(iRowCount, 22);                   
-                     
-                     
-                     
+
+
+                     tblComPortList.setRowHeight(iRowCount, 22);
+
+
+
                      iRowCount++;
                   }
                }
@@ -566,42 +574,42 @@ public class ControlPanel extends JFrame implements IControlPanel{
             log.error(LOG, e);
             return;
          }
-         
+
          while (ControlPanel.this.locator.getStatus() != IDeviceLocator.STATUS.READY){
-            
+
             int iPortNumber = 0;
             for(final IPort port : locator.getPortList()){
-               
-               final int iPortNumber_ = iPortNumber; 
-               
+
+               final int iPortNumber_ = iPortNumber;
+
                SwingUtilities.invokeLater(new Runnable(){
                   public void run(){
                      if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
                         //ControlPanel.this.setVisible(false);
                         bFirstRun.getAndSet(false);
                      }
-                     
-                     
+
+
                      if(port.getProgress() == IPort.PROGRESS.WRONG_VERSION ||
                         port.getProgress() == IPort.PROGRESS.UNKNOWN_DEVICE ||
                         port.getProgress() == IPort.PROGRESS.TIME_OUT){
-                        
+
                         mapFirmwareButtons.get(port.getPortName()).setEnabled(true);
                      }
-                     
+
                      mapStatuses.get(port.getPortName()).setText(printStatus(port).getText());
                      mapStatuses.get(port.getPortName()).setIcon(printStatus(port).getIcon());
-                     
+
                      tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
                      tblComPortList.revalidate();
-                     tblComPortList.repaint();                     
+                     tblComPortList.repaint();
                   }
                });
-               
+
                iPortNumber++;
             }
-            
-            
+
+
             try{
                Thread.sleep(100);
             }
@@ -612,12 +620,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
                break;
             }
          }
-         
+
          int iPortNumber = 0;
          for(final IPort port : locator.getPortList()){
-            
-            final int iPortNumber_ = iPortNumber; 
-            
+
+            final int iPortNumber_ = iPortNumber;
+
             SwingUtilities.invokeLater(new Runnable(){
                public void run(){
                   if(port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED /*&& bFirstRun.get()*/){
@@ -626,23 +634,23 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
 //                     Context.ctx.getBean("flash", IFlash.class).run(port.getDevice().getType());
                   }
-                  
+
                   if(port.getProgress() == IPort.PROGRESS.WRONG_VERSION ||
                      port.getProgress() == IPort.PROGRESS.UNKNOWN_DEVICE ||
                      port.getProgress() == IPort.PROGRESS.TIME_OUT ||
                      port.getProgress() == IPort.PROGRESS.ROBOT_DETECTED){
                      mapFirmwareButtons.get(port.getPortName()).setEnabled(true);
                   }
-                  
+
                   mapStatuses.get(port.getPortName()).setText(printStatusFinal(port).getText());
                   mapStatuses.get(port.getPortName()).setIcon(printStatusFinal(port).getIcon());
                   tblComPortList.getModel().setValueAt(mapStatuses.get(port.getPortName()), iPortNumber_, 1);
-                  
+
                   tblComPortList.revalidate();
-                  tblComPortList.repaint();                    
+                  tblComPortList.repaint();
                }
             });
-            
+
             iPortNumber++;
          }
 
@@ -652,7 +660,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
                btnFind.setIcon(null);
             }
          });
-         
+
 
          synchronized(ControlPanel.this){
             if(state == STATE.READY || state == STATE.WRONG_VERSION){
@@ -663,9 +671,9 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
       }
    }
-   
-   
-   protected JLabel printStatus(IPort port){      
+
+
+   protected JLabel printStatus(IPort port){
       switch (port.getProgress()){
          case INIT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_init"));
@@ -710,7 +718,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_robot_ok"), port.getDevice()));
             lb.setIcon(iconGreen);
             updateIcon(iconGreen);
-            
+
             state = STATE.READY;
             return lb;
          }
@@ -718,7 +726,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_wrong_version"), port.getDevice()));
             lb.setIcon(iconYellow);
             updateIcon(iconYellow);
-            
+
             state = STATE.WRONG_VERSION;
             return lb;
          }
@@ -740,18 +748,18 @@ public class ControlPanel extends JFrame implements IControlPanel{
             updateIcon(iconRed);
             return lb;
          }
-         
+
       }
-      
+
       JLabel lb = new JLabel("---");
       lb.setIcon(iconYellow);
       trayIcon.setImage(iconYellow.getImage());
 
       return lb;
    }
-   
-   
-   protected JLabel printStatusFinal(IPort port){      
+
+
+   protected JLabel printStatusFinal(IPort port){
       switch (port.getState()){
          case TIME_OUT:{
             JLabel lb = new JLabel(ControlPanel.this.config.i18n("port_state_timeout"));
@@ -769,7 +777,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_robot_ok"), port.getDevice()));
             lb.setIcon(iconGreen);
             updateIcon(iconGreen);
-            
+
             state = STATE.READY;
             return lb;
          }
@@ -777,7 +785,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
             JLabel lb = new JLabel(format_id_string(ControlPanel.this.config.i18n("port_state_wrong_version"), port.getDevice()));
             lb.setIcon(iconYellow);
             updateIcon(iconYellow);
-            
+
             state = STATE.WRONG_VERSION;
             return lb;
          }
@@ -788,18 +796,18 @@ public class ControlPanel extends JFrame implements IControlPanel{
             return lb;
          }
       }
-      
+
       JLabel lb = new JLabel("---");
       lb.setIcon(iconYellow);
       trayIcon.setImage(iconYellow.getImage());
 
       return lb;
    }
-   
-   
-   
-   
-   
+
+
+
+
+
    private String format_id_string(String str, IConnectedDevice device){
       try{
          return str.replaceAll("%s", "" + device.getSerialCompacted())
@@ -809,10 +817,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
          return "unknown device type=" + device.getType();
       }
    }
-   
-   
-   
-   
+
+
+
+
    private void updateIcon(ImageIcon icon){
       if(bestDeviceIcon == null){
          //no status yet
@@ -836,13 +844,13 @@ public class ControlPanel extends JFrame implements IControlPanel{
             trayIcon.setImage(icon.getImage());
          }
       }
-      
+
       bestDeviceIcon = icon.toString();
    }
-   
-   
 
-   
+
+
+
    public void popUp(){
       SwingUtilities.invokeLater(new Runnable(){
          public void run(){
@@ -855,14 +863,14 @@ public class ControlPanel extends JFrame implements IControlPanel{
             ControlPanel.this.requestFocus();
          }
       });
-   }   
+   }
 
 
 
 
    class ClickFirmwareUpload  implements ActionListener{
       private final IPort port;
-      
+
 
       public ClickFirmwareUpload(IPort port){
          this.port = port;
@@ -874,18 +882,18 @@ public class ControlPanel extends JFrame implements IControlPanel{
       @Override
       public void actionPerformed(ActionEvent arg0){
          FirmwareUploader uploader = new FirmwareUploader(port);
-         uploader.start(); 
+         uploader.start();
       }
-   
+
    }
-   
 
 
-   
-   
+
+
+
    class FirmwareUploader extends Thread{
       private final IPort port;
-        
+
 
       public FirmwareUploader(IPort port){
          this.port = port;
@@ -895,12 +903,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
 
       @Override
-      public void run(){      
+      public void run(){
          try{
             SwingUtilities.invokeAndWait(new Runnable(){
                public void run(){
                   ControlPanel.this.setVisible(false);
-                  //ControlPanel.this.setState(Frame.ICONIFIED);               
+                  //ControlPanel.this.setState(Frame.ICONIFIED);
                }
             });
          }
@@ -908,28 +916,28 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
          catch (InterruptedException e1){
          }
-         
 
-         
+
+
          String sFirmwareQuestion = ControlPanel.this.config.i18n("dialog_confirm_update_firmware")
-                                                            .replaceAll("%p", "" + port.getPortName()); 
-         
+                                                            .replaceAll("%p", "" + port.getPortName());
+
          IConnectedDevice device = port.getDevice();
-         
+
          if(device == null){
-            sFirmwareQuestion = sFirmwareQuestion.replaceAll("%f", config.getVersion()); 
+            sFirmwareQuestion = sFirmwareQuestion.replaceAll("%f", config.getVersion());
          }
          else{
-            sFirmwareQuestion = sFirmwareQuestion.replaceAll("%f", String.format("%04d", locator.getDevices().getDevice(port.getDevice().getType()).getFirmware())); 
+            sFirmwareQuestion = sFirmwareQuestion.replaceAll("%f", String.format("%04d", locator.getDevices().getDevice(port.getDevice().getType()).getFirmware()));
          }
-         
-      
+
+
          if(JOptionPane.showOptionDialog(null,
                   sFirmwareQuestion,
-                  ControlPanel.this.config.i18n("are_you_sure"), 
-                  JOptionPane.YES_NO_OPTION, 
-                  JOptionPane.INFORMATION_MESSAGE, 
-                  null, 
+                  ControlPanel.this.config.i18n("are_you_sure"),
+                  JOptionPane.YES_NO_OPTION,
+                  JOptionPane.INFORMATION_MESSAGE,
+                  null,
                   new String[]{ControlPanel.this.config.i18n("yes"), ControlPanel.this.config.i18n("no")}, // this is the array
                   "default") == JOptionPane.YES_OPTION){
          }
@@ -938,7 +946,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
                SwingUtilities.invokeAndWait(new Runnable(){
                   public void run(){
                      ControlPanel.this.setVisible(true);
-                     //ControlPanel.this.setState(Frame.ICONIFIED);               
+                     //ControlPanel.this.setState(Frame.ICONIFIED);
                   }
                });
             }
@@ -946,47 +954,47 @@ public class ControlPanel extends JFrame implements IControlPanel{
             }
             catch (InterruptedException e1){
             }
-            
+
             return;
          }
-         
+
 //         SwingUtilities.invokeLater(new Runnable(){
 //            public void run(){
-//               ControlPanel.this.setState(Frame.NORMAL);               
+//               ControlPanel.this.setState(Frame.NORMAL);
 //               //ControlPanel.this.setVisible(true);
 //               btnUpload.setEnabled(false);
 //            }
 //         });
-         
-         
+
+
 //         lock(ControlPanel.this.config.i18n("message_firmwaring"));
-         
+
          try{
             port.close();
-            
+
             ControlPanel.this.firmware.uploadFirmware(port.getPortName());
          }
          catch (Throwable e){
             log.fatal(LOG, e);
          }
 
-//         unlock();         
+//         unlock();
          ControlPanel.this.popUp();
          ControlPanel.this.reconnect();
       }
    }
 
-   
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
    class TextBubbleBorder extends AbstractBorder {
       private static final long serialVersionUID = 5448483592139168866L;
-      
-      
+
+
       private Color color;
       private int thickness = 4;
       private int radii = 8;
@@ -1107,13 +1115,13 @@ public class ControlPanel extends JFrame implements IControlPanel{
             btnExit.setEnabled(false);
             btnFind.setText(sMessage);
             btnFind.setIcon(iconWating);
-            
+
             for(Component component : tblComPortList.getComponents()){
                component.setEnabled(false);
-               
+
                if(component instanceof JPanel){
                   JPanel panel = (JPanel) component;
-                  
+
                   for(Component component2 : panel.getComponents()){
                      component2.setEnabled(false);
                   }
@@ -1131,40 +1139,40 @@ public class ControlPanel extends JFrame implements IControlPanel{
             btnExit.setEnabled(true);
             btnFind.setText(config.i18n("button_search"));
             btnFind.setIcon(null);
-            
+
             for(Component component : tblComPortList.getComponents()){
                component.setEnabled(true);
-               
+
                if(component instanceof JPanel){
                   JPanel panel = (JPanel) component;
-                  
+
                   for(Component component2 : panel.getComponents()){
                      component2.setEnabled(true);
                   }
                }
             }
-            
+
             btnDiagnostic.setEnabled(false);
          }
       });
    }
-   
-   
+
+
    private class FramePositionChecker extends Thread{
       private long lastTime = 0;
       private int iInterval = 250;
-      
+
       private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      
+
       public void run(){
          while(true){
             if(System.currentTimeMillis() -  iInterval > lastTime){
                lastTime = System.currentTimeMillis();
-               
+
                int iCurrentX = ControlPanel.this.getLocation().x;
                int iCurrentY = ControlPanel.this.getLocation().y;
-               
-               
+
+
                if(iCurrentX < 0) {
                   iCurrentX = 0;
                }
@@ -1186,10 +1194,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
                if(iCurrentY > screenSize.height - FRAME_HEIGHT) {
                   iCurrentY = screenSize.height - FRAME_HEIGHT;
                }
-               
+
                ControlPanel.this.setLocation(iCurrentX, iCurrentY);
             }
-            
+
             synchronized(this){
                try{
                   this.wait(iInterval);
@@ -1201,15 +1209,15 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
       }
    }
-   
-   
+
+
    private void checkNewVersion(){
       try{
          log.info(LOG + "Check new version...");
-         
+
          String sUpdateURL = config.getUpdateURL() + "/" + config.getVersion() + ".txt";
          log.trace(LOG + "UpdateURL=" + sUpdateURL);
-         
+
          URL url = new URL(sUpdateURL);
 
          HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -1224,28 +1232,28 @@ public class ControlPanel extends JFrame implements IControlPanel{
                sb.append(inputLine);
             }
             in.close();
-         
+
             log.trace(LOG + sb.toString());
-         
-         
-            if(JOptionPane.showOptionDialog(null, 
-                     ControlPanel.this.config.i18n("dialog_update_open_browser"), 
-                     ControlPanel.this.config.i18n("dialog_update_new_version_available"), 
-                     JOptionPane.YES_NO_OPTION, 
-                     JOptionPane.INFORMATION_MESSAGE, 
-                     null, 
+
+
+            if(JOptionPane.showOptionDialog(null,
+                     ControlPanel.this.config.i18n("dialog_update_open_browser"),
+                     ControlPanel.this.config.i18n("dialog_update_new_version_available"),
+                     JOptionPane.YES_NO_OPTION,
+                     JOptionPane.INFORMATION_MESSAGE,
+                     null,
                      new String[]{ControlPanel.this.config.i18n("yes"), ControlPanel.this.config.i18n("no")}, // this is the array
                      "default") == JOptionPane.YES_OPTION){
-            
-               Desktop.getDesktop().browse(new URI(sb.toString()));            
+
+               Desktop.getDesktop().browse(new URI(sb.toString()));
             }
          }
       }
-      
+
       catch (Throwable e){
          log.error(LOG, e);
       }
-      
+
       log.info(LOG + "No update or server unavailble");
       return;
    }
@@ -1259,22 +1267,22 @@ public class ControlPanel extends JFrame implements IControlPanel{
          public void run(){
             loadFileName = null;
             loadFileData = null;
-            
+
             UIManager.put("FileChooser.openDialogTitleText",  ControlPanel.this.config.i18n("dialog_open_title"));
             UIManager.put("FileChooser.openButtonText",       ControlPanel.this.config.i18n("dialog_open_button_open"));
             UIManager.put("FileChooser.cancelButtonText",     ControlPanel.this.config.i18n("dialog_open_button_cancel"));
             UIManager.put("FileChooser.lookInLabelText",      ControlPanel.this.config.i18n("dialog_open_button_look_in"));
             UIManager.put("FileChooser.filesOfTypeLabelText", ControlPanel.this.config.i18n("dialog_open_button_file_type"));
             UIManager.put("FileChooser.fileNameLabelText",    ControlPanel.this.config.i18n("dialog_open_button_file_name"));
-            
-            
-            
+
+
+
             try{
                MyFileChooser fileChooser = new MyFileChooser();
                fileChooser.setAcceptAllFileFilterUsed(false);
                fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));
-               
-               
+
+
                int iResult;
                while (true){
                   iResult = fileChooser.showOpenDialog(null);
@@ -1285,7 +1293,7 @@ public class ControlPanel extends JFrame implements IControlPanel{
                      break;
                   }
                }
-               
+
                if(iResult == JFileChooser.APPROVE_OPTION){
                   selectedFile = fileChooser.getSelectedFile();
                   loadFileName = selectedFile.getName();
@@ -1298,25 +1306,25 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
       });
    }
-   
-   
-   
+
+
+
    @Override
    public String dialogLoadCheck(){
       return loadFileName;
    }
-   
+
 
 
    @Override
    public byte[] dialogLoadData(){
       return loadFileData;
    }
-   
 
 
-   
-   
+
+
+
    @Override
    public void dialogSaveReset(){
       selectedFile = null;
@@ -1325,13 +1333,13 @@ public class ControlPanel extends JFrame implements IControlPanel{
    @Override
    public String dialogSaveCheck(){
       return saveFileName;
-   }   
+   }
    @Override
    public void dialogSave(final byte[] data){
       log.trace(LOG + "save");
-      
+
       if(selectedFile == null){
-         dialogSaveAs("project", data);        
+         dialogSaveAs("project", data);
       }
       else{
          try{
@@ -1343,23 +1351,23 @@ public class ControlPanel extends JFrame implements IControlPanel{
             log.error(LOG, e);
          }
       }
-      
+
       dialogSaveTmp(data);
    }
-   
 
-   
-   
-   
+
+
+
+
    private File getTmpFile(){
       String sTmpFolder = System.getProperty("java.io.tmpdir");
       if(sTmpFolder.endsWith("/")){
-         //Windows adds this                  
+         //Windows adds this
       }
       else{
          sTmpFolder += "/";
       }
-      
+
       try{
          MessageDigest m = MessageDigest.getInstance("MD5");
          m.reset();
@@ -1379,9 +1387,9 @@ public class ControlPanel extends JFrame implements IControlPanel{
    }
 
 
-   
-   
-   
+
+
+
    public byte[] dialogOpenTmp(){
       log.trace(LOG + "openTmp()");
 
@@ -1399,20 +1407,20 @@ public class ControlPanel extends JFrame implements IControlPanel{
             log.info("Can not read the autosave file.");
          }
       }
-      
+
       return null;
    }
-   
-   
-   
-   
-   
+
+
+
+
+
    @Override
    public void dialogSaveTmp(final byte[] data){
       log.trace(LOG + "saveTmp()");
-      
-      
-      synchronized(this){      
+
+
+      synchronized(this){
          if(config.isAutoSave()){
             try{
                FileOutputStream stream = new FileOutputStream(getTmpFile());
@@ -1425,39 +1433,39 @@ public class ControlPanel extends JFrame implements IControlPanel{
          }
       }
    }
-   
 
-   
-   
-   
-   
+
+
+
+
+
    @Override
    public void dialogSaveAs(final String sName, final byte[] data){
       log.trace(LOG + "save as");
-      
+
       saveFileName = null;
-            
+
       SwingUtilities.invokeLater(new Thread(){
-         public void run(){                        
+         public void run(){
             UIManager.put("FileChooser.saveDialogTitleText",  ControlPanel.this.config.i18n("dialog_save_title"));
             UIManager.put("FileChooser.saveButtonText",       ControlPanel.this.config.i18n("dialog_save_button_save"));
             UIManager.put("FileChooser.cancelButtonText",     ControlPanel.this.config.i18n("dialog_save_button_cancel"));
             UIManager.put("FileChooser.lookInLabelText",      ControlPanel.this.config.i18n("dialog_save_button_look_in"));
             UIManager.put("FileChooser.filesOfTypeLabelText", ControlPanel.this.config.i18n("dialog_save_button_file_type"));
             UIManager.put("FileChooser.fileNameLabelText",    ControlPanel.this.config.i18n("dialog_save_button_file_name"));
-            
-      
+
+
             MyFileChooser fileChooser = new MyFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));               
+            fileChooser.setFileFilter(new FileNameExtensionFilter(".sb2", "sb2"));
             fileChooser.setSelectedFile(new File(sName));
-            
-            
+
+
             ControlPanel.this.setAlwaysOnTop(false);
-               
-            
+
+
             while(true){
                int iResult = fileChooser.showSaveDialog(null);
-                  
+
                if(iResult == JFileChooser.APPROVE_OPTION){
                   selectedFile = fileChooser.getSelectedFile();
                   if(selectedFile.getAbsolutePath().endsWith(".sb2")){
@@ -1465,11 +1473,11 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   else{
                      selectedFile = new File(selectedFile.getAbsolutePath() + ".sb2");
                   }
-                  
+
                   if(selectedFile.exists()){
-                     
+
                      UIManager.put("OptionPane.yesButtonText", ControlPanel.this.config.i18n("yes"));
-                     UIManager.put("OptionPane.noButtonText",  ControlPanel.this.config.i18n("no"));                     
+                     UIManager.put("OptionPane.noButtonText",  ControlPanel.this.config.i18n("no"));
                      int dialogResult = JOptionPane.showConfirmDialog(null,
                                                                       ControlPanel.this.config.i18n("dialog_save_confirm_file_exists"),
                                                                       "",
@@ -1478,10 +1486,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
                         continue;
                      }
                   }
-                  
+
                   saveFileName = selectedFile.getName();
-                  
-                  
+
+
                   try{
                      FileOutputStream stream = new FileOutputStream(selectedFile.getAbsolutePath());
                      stream.write(data);
@@ -1493,19 +1501,19 @@ public class ControlPanel extends JFrame implements IControlPanel{
                   }
                }
                else{
-                  saveFileName = "---"; 
+                  saveFileName = "---";
                   break;
                }
             }
-            
+
             ControlPanel.this.setAlwaysOnTop(true);
          }
       });
    }
-   
 
-   
-   
+
+
+
    class MyFileChooser extends JFileChooser{
       private static final long serialVersionUID = 7051835330389929338L;
 
@@ -1516,9 +1524,9 @@ public class ControlPanel extends JFrame implements IControlPanel{
       }
    }
 
-   
-   
-   
+
+
+
    class LabelRenderer implements TableCellRenderer{
 
       public LabelRenderer(){
@@ -1529,26 +1537,26 @@ public class ControlPanel extends JFrame implements IControlPanel{
          return (Component) value;
       }
    }
-   
-   
-   
-   
-   
+
+
+
+
+
    class ButtonRenderer implements TableCellRenderer{
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
          return (Component) value;
       }
    }
-   
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
    public class ClientsTableRenderer extends DefaultCellEditor{
       private static final long serialVersionUID = 1675293203153976084L;
-      
+
       private JButton button;
       private boolean clicked;
       @SuppressWarnings("unused")
@@ -1594,12 +1602,12 @@ public class ControlPanel extends JFrame implements IControlPanel{
       public Object getCellEditorValue(){
          if(clicked){
             //JOptionPane.showMessageDialog(button, row);
-            
+
             FirmwareUploader uploader = new FirmwareUploader(locator.getPortList().get(row));
-            uploader.start(); 
+            uploader.start();
          }
          clicked = false;
-         
+
          return new JButton(ControlPanel.this.config.i18n("button_upload_firmware"));
       }
 

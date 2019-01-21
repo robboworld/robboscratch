@@ -334,7 +334,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
    <bean id="scratch" class="scratchduino.robot.ScratchExternalCommand" scope="singleton" lazy-init="true">
       <constructor-arg ref="config"/>
       <constructor-arg ref="os"/>
-      <constructor-arg value="flash2.1.59"/>
+      <constructor-arg value="flash2.1.70"/>
    </bean>
 
 <!--
