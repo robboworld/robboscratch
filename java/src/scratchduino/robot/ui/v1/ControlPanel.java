@@ -361,8 +361,10 @@ public class ControlPanel extends JFrame implements IControlPanel{
 
       FramePositionChecker fpc = new FramePositionChecker();
       fpc.start();
+      
+      log.debug("No new version checking");
 
-      checkNewVersion();
+     // checkNewVersion();
 
 
 
